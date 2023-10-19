@@ -14,13 +14,23 @@ public class ActiveGame
 
     #region Invite
     private readonly string _invitePrefix;
-    public string InviteCode { get; set; } = Guid.NewGuid().ToString();
+    public string InviteCode { get; } = Guid.NewGuid().ToString();
     public string InviteUrl => FlipNowHelper.EnsureSlash(_invitePrefix, start: false) + InviteCode;
     #endregion
 
     #region Players
     public List<Player> Players { get; }
-    public int TurnPlayerIndex { get; set; } = 0;
+
+    private int _turnPlayerIndex = 0;
+    public int TurnPlayerIndex 
+    {
+        get => _turnPlayerIndex;
+        set 
+        {
+            if (value < 0 || Players.Count <= value) throw new ArgumentOutOfRangeException(nameof(value), value, "Index out of range");
+            _turnPlayerIndex = value;
+        } 
+    }
     public Player TurnPlayer => Players[TurnPlayerIndex];
     public Player Host { get; }
     public List<Player> Leaderboard => Players.OrderByDescending(p => p.Score).ToList();
