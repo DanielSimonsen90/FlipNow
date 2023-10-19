@@ -1,4 +1,4 @@
-﻿namespace FlipNow.Entities.Entities;
+﻿namespace FlipNow.Common.Entities;
 #nullable disable
 
 public class Game

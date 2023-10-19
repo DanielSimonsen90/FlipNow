@@ -1,5 +1,5 @@
 ﻿#nullable disable
-namespace FlipNow.Entities.Entities;
+namespace FlipNow.Common.Entities;
 
 public class Card
 {
