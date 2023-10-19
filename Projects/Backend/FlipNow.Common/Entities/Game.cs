@@ -1,7 +1,9 @@
-﻿namespace FlipNow.Common.Entities;
+﻿using DanhoLibrary.NLayer;
+
+namespace FlipNow.Common.Entities;
 #nullable disable
 
-public class Game
+public class Game : BaseEntity<Guid>
 {
     public UserScore WinnerScore { get; set; }
     public IEnumerable<UserScore> Scores { get; set; }
