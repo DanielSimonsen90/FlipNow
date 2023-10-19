@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FlipNow.DataAccess\FlipNow.DataAccess.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DanhoLibrary">
+      <HintPath>..\..\..\..\..\..\..\Libraries\DanhoLibrary\DanhoLibrary\bin\Release\netstandard2.1\DanhoLibrary.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

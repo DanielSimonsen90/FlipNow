@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlipNow.DataAccess", "FlipN
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlipNow.Common", "FlipNow.Common\FlipNow.Common.csproj", "{3F5FE4ED-41D3-4167-B60B-991DD995C044}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlipNow.Business", "FlipNow.Business\FlipNow.Business.csproj", "{7916A3C4-8958-468E-B6BC-8896A881080A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3F5FE4ED-41D3-4167-B60B-991DD995C044}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F5FE4ED-41D3-4167-B60B-991DD995C044}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F5FE4ED-41D3-4167-B60B-991DD995C044}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7916A3C4-8958-468E-B6BC-8896A881080A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7916A3C4-8958-468E-B6BC-8896A881080A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7916A3C4-8958-468E-B6BC-8896A881080A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7916A3C4-8958-468E-B6BC-8896A881080A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
