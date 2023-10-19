@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FlipNow.Entities\FlipNow.Common.csproj" />
+    <ProjectReference Include="..\FlipNow.Common\FlipNow.Common.csproj" />
   </ItemGroup>
 
 </Project>
