@@ -1,9 +1,4 @@
-﻿using FlipNow.Entities.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FlipNow.Common.Entities;
 
 namespace FlipNow.DataAccess.SeedData;
 

@@ -1,7 +1,7 @@
 ﻿using DanhoLibrary.NLayer;
 #nullable disable
 
-namespace FlipNow.Entities.Entities;
+namespace FlipNow.Common.Entities;
 
 public class UserScore : BaseEntity<Guid>
 {

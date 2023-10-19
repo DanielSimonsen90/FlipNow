@@ -1,4 +1,4 @@
-﻿using FlipNow.Entities.Entities;
+﻿using FlipNow.Common.Entities;
 
 namespace FlipNow.DataAccess.SeedData;
 
