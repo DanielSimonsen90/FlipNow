@@ -1,4 +1,5 @@
-﻿using FlipNow.Business.Models;
+﻿using DanhoLibrary.Extensions;
+using FlipNow.Business.Models;
 using FlipNow.Common.Entities;
 
 namespace FlipNow.Business.Services;
@@ -6,12 +7,13 @@ namespace FlipNow.Business.Services;
 public class GameService
 {
     public static readonly Dictionary<Guid, ActiveGame> HostedGames = new();
-    internal static double CalculateScore(Player player) => player.CardMatches * 1000 - player.TimeSpent.Seconds;
+    public static ActiveGame FindActiveGame(string invideCode) => HostedGames.FirstOrDefault(kvp => kvp.Value.InviteCode == invideCode).Value;
     private static bool IsNotMatch(GameCard first, GameCard second) => first.Name != second.Name;
 
     public ActiveGame Game { get; private set; }
 
     private readonly UnitOfWork _unitOfWork;
+    private readonly Guid _hostId;
 
     public GameService(UnitOfWork unitOfWork, string invitePrefix, User host)
     {
@@ -22,7 +24,8 @@ public class GameService
             invitePrefix,
             cards: _unitOfWork.CardRepository.GetAllShuffled(),
             host);
-        HostedGames.Add(host.Id, Game);
+
+        _hostId = host.Id;
     }
 
     public GameService(UnitOfWork unitOfWork, ActiveGame game)
@@ -43,6 +46,7 @@ public class GameService
         if (Game.PlayState != PlayState.PLAYING) throw new InvalidOperationException("Game is not playing");
 
         Game.PlayState = PlayState.IDLE;
+        HostedGames.Remove(_hostId);
     }
     private void ResetGame()
     {
@@ -55,8 +59,15 @@ public class GameService
                 gc.Flipped = false;
                 return gc;
             }).ToList();
+
+        UpdateHostedGames();
     }
 
+    public void FlipCard(int index)
+    {
+        Game.Cards[index].Flipped = true;
+        UpdateHostedGames();
+    }
     public async Task<ActiveGame> ProcessGame()
     {
         // State check
@@ -76,6 +87,8 @@ public class GameService
                 if (gc.Flipped && !gc.Matched) gc.Flipped = false;
                 return gc;
             }).ToList();
+
+            UpdateHostedGames();
             return Game;
         }
         else
@@ -95,6 +108,7 @@ public class GameService
             await SaveGameAsync();
         }
 
+        UpdateHostedGames();
         return Game;
     }
 
@@ -119,4 +133,24 @@ public class GameService
 
         await _unitOfWork.SaveChangesAsync();
     }
+    private void UpdateHostedGames()
+    {
+        HostedGames.Set(_hostId, Game);
+    }
+
+    public void AddPlayer(User user)
+    {
+        if (Game.Players.Any(p => p.User.Id == user.Id)) throw new InvalidOperationException("User is already in the game");
+
+        Game.Players.Add(new Player(user, Game));
+        UpdateHostedGames();
+    }
+    public void RemovePlayer(User user)
+    {
+        if (Game.Players.All(p => p.User.Id != user.Id)) throw new InvalidOperationException("User is not in the game");
+
+        Game.Players.Remove(Game.Players.First(p => p.User.Id == user.Id));
+        UpdateHostedGames();
+    }
 }
+
