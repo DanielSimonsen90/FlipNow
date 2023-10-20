@@ -12,11 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\FlipNow.Business\FlipNow.Business.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FlipNow.Business\FlipNow.Business.csproj" />
+    <Reference Include="DanhoLibrary">
+      <HintPath>..\..\..\..\..\..\..\Libraries\DanhoLibrary\DanhoLibrary\bin\Release\netstandard2.1\DanhoLibrary.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
