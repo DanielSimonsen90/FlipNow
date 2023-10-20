@@ -4,12 +4,12 @@ namespace FlipNow.Business.Models;
 
 public class ActiveGame
 {
-    public ActiveGame(string invitePrefix, IEnumerable<Card> cards, IEnumerable<Player> players, Player host)
+    public ActiveGame(string invitePrefix, IEnumerable<Card> cards, User host)
     {
         _invitePrefix = invitePrefix;
         Cards = cards.Select(c => new GameCard(c)).ToList();
-        Players = players.ToList();
-        Host = host;
+        Host = new Player(host, this);
+        Players = new List<Player>() { Host };
     }
 
     #region Invite
@@ -36,6 +36,6 @@ public class ActiveGame
     public List<Player> Leaderboard => Players.OrderByDescending(p => p.Score).ToList();
     #endregion
 
-    public List<GameCard> Cards { get; }
+    public List<GameCard> Cards { get; internal set; }
     public PlayState PlayState { get; set; } = PlayState.IDLE;
 }

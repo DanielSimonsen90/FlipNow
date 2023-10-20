@@ -12,7 +12,7 @@ public class Player
 
     public User User { get; }
     public ActiveGame Game { get; }
-    public double Score { get; set; }
+    public double Score => GameService.CalculateScore(this);
     public int CardMatches { get; set; }
     public int CardMatchesLeft => Game.Cards.Count / 2 - CardMatches;
     public bool Finished { get; set; }

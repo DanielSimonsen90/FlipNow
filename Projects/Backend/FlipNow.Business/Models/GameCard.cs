@@ -14,6 +14,8 @@ public class GameCard
     /// </summary>
     public string Name { get; }
 
-    public ActiveGame Game { get; set; }
-    public bool Flipped { get; set; }
+    public bool Flipped { get; set; } = false;
+
+    public Player? MatchedBy { get; set; }
+    public bool Matched => Flipped && MatchedBy is not null;
 }
