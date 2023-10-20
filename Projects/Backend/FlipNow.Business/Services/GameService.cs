@@ -1,19 +1,13 @@
 ﻿using FlipNow.Business.Models;
 using FlipNow.Common.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FlipNow.Business.Services;
 
 public class GameService
 {
-    public static Dictionary<Guid, ActiveGame> HostedGames = new();
-    internal static double CalculateScore(Player player) =>  player.CardMatches * 1000 - player.TimeSpent.Seconds;
+    public static readonly Dictionary<Guid, ActiveGame> HostedGames = new();
+    internal static double CalculateScore(Player player) => player.CardMatches * 1000 - player.TimeSpent.Seconds;
     private static bool IsNotMatch(GameCard first, GameCard second) => first.Name != second.Name;
-    
 
     public ActiveGame Game { get; private set; }
 
@@ -22,7 +16,7 @@ public class GameService
     public GameService(UnitOfWork unitOfWork, string invitePrefix, User host)
     {
         if (HostedGames.ContainsKey(host.Id)) throw new InvalidOperationException("User is already hosting a game");
-        
+
         _unitOfWork = unitOfWork;
         Game = new ActiveGame(
             invitePrefix,
@@ -40,7 +34,7 @@ public class GameService
     public void StartGame()
     {
         if (Game.PlayState == PlayState.PLAYING) throw new InvalidOperationException("Game is already playing");
-        
+
         ResetGame();
         Game.PlayState = PlayState.PLAYING;
     }
@@ -54,8 +48,8 @@ public class GameService
     {
         if (Game.TurnPlayerIndex > 0)
             Game.TurnPlayerIndex = 0;
-        
-        if (Game.Cards.Any(c => c.Flipped)) 
+
+        if (Game.Cards.Any(c => c.Flipped))
             Game.Cards = Game.Cards.Select(gc =>
             {
                 gc.Flipped = false;
@@ -63,7 +57,7 @@ public class GameService
             }).ToList();
     }
 
-    public ActiveGame ProcessGame()
+    public async Task<ActiveGame> ProcessGame()
     {
         // State check
         if (Game.PlayState != PlayState.PLAYING) throw new InvalidOperationException("Game is not playing");
@@ -93,19 +87,36 @@ public class GameService
                 return gc;
             }).ToList();
         }
-        
+
         // Check game finish
         if (Game.Cards.All(card => card.Matched))
         {
             EndGame();
-            SaveGame();
+            await SaveGameAsync();
         }
-        
+
         return Game;
     }
 
-    private void SaveGame()
+    private async Task SaveGameAsync()
     {
-        throw new NotImplementedException();
+        IEnumerable<Card> cards = _unitOfWork.CardRepository.GetAll(c => Game.Cards.Any(gc => gc.Name == c.Name));
+        IEnumerable<UserScore> scores = Game.Players.Select(p => new UserScore()
+        {
+            Score = p.Score,
+            Time = p.TimeSpent,
+            User = p.User
+        });
+
+        await _unitOfWork.UserScoreRepository.AddRangeAsync(scores.ToArray());
+        await _unitOfWork.GameRepository.AddAsync(new()
+        {
+            Cards = cards,
+            PlayingUsers = Game.Players.Select(p => p.User),
+            Scores = scores,
+            WinnerScore = scores.OrderByDescending(s => s.Score).First()
+        });
+
+        await _unitOfWork.SaveChangesAsync();
     }
 }
