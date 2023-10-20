@@ -6,7 +6,6 @@ namespace FlipNow.Business.Services;
 public class GameService
 {
     public static readonly Dictionary<Guid, ActiveGame> HostedGames = new();
-    internal static double CalculateScore(Player player) => player.CardMatches * 1000 - player.TimeSpent.Seconds;
     private static bool IsNotMatch(GameCard first, GameCard second) => first.Name != second.Name;
 
     public ActiveGame Game { get; private set; }
