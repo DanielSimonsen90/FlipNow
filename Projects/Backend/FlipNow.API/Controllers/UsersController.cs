@@ -1,22 +1,32 @@
 ﻿using FlipNow.Business.Services;
+using FlipNow.Common.Entities;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FlipNow.API.Controllers
+namespace FlipNow.API.Controllers;
+
+public class UsersController : BaseController
 {
-    public class UsersController : BaseController
+    public UsersController(UnitOfWork unitOfWork) : base(unitOfWork) { }
+
+    [HttpPost("{username}"), HttpGet("{username}")]
+    public async Task<IActionResult> CreateOrFindUser(string username)
     {
-        public UsersController(UnitOfWork unitOfWork) : base(unitOfWork) { }
+        User? user = _unitOfWork.UserRepository.GetByUsername(username);
+        if (user is not null) return Ok(user);
 
-        [HttpPost("{username}")]
-        public IActionResult CreateOrFindUser(string username)
-        {
-            throw new NotImplementedException();
-        }
+        user = await _unitOfWork.UserRepository.AddAsync(new User() { Username = username });
+        await _unitOfWork.SaveChangesAsync();
+        return Created($"/api/users/{username}", user);
+    }
 
-        [HttpDelete("{userId:Guid}")]
-        public IActionResult DeleteUser(Guid userId)
-        {
-            throw new NotImplementedException();
-        }
+    [HttpDelete("{userId:Guid}")]
+    public async Task<IActionResult> DeleteUser(Guid userId)
+    {
+        User? user = _unitOfWork.UserRepository.Get(userId);
+        if (user is null) return NotFound($"User with id {userId} not found.");
+
+        _unitOfWork.UserRepository.Delete(user);
+        await _unitOfWork.SaveChangesAsync();
+        return Ok($"{user.Username} deleted.");
     }
 }
