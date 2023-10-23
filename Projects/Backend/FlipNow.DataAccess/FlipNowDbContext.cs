@@ -42,7 +42,6 @@ public class FlipNowDbContext : DbContext
         builder.Entity<Card>()
             .HasMany(c => c.Games)
             .WithMany(g => g.Cards);
-            //.UsingEntity<CardGame>();
 
         builder.Entity<Game>()
             .HasMany(g => g.PlayingUsers)
