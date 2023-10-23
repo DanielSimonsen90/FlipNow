@@ -26,40 +26,38 @@ namespace FlipNow.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CardGame",
+                name: "Games",
                 columns: table => new
                 {
-                    GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CardsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CardId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CardGame", x => new { x.CardsId, x.GameId });
-                    table.ForeignKey(
-                        name: "FK_CardGame_Cards_CardId",
-                        column: x => x.CardId,
-                        principalTable: "Cards",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_Games", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CardGame",
+                columns: table => new
+                {
+                    CardsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GamesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CardGame", x => new { x.CardsId, x.GamesId });
                     table.ForeignKey(
                         name: "FK_CardGame_Cards_CardsId",
                         column: x => x.CardsId,
                         principalTable: "Cards",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Games",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    WinnerScoreId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Games", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CardGame_Games_GamesId",
+                        column: x => x.GamesId,
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -69,7 +67,6 @@ namespace FlipNow.DataAccess.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AvgScore = table.Column<double>(type: "float", nullable: false),
-                    HighestScoreId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ActiveGameId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
@@ -88,8 +85,8 @@ namespace FlipNow.DataAccess.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Score = table.Column<double>(type: "float", nullable: false),
                     GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Score = table.Column<double>(type: "float", nullable: false),
                     Time = table.Column<TimeSpan>(type: "time", nullable: false)
                 },
                 constraints: table =>
@@ -121,33 +118,18 @@ namespace FlipNow.DataAccess.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "ActiveGameId", "AvgScore", "HighestScoreId", "Username" },
-                values: new object[] { new Guid("00000000-0000-0000-0000-000000000006"), null, 0.0, null, "Dumbho" });
+                columns: new[] { "Id", "ActiveGameId", "AvgScore", "Username" },
+                values: new object[] { new Guid("00000000-0000-0000-0000-000000000006"), null, 0.0, "Dumbho" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CardGame_CardId",
+                name: "IX_CardGame_GamesId",
                 table: "CardGame",
-                column: "CardId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CardGame_GameId",
-                table: "CardGame",
-                column: "GameId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Games_WinnerScoreId",
-                table: "Games",
-                column: "WinnerScoreId");
+                column: "GamesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_ActiveGameId",
                 table: "Users",
                 column: "ActiveGameId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_HighestScoreId",
-                table: "Users",
-                column: "HighestScoreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserScores_GameId",
@@ -158,59 +140,25 @@ namespace FlipNow.DataAccess.Migrations
                 name: "IX_UserScores_UserId",
                 table: "UserScores",
                 column: "UserId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_CardGame_Games_GameId",
-                table: "CardGame",
-                column: "GameId",
-                principalTable: "Games",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Games_UserScores_WinnerScoreId",
-                table: "Games",
-                column: "WinnerScoreId",
-                principalTable: "UserScores",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Users_UserScores_HighestScoreId",
-                table: "Users",
-                column: "HighestScoreId",
-                principalTable: "UserScores",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Users_Games_ActiveGameId",
-                table: "Users");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_UserScores_Games_GameId",
-                table: "UserScores");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Users_UserScores_HighestScoreId",
-                table: "Users");
-
             migrationBuilder.DropTable(
                 name: "CardGame");
-
-            migrationBuilder.DropTable(
-                name: "Cards");
-
-            migrationBuilder.DropTable(
-                name: "Games");
 
             migrationBuilder.DropTable(
                 name: "UserScores");
 
             migrationBuilder.DropTable(
+                name: "Cards");
+
+            migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Games");
         }
     }
 }

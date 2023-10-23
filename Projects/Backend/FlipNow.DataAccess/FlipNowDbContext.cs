@@ -41,8 +41,7 @@ public class FlipNowDbContext : DbContext
     {
         builder.Entity<Card>()
             .HasMany(c => c.Games)
-            .WithMany(g => g.Cards)
-            .UsingEntity<CardGame>();
+            .WithMany(g => g.Cards);
 
         builder.Entity<Game>()
             .HasMany(g => g.PlayingUsers)
@@ -50,13 +49,6 @@ public class FlipNowDbContext : DbContext
         builder.Entity<Game>()
             .HasMany(g => g.Scores)
             .WithOne(us => us.Game);
-        //builder.Entity<Game>()
-        //    .HasOne(g => g.WinnerScore)
-        //    .WithOne(us => us.Game);
-
-        //builder.Entity<User>()
-        //    .HasOne(u => u.HighestScore)
-        //    .WithOne(us => us.User);
 
         builder.Entity<UserScore>()
             .HasOne(us => us.User)

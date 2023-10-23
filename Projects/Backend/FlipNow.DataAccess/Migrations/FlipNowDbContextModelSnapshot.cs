@@ -22,6 +22,21 @@ namespace FlipNow.DataAccess.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CardGame", b =>
+                {
+                    b.Property<Guid>("CardsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GamesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("CardsId", "GamesId");
+
+                    b.HasIndex("GamesId");
+
+                    b.ToTable("CardGame");
+                });
+
             modelBuilder.Entity("FlipNow.Common.Entities.Card", b =>
                 {
                     b.Property<Guid>("Id")
@@ -63,38 +78,13 @@ namespace FlipNow.DataAccess.Migrations
                         });
                 });
 
-            modelBuilder.Entity("FlipNow.Common.Entities.CardGame", b =>
-                {
-                    b.Property<Guid>("CardsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("GameId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CardId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("CardsId", "GameId");
-
-                    b.HasIndex("CardId");
-
-                    b.HasIndex("GameId");
-
-                    b.ToTable("CardGame");
-                });
-
             modelBuilder.Entity("FlipNow.Common.Entities.Game", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("WinnerScoreId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("WinnerScoreId");
 
                     b.ToTable("Games");
                 });
@@ -111,17 +101,12 @@ namespace FlipNow.DataAccess.Migrations
                     b.Property<double>("AvgScore")
                         .HasColumnType("float");
 
-                    b.Property<Guid?>("HighestScoreId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ActiveGameId");
-
-                    b.HasIndex("HighestScoreId");
 
                     b.ToTable("Users");
 
@@ -161,38 +146,19 @@ namespace FlipNow.DataAccess.Migrations
                     b.ToTable("UserScores");
                 });
 
-            modelBuilder.Entity("FlipNow.Common.Entities.CardGame", b =>
+            modelBuilder.Entity("CardGame", b =>
                 {
-                    b.HasOne("FlipNow.Common.Entities.Card", "Card")
-                        .WithMany()
-                        .HasForeignKey("CardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("FlipNow.Common.Entities.Card", null)
                         .WithMany()
                         .HasForeignKey("CardsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FlipNow.Common.Entities.Game", "Game")
+                    b.HasOne("FlipNow.Common.Entities.Game", null)
                         .WithMany()
-                        .HasForeignKey("GameId")
+                        .HasForeignKey("GamesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Card");
-
-                    b.Navigation("Game");
-                });
-
-            modelBuilder.Entity("FlipNow.Common.Entities.Game", b =>
-                {
-                    b.HasOne("FlipNow.Common.Entities.UserScore", "WinnerScore")
-                        .WithMany()
-                        .HasForeignKey("WinnerScoreId");
-
-                    b.Navigation("WinnerScore");
                 });
 
             modelBuilder.Entity("FlipNow.Common.Entities.User", b =>
@@ -201,13 +167,7 @@ namespace FlipNow.DataAccess.Migrations
                         .WithMany("PlayingUsers")
                         .HasForeignKey("ActiveGameId");
 
-                    b.HasOne("FlipNow.Common.Entities.UserScore", "HighestScore")
-                        .WithMany()
-                        .HasForeignKey("HighestScoreId");
-
                     b.Navigation("ActiveGame");
-
-                    b.Navigation("HighestScore");
                 });
 
             modelBuilder.Entity("FlipNow.Common.Entities.UserScore", b =>

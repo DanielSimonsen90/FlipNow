@@ -128,7 +128,6 @@ public class GameService
             Cards = cards,
             PlayingUsers = Game.Players.Select(p => p.User),
             Scores = scores,
-            WinnerScore = scores.OrderByDescending(s => s.Score).First()
         });
 
         await _unitOfWork.SaveChangesAsync();
