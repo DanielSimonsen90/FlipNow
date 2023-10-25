@@ -7,8 +7,9 @@ namespace FlipNow.Business.Services;
 public class GameService
 {
     public static readonly Dictionary<Guid, ActiveGame> HostedGames = new();
-    public static ActiveGame FindActiveGame(string invideCode) => HostedGames.FirstOrDefault(kvp => kvp.Value.InviteCode == invideCode).Value;
+    public static ActiveGame? FindActiveGame(string invideCode) => HostedGames.FirstOrDefault(kvp => kvp.Value.InviteCode == invideCode).Value;
     private static bool IsNotMatch(GameCard first, GameCard second) => first.Name != second.Name;
+    public static ActiveGame? FindGameFromUser(User user) => HostedGames.FirstOrDefault(kvp => kvp.Value.Players.Any(p => p.User.Id == user.Id)).Value;
 
     public ActiveGame Game { get; private set; }
 
@@ -63,8 +64,15 @@ public class GameService
         UpdateHostedGames();
     }
 
+    /// <summary>
+    /// Flip card from <paramref name="index"/>
+    /// </summary>
+    /// <param name="index">Index in card collection to find card to flip</param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public void FlipCard(int index)
     {
+        if (index < 0 || index >= Game.Cards.Count) throw new ArgumentOutOfRangeException(nameof(index));
+
         Game.Cards[index].Flipped = true;
         UpdateHostedGames();
     }
@@ -144,6 +152,8 @@ public class GameService
         Game.Players.Add(new Player(user, Game));
         UpdateHostedGames();
     }
+    public Player? GetPlayer(Guid playerId) => Game.Players.FirstOrDefault(p => p.Id == playerId);
+    public Player? GetPlayer(User user) => Game.Players.FirstOrDefault(p => p.User.Id == user.Id);
     public void RemovePlayer(User user)
     {
         if (Game.Players.All(p => p.User.Id != user.Id)) throw new InvalidOperationException("User is not in the game");

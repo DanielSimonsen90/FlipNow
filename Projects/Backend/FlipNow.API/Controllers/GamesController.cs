@@ -1,4 +1,5 @@
-﻿using FlipNow.Business.Models;
+﻿using FlipNow.Business.Hubs;
+using FlipNow.Business.Models;
 using FlipNow.Business.Services;
 using FlipNow.Common.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -38,46 +39,16 @@ public class GamesController : BaseController
         return Created(gameService.Game.InviteUrl, gameService);
     }
 
-    [HttpPost("{inviteCode}")] public IActionResult JoinGame(string inviteCode, Guid? userId) => ModifyPlayerPresence(inviteCode, userId, shouldBePresent: true);
-    [HttpDelete("{inviteCode}")] public IActionResult LeaveGame(string inviteCode, Guid? userId) => ModifyPlayerPresence(inviteCode, userId, shouldBePresent: false);
-
-    private IActionResult ModifyPlayerPresence(string inviteCode, Guid? userId, bool shouldBePresent)
+    [HttpGet]
+    public IActionResult GetGame(string? userId)
     {
-        var result = GetGameAndUser(inviteCode, userId,
-            out ActiveGame? game, out User? user);
+        if (string.IsNullOrEmpty(userId)) return BadQueryRequest(nameof(userId));
+        
+        Guid id = Guid.Parse(userId);
+        User? user = _unitOfWork.UserRepository.Get(id);
+        if (user is null) return NotFound($"User with id {userId} not found.");
 
-        if (result is not null
-            || game is null
-            || user is null)
-            return result ?? InternalServerError();
-
-        var gameService = new GameService(_unitOfWork, game);
-
-        try
-        {
-            if (shouldBePresent) gameService.AddPlayer(user);
-            else gameService.RemovePlayer(user);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-
-        return Ok(gameService.Game);
-    }
-
-    private IActionResult? GetGameAndUser(string inviteCode, Guid? userId,
-        out ActiveGame? game, out User? user)
-    {
-        user = null;
-        game = GameService.FindActiveGame(inviteCode);
-
-        if (game is null) return NotFound("Game not found");
-        if (userId is not Guid playerId) return BadQueryRequest(nameof(userId));
-
-        try { user = _unitOfWork.UserRepository.Get(playerId); }
-        catch (Exception ex) { return NotFound(ex.Message); }
-
-        return null;
+        ActiveGame? game = GameService.FindGameFromUser(user);
+        return Ok(game);
     }
 }

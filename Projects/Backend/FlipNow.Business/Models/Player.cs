@@ -10,6 +10,7 @@ public class Player
         Game = game;
     }
 
+    public Guid Id { get; } = Guid.NewGuid();
     public User User { get; }
     public ActiveGame Game { get; }
     public double Score => CardMatches * 1000 - TimeSpent.Seconds;
