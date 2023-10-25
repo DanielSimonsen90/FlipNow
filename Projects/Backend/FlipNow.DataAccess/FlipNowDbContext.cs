@@ -45,7 +45,7 @@ public class FlipNowDbContext : DbContext
 
         builder.Entity<Game>()
             .HasMany(g => g.PlayingUsers)
-            .WithOne(u => u.ActiveGame);
+            .WithOne();
         builder.Entity<Game>()
             .HasMany(g => g.Scores)
             .WithOne(us => us.Game);

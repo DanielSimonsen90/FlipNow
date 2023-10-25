@@ -3,5 +3,6 @@
 public enum PlayState
 {
     IDLE,
-    PLAYING
+    PLAYING,
+    ENDED
 }

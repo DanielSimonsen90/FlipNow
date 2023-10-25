@@ -16,7 +16,6 @@ builder.Services.AddDbContext<FlipNowDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddScoped<UnitOfWork>();
-builder.Services.AddScoped<GamesHubService>();
 builder.Services.AddSignalR();
 
 // Force lowercase endpoints

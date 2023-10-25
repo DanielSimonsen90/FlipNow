@@ -2,6 +2,7 @@
 using FlipNow.Business.Models;
 using FlipNow.Common.Entities;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,7 @@ public class GamesHubService : IGamesHub
     }
 
     #region Game lifecycle
-    public Task StartGame(string? inviteCode) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_END_GAME, async (players, service) =>
+    public Task StartGame(string? inviteCode) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_START_GAME, async (players, service) =>
     {
         service.StartGame();
         return await Task.FromResult(service.Game);
@@ -72,7 +73,7 @@ public class GamesHubService : IGamesHub
     #endregion
 
     #region Game Updates
-    public Task FlipCard(string? inviteCode, int? cardIndex) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_FLIP_CARD, async (players, service) =>
+    public Task FlipCard(string? inviteCode, int? cardIndex) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_UPDATE_GAME, async (players, service) =>
     {
         if (cardIndex is not int index) throw new ArgumentNullException(nameof(cardIndex), $"{nameof(cardIndex)} not provided.");
 
@@ -96,6 +97,15 @@ public class GamesHubService : IGamesHub
             // TODO: Check if updatedGame != game
 
             await players.SendAsync(eventName, updatedGame);
+
+            if (updatedGame.PlayState == PlayState.PLAYING)
+            {
+                updatedGame = await service.ProcessGame();
+                await players.SendAsync(updatedGame.PlayState == PlayState.ENDED 
+                    ? GamesHubConstants.EVENTS_END_GAME 
+                    : GamesHubConstants.EVENTS_UPDATE_GAME, 
+                    updatedGame);
+            }
         }
         catch (Exception ex)
         {

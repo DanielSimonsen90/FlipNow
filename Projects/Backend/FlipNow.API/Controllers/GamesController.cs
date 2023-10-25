@@ -36,7 +36,7 @@ public class GamesController : BaseController
             || gameService is null) 
             return getGameServiceResult ?? InternalServerError();
 
-        return Created(gameService.Game.InviteUrl, gameService);
+        return Created(gameService.Game.InviteUrl, gameService.Game);
     }
 
     [HttpGet]

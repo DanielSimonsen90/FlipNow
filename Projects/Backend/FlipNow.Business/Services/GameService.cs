@@ -28,7 +28,6 @@ public class GameService
 
         _hostId = host.Id;
     }
-
     public GameService(UnitOfWork unitOfWork, ActiveGame game)
     {
         _unitOfWork = unitOfWork;
@@ -46,7 +45,7 @@ public class GameService
     {
         if (Game.PlayState != PlayState.PLAYING) throw new InvalidOperationException("Game is not playing");
 
-        Game.PlayState = PlayState.IDLE;
+        Game.PlayState = PlayState.ENDED;
         HostedGames.Remove(_hostId);
     }
     private void ResetGame()

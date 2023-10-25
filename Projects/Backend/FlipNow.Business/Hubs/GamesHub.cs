@@ -13,9 +13,9 @@ public class GamesHub : Hub, IGamesHub
     public const string ENDPOINT = "gameshub";
     private readonly GamesHubService _service;
 
-    public GamesHub(GamesHubService service)
+    public GamesHub(UnitOfWork uow)
     {
-        _service = service;
+        _service = new GamesHubService(uow, this);
     }
 
     // "Events" are methods that can be called from the client
