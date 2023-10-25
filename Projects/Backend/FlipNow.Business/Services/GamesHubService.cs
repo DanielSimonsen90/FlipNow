@@ -2,13 +2,18 @@
 using FlipNow.Business.Models;
 using FlipNow.Common.Entities;
 using Microsoft.AspNetCore.SignalR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace FlipNow.Business.Services;
 
 public class GamesHubService : IGamesHub
 {
     private readonly UnitOfWork _uow;
-
+    
     private readonly IHubCallerClients _clients;
     private readonly IGroupManager _groups;
     private readonly HubCallerContext _context;
@@ -16,7 +21,7 @@ public class GamesHubService : IGamesHub
     public GamesHubService(UnitOfWork uow, Hub hub)
     {
         _uow = uow;
-
+        
         _clients = hub.Clients;
         _groups = hub.Groups;
         _context = hub.Context;
@@ -26,13 +31,13 @@ public class GamesHubService : IGamesHub
     public Task StartGame(string? inviteCode) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_END_GAME, async (players, service) =>
     {
         service.StartGame();
-        return service.Game;
+        return await Task.FromResult(service.Game);
     });
 
     public Task EndGame(string? inviteCode) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_END_GAME, async (players, service) =>
     {
         service.EndGame();
-        return service.Game;
+        return await Task.FromResult(service.Game);
     });
     #endregion
 
@@ -72,7 +77,7 @@ public class GamesHubService : IGamesHub
         if (cardIndex is not int index) throw new ArgumentNullException(nameof(cardIndex), $"{nameof(cardIndex)} not provided.");
 
         service.FlipCard(index);
-        return service.Game;
+        return await Task.FromResult(service.Game);
     });
     #endregion
 
