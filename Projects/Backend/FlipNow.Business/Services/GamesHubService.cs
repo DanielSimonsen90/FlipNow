@@ -65,7 +65,7 @@ public class GamesHubService : IGamesHub
         if (string.IsNullOrEmpty(playerId)) throw new ArgumentNullException(nameof(playerId), "PlayerId cannot be null or empty.");
         Player player = service.GetPlayer(Guid.Parse(playerId)) ?? throw new NullReferenceException("Player not found");
 
-        service.RemovePlayer(player.User);
+        service.RemovePlayer(player.User.Id);
         await _groups.RemoveFromGroupAsync(_context.ConnectionId, inviteCode);
         await _clients.Group(inviteCode).SendAsync("PlayerLeft", _context.ConnectionId);
         return service.Game;

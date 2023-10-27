@@ -121,19 +121,21 @@ public class GameService
 
     private async Task SaveGameAsync()
     {
+        IEnumerable<Guid> playerIds = Game.Players.Select(p => p.Id);
+        IEnumerable<User> users = _unitOfWork.UserRepository.GetAll(u => playerIds.Contains(u.Id));
         IEnumerable<Card> cards = _unitOfWork.CardRepository.GetAll(c => Game.Cards.Any(gc => gc.Name == c.Name));
         IEnumerable<UserScore> scores = Game.Players.Select(p => new UserScore()
         {
             Score = p.Score,
             Time = p.TimeSpent,
-            User = p.User
+            User = users.First(u => u.Id == p.Id),
         });
 
         await _unitOfWork.UserScoreRepository.AddRangeAsync(scores.ToArray());
         await _unitOfWork.GameRepository.AddAsync(new()
         {
             Cards = cards,
-            PlayingUsers = Game.Players.Select(p => p.User),
+            PlayingUsers = users,
             Scores = scores,
         });
 
@@ -153,11 +155,11 @@ public class GameService
     }
     public Player? GetPlayer(Guid playerId) => Game.Players.FirstOrDefault(p => p.Id == playerId);
     public Player? GetPlayer(User user) => Game.Players.FirstOrDefault(p => p.User.Id == user.Id);
-    public void RemovePlayer(User user)
+    public void RemovePlayer(Guid userId)
     {
-        if (Game.Players.All(p => p.User.Id != user.Id)) throw new InvalidOperationException("User is not in the game");
+        if (Game.Players.All(p => p.User.Id != userId)) throw new InvalidOperationException("User is not in the game");
 
-        Game.Players.Remove(Game.Players.First(p => p.User.Id == user.Id));
+        Game.Players.Remove(Game.Players.First(p => p.User.Id == userId));
         UpdateHostedGames();
     }
 }

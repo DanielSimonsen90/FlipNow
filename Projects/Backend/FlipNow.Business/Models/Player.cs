@@ -1,19 +1,21 @@
-﻿using FlipNow.Common.Entities;
+﻿using FlipNow.Common.DTOs;
+using FlipNow.Common.Entities;
+using Mapster;
 
 namespace FlipNow.Business.Models;
 
 public class Player
 {
-    private int _gameCardsAmount;
+    private readonly int _gameCardsAmount;
 
     public Player(User user, ActiveGame game)
     {
-        User = user;
+        User = user.Adapt<UserDTO>();
         _gameCardsAmount = game.Cards.Count;
     }
 
     public Guid Id { get; } = Guid.NewGuid();
-    public User User { get; }
+    public UserDTO User { get; }
     public double Score => CardMatches * 1000 - TimeSpent.Seconds;
     public int CardMatches { get; set; }
     public int CardMatchesLeft => _gameCardsAmount / 2 - CardMatches;

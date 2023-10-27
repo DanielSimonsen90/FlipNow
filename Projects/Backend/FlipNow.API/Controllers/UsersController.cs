@@ -29,4 +29,9 @@ public class UsersController : BaseController
         await _unitOfWork.SaveChangesAsync();
         return Ok($"{user.Username} deleted.");
     }
+
+#if DEBUG
+    [HttpGet]
+    public async Task<IActionResult> GetAllUsers() => await Task.FromResult(Ok(_unitOfWork.UserRepository.GetAll()));
+#endif
 }

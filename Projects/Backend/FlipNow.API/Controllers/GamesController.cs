@@ -42,8 +42,11 @@ public class GamesController : BaseController
     [HttpGet]
     public IActionResult GetGame(string? userId)
     {
+#if !DEBUG
         if (string.IsNullOrEmpty(userId)) return BadQueryRequest(nameof(userId));
-        
+#else
+        if (string.IsNullOrEmpty(userId)) return Ok(_unitOfWork.GameRepository.GetAll());
+#endif
         Guid id = Guid.Parse(userId);
         User? user = _unitOfWork.UserRepository.Get(id);
         if (user is null) return NotFound($"User with id {userId} not found.");
