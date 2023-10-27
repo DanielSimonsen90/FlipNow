@@ -1,0 +1,31 @@
+.not-found {
+  display: grid;
+  justify-items: center;
+  max-height: 20ch;
+  margin: 0 auto;
+
+  header {
+    margin-top: 2em;
+    display: flex;
+    align-items: center;
+    gap: 1em;
+  }
+
+  h1 {
+    margin: unset;
+  }
+
+  p {
+    text-align: center;
+  }
+
+  .button {
+    justify-self: center;
+  }
+}
+
+.modCheck {
+  --size: 3em;
+  max-width: var(--size);
+  max-height: var(--size);
+}
