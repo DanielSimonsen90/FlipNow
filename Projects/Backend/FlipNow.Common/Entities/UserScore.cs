@@ -1,5 +1,4 @@
 ﻿using DanhoLibrary.NLayer;
-using System.ComponentModel.DataAnnotations.Schema;
 #nullable disable
 
 namespace FlipNow.Common.Entities;

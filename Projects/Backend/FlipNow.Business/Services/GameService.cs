@@ -7,8 +7,9 @@ namespace FlipNow.Business.Services;
 public class GameService
 {
     public static readonly Dictionary<Guid, ActiveGame> HostedGames = new();
-    public static ActiveGame FindActiveGame(string invideCode) => HostedGames.FirstOrDefault(kvp => kvp.Value.InviteCode == invideCode).Value;
+    public static ActiveGame? FindActiveGame(string invideCode) => HostedGames.FirstOrDefault(kvp => kvp.Value.InviteCode == invideCode).Value;
     private static bool IsNotMatch(GameCard first, GameCard second) => first.Name != second.Name;
+    public static ActiveGame? FindGameFromUser(User user) => HostedGames.FirstOrDefault(kvp => kvp.Value.Players.Any(p => p.User.Id == user.Id)).Value;
 
     public ActiveGame Game { get; private set; }
 
@@ -27,7 +28,6 @@ public class GameService
 
         _hostId = host.Id;
     }
-
     public GameService(UnitOfWork unitOfWork, ActiveGame game)
     {
         _unitOfWork = unitOfWork;
@@ -45,7 +45,7 @@ public class GameService
     {
         if (Game.PlayState != PlayState.PLAYING) throw new InvalidOperationException("Game is not playing");
 
-        Game.PlayState = PlayState.IDLE;
+        Game.PlayState = PlayState.ENDED;
         HostedGames.Remove(_hostId);
     }
     private void ResetGame()
@@ -63,8 +63,15 @@ public class GameService
         UpdateHostedGames();
     }
 
+    /// <summary>
+    /// Flip card from <paramref name="index"/>
+    /// </summary>
+    /// <param name="index">Index in card collection to find card to flip</param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public void FlipCard(int index)
     {
+        if (index < 0 || index >= Game.Cards.Count) throw new ArgumentOutOfRangeException(nameof(index));
+
         Game.Cards[index].Flipped = true;
         UpdateHostedGames();
     }
@@ -114,19 +121,21 @@ public class GameService
 
     private async Task SaveGameAsync()
     {
+        IEnumerable<Guid> playerIds = Game.Players.Select(p => p.Id);
+        IEnumerable<User> users = _unitOfWork.UserRepository.GetAll(u => playerIds.Contains(u.Id));
         IEnumerable<Card> cards = _unitOfWork.CardRepository.GetAll(c => Game.Cards.Any(gc => gc.Name == c.Name));
         IEnumerable<UserScore> scores = Game.Players.Select(p => new UserScore()
         {
             Score = p.Score,
             Time = p.TimeSpent,
-            User = p.User
+            User = users.First(u => u.Id == p.Id),
         });
 
         await _unitOfWork.UserScoreRepository.AddRangeAsync(scores.ToArray());
         await _unitOfWork.GameRepository.AddAsync(new()
         {
             Cards = cards,
-            PlayingUsers = Game.Players.Select(p => p.User),
+            PlayingUsers = users,
             Scores = scores,
         });
 
@@ -144,11 +153,13 @@ public class GameService
         Game.Players.Add(new Player(user, Game));
         UpdateHostedGames();
     }
-    public void RemovePlayer(User user)
+    public Player? GetPlayer(Guid playerId) => Game.Players.FirstOrDefault(p => p.Id == playerId);
+    public Player? GetPlayer(User user) => Game.Players.FirstOrDefault(p => p.User.Id == user.Id);
+    public void RemovePlayer(Guid userId)
     {
-        if (Game.Players.All(p => p.User.Id != user.Id)) throw new InvalidOperationException("User is not in the game");
+        if (Game.Players.All(p => p.User.Id != userId)) throw new InvalidOperationException("User is not in the game");
 
-        Game.Players.Remove(Game.Players.First(p => p.User.Id == user.Id));
+        Game.Players.Remove(Game.Players.First(p => p.User.Id == userId));
         UpdateHostedGames();
     }
 }

@@ -1,3 +1,4 @@
+using FlipNow.Business.Hubs;
 using FlipNow.Business.Services;
 using FlipNow.DataAccess;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ builder.Services.AddDbContext<FlipNowDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddScoped<UnitOfWork>();
+builder.Services.AddSignalR();
 
 // Force lowercase endpoints
 builder.Services.Configure<RouteOptions>(options =>
@@ -33,7 +35,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
+
 app.MapControllers();
+app.MapHub<GamesHub>($"/{GamesHub.ENDPOINT}");
+
 app.UseCors(builder =>
 {
     builder.WithOrigins("http://localhost:3000")
