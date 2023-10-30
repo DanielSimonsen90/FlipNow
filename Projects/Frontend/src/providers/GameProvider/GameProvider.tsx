@@ -6,6 +6,7 @@ import { useUser } from 'providers/UserProvider';
 
 import { GameProviderContext, GameReducer } from './GameProviderConstants';
 import { GameAction } from './GameProviderTypes';
+import { useGetActiveGame } from './GameProviderHooks';
 
 export default function GameProvider({ children }: PropsWithChildren) {
   const [game, setGame] = useState<Nullable<ActiveGame>>(null);
@@ -16,7 +17,9 @@ export default function GameProvider({ children }: PropsWithChildren) {
 
     const updatedGame = await GameReducer(user, game, action);
     setGame(updatedGame);
-  }, [game]);
+  }, [user, game]);
+
+  useGetActiveGame(game, setGame);
 
   return (
     <GameProviderContext.Provider value={{

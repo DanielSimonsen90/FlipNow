@@ -4,7 +4,8 @@ export const API_ENDPOINT_SECURE = "https://localhost:5000/api";
 type TParam = string | undefined;
 
 type ApiEndpoints<Param extends TParam = undefined> =
-  | `games?hostId=${Param}` // /{userId}
+  | `games?hostId=${Param}` 
+  | `games?userId=${Param}`
 
   | `users/${Param}` // /{username}
   | `users/${Param}` // /{userId}
