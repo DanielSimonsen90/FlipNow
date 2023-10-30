@@ -8,6 +8,7 @@ export const STORAGE = window.localStorage;
 export const UserProviderContext = createContext<UserProviderContextType>({
   user: null,
   createOrFind: async (username: string) => {},
+  logout: () => {},
 })
 
 export async function createOrFind(username: string): Promise<ProvidedUserType> {
