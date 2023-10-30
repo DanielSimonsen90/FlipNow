@@ -7,3 +7,5 @@ export type User<Full extends boolean> = {
 } & (Full extends true ? {
   scores: Array<UserScore>;
 } : {})
+
+export default User;

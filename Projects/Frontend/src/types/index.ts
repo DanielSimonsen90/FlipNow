@@ -8,3 +8,6 @@ export type StorageOptions = {
 export type FormEvent = React.FormEvent<HTMLFormElement> & {
   target: HTMLFormElement,
 }
+
+export type Guid = string;
+export type TimeSpan = object;
