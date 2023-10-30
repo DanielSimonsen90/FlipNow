@@ -2,6 +2,9 @@ import { createContext } from "react";
 import type { ProvidedUserType, UserProviderContextType } from "./UserProviderTypes";
 import { Request } from "utils/ApiUtil";
 
+export const STORAGE_KEY = "User";
+export const STORAGE = window.localStorage;
+
 export const UserProviderContext = createContext<UserProviderContextType>({
   user: null,
   createOrFind: async (username: string) => {},
