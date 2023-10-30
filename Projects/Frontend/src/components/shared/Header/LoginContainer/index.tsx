@@ -3,6 +3,8 @@ import { LoginContainerProps } from "./LoginContainerProps";
 import LoginContainer from "./LoginContainer";
 import LoggedInContainer from "./LoggedInContainer";
 
+import './LoginContainer.scss';
+
 export default function LoginContainerFactory() {
   const userStore = useUser();
 
