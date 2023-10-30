@@ -1,0 +1,22 @@
+.login-container {
+  display: grid;
+  align-items: center;
+  
+  p {
+    margin: .5ch;
+    color: var(--text-muted);
+    text-align: right;
+  }
+
+  span {
+    color: var(--text-primary);
+  }
+
+  button {
+    margin-left: auto;
+  }
+
+  &.login {
+    gap: 1ch;
+  }
+}

@@ -1,0 +1,33 @@
+@use './colors' as clrs;
+
+@import './components/index.scss';
+
+:root {
+  --text-primary: #{clrs.$text-primary};
+  --text-muted: #{clrs.$text-muted};
+
+  --background-primary: #{clrs.$background-primary};
+  --background-secondary: #{clrs.$background-secondary};
+  --background-tertiary: #{clrs.$background-tertiary};
+
+  --brand-primary: #{clrs.$brand-primary};
+  --brand-muted: #{clrs.$brand-muted};
+
+  // TODO: Remove card properties from here
+  --card__background: #{clrs.$card__background};
+  --card__title: #{clrs.$card__title};
+  --card__title--hovered: #{clrs.$card__title--hovered};
+
+  font-size: 16px;
+  font-family: Arial;
+}
+
+body {
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+main {
+  margin-inline: 1em;
+}
