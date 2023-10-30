@@ -1,7 +1,9 @@
+import { TimeSpan } from "types";
+
 export type UserScore = {
   id: string;
   score: number;
-  time: 
-  //TimeSpan; // TODO: How to import TimeSpan?
-  any;
+  time: TimeSpan;
 }
+
+export default UserScore;
