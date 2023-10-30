@@ -17,6 +17,7 @@ builder.Services.AddDbContext<FlipNowDbContext>(options =>
 });
 builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<GameSessionService>();
 
 // Force lowercase endpoints
 builder.Services.Configure<RouteOptions>(options =>

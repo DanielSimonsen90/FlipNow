@@ -2,27 +2,22 @@
 using FlipNow.Business.Models;
 using FlipNow.Common.Entities;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FlipNow.Business.Services;
 
 public class GamesHubService : IGamesHub
 {
     private readonly UnitOfWork _uow;
-    
+    private readonly GameSessionService _sessionService;
     private readonly IHubCallerClients _clients;
     private readonly IGroupManager _groups;
     private readonly HubCallerContext _context;
 
-    public GamesHubService(UnitOfWork uow, Hub hub)
+    public GamesHubService(UnitOfWork uow, GameSessionService sessionService, Hub hub)
     {
         _uow = uow;
-        
+        _sessionService = sessionService;
+
         _clients = hub.Clients;
         _groups = hub.Groups;
         _context = hub.Context;
@@ -51,7 +46,7 @@ public class GamesHubService : IGamesHub
         Player? player = service.GetPlayer(user);
         if (player is not null) throw new InvalidOperationException("Player already joined.");
 
-        ActiveGame? existingPlayerGame = GameService.FindGameFromUser(user);
+        ActiveGame? existingPlayerGame = _sessionService.FindGameFromUser(user);
         if (existingPlayerGame is not null) throw new InvalidOperationException("Player already in a game.");
 
         service.AddPlayer(user);
@@ -90,8 +85,8 @@ public class GamesHubService : IGamesHub
             if (string.IsNullOrEmpty(inviteCode)) throw new ArgumentException("Invalid game invite code");
 
             IClientProxy players = _clients.Group(inviteCode);
-            ActiveGame game = GameService.FindActiveGame(inviteCode) ?? throw new NullReferenceException("Game not found");
-            GameService service = new(_uow, game);
+            ActiveGame game = _sessionService.FindActiveGame(inviteCode) ?? throw new NullReferenceException("Game not found");
+            GameService service = new(_uow, _sessionService, game);
             ActiveGame updatedGame = await callback(players, service);
 
             // TODO: Check if updatedGame != game
@@ -101,9 +96,9 @@ public class GamesHubService : IGamesHub
             if (updatedGame.PlayState == PlayState.PLAYING)
             {
                 updatedGame = await service.ProcessGame();
-                await players.SendAsync(updatedGame.PlayState == PlayState.ENDED 
-                    ? GamesHubConstants.EVENTS_END_GAME 
-                    : GamesHubConstants.EVENTS_UPDATE_GAME, 
+                await players.SendAsync(updatedGame.PlayState == PlayState.ENDED
+                    ? GamesHubConstants.EVENTS_END_GAME
+                    : GamesHubConstants.EVENTS_UPDATE_GAME,
                     updatedGame);
             }
         }

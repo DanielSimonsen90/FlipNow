@@ -9,8 +9,12 @@ namespace FlipNow.API.Controllers;
 public class GamesController : BaseController
 {
     private const string INVITE_PREFIX = API_URL + "games/";
+    private readonly GameSessionService _sessionService;
 
-    public GamesController(UnitOfWork unitOfWork) : base(unitOfWork) { }
+    public GamesController(UnitOfWork unitOfWork, GameSessionService sessionService) : base(unitOfWork) 
+    {
+        _sessionService = sessionService;
+    }
 
     [HttpPost]
     public IActionResult CreateGame(Guid? hostId)
@@ -29,7 +33,7 @@ public class GamesController : BaseController
 
         // Define GameService in try/catch, as it is possible for GameService constructor to throw InvalidOperationException (user is already hosting a game)
         IActionResult? getGameServiceResult = TryGetObject(
-            () => new GameService(_unitOfWork, INVITE_PREFIX, host), 
+            () => new GameService(_unitOfWork, _sessionService, INVITE_PREFIX, host), 
             exMsg => Forbid(exMsg), 
             out GameService? gameService);
         if (getGameServiceResult is not null 
@@ -51,7 +55,7 @@ public class GamesController : BaseController
         User? user = _unitOfWork.UserRepository.Get(id);
         if (user is null) return NotFound($"User with id {userId} not found.");
 
-        ActiveGame? game = GameService.FindGameFromUser(user);
+        ActiveGame? game = _sessionService.FindGameFromUser(user);
         return Ok(game);
     }
 }

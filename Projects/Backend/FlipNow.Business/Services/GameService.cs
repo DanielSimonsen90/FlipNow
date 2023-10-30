@@ -6,31 +6,35 @@ namespace FlipNow.Business.Services;
 
 public class GameService
 {
-    public static readonly Dictionary<Guid, ActiveGame> HostedGames = new();
-    public static ActiveGame? FindActiveGame(string invideCode) => HostedGames.FirstOrDefault(kvp => kvp.Value.InviteCode == invideCode).Value;
     private static bool IsNotMatch(GameCard first, GameCard second) => first.Name != second.Name;
-    public static ActiveGame? FindGameFromUser(User user) => HostedGames.FirstOrDefault(kvp => kvp.Value.Players.Any(p => p.User.Id == user.Id)).Value;
-
+    
     public ActiveGame Game { get; private set; }
 
     private readonly UnitOfWork _unitOfWork;
+    private readonly GameSessionService _sessionService;
     private readonly Guid _hostId;
 
-    public GameService(UnitOfWork unitOfWork, string invitePrefix, User host)
+    public GameService(UnitOfWork unitOfWork, GameSessionService sessionService, 
+        string invitePrefix, User host)
     {
-        if (HostedGames.ContainsKey(host.Id)) throw new InvalidOperationException("User is already hosting a game");
+        if (sessionService.HasGame(host.Id)) throw new InvalidOperationException("User is already hosting a game");
 
         _unitOfWork = unitOfWork;
+        _sessionService = sessionService;
         Game = new ActiveGame(
             invitePrefix,
             cards: _unitOfWork.CardRepository.GetAllShuffled(),
             host);
 
         _hostId = host.Id;
+
+        sessionService.AddGame(_hostId, Game);
     }
-    public GameService(UnitOfWork unitOfWork, ActiveGame game)
+    public GameService(UnitOfWork unitOfWork, GameSessionService sessionService,
+        ActiveGame game)
     {
         _unitOfWork = unitOfWork;
+        _sessionService = sessionService;
         Game = game;
     }
 
@@ -46,7 +50,7 @@ public class GameService
         if (Game.PlayState != PlayState.PLAYING) throw new InvalidOperationException("Game is not playing");
 
         Game.PlayState = PlayState.ENDED;
-        HostedGames.Remove(_hostId);
+        _sessionService.RemoveGame(_hostId);
     }
     private void ResetGame()
     {
@@ -143,7 +147,7 @@ public class GameService
     }
     private void UpdateHostedGames()
     {
-        HostedGames.Set(_hostId, Game);
+        _sessionService.Update(_hostId, Game);
     }
 
     public void AddPlayer(User user)
