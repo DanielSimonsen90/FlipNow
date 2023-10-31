@@ -6,7 +6,7 @@ import { Request } from "utils";
 import { ActiveGame } from "models/backend";
 import { Nullable, Promiseable } from "types";
 import { useAsyncEffect } from "danholibraryrjs";
-import Connection, { ClientHubEvents } from './Hub';
+import Connection, { HubEvents } from './Hub';
 
 export const useGame = () => useContext(GameProviderContext);
 
@@ -27,9 +27,9 @@ export async function useGetActiveGame(
   }, [user]);
 }
 
-export function useSingalREvent<EventName extends keyof ClientHubEvents>(
+export function useSingalREvent<EventName extends keyof HubEvents>(
   name: EventName, 
-  callback: (...args: ClientHubEvents[EventName]) => Promiseable<void>
+  callback: (...args: HubEvents[EventName]) => Promiseable<void>
 ) {
   useEffect(() => {
     Connection.on(name, callback);

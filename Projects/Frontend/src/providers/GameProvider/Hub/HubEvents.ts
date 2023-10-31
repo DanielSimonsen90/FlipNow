@@ -4,22 +4,24 @@ import { ActiveGame } from "models/backend";
  * These events are emitted to the server from the client
  * Client => Server
  */
-export type ServerHubEvents = {
+export type HubActions = {
+  createGame: [];
   startGame: [];
   endGame: [];
   deleteGame: [];
 
-  joinGame: [userId: string];
+  joinGame: [inviteCode: string, userId: string];
   leaveGame: [playerId: string];
 
   flipCard: [cardIndex: number];
 }
+export type HubActionNames = keyof HubActions;
 
 /**
  * These events are emitted to the client from the server
  * Server => Client
  */
-export type ClientHubEvents = {
+export type HubEvents = {
   gameStarted: [game: ActiveGame];
   gameUpdated: [game: ActiveGame];
   gameReset: [game: ActiveGame];
@@ -32,7 +34,4 @@ export type ClientHubEvents = {
   broadcastFailed: [message: string];
   log: [message: string];
 }
-
-export type HubEvents = ServerHubEvents & ClientHubEvents;
-
 export type HubEventNames = keyof HubEvents;

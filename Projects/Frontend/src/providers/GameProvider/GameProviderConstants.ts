@@ -3,9 +3,9 @@ import { Nullable } from "types";
 import { ActiveGame } from "models/backend";
 
 import Actions from './Actions';
-import { GameAction, GameActionProps, GameProviderContextType } from "./GameProviderTypes";
+import { GameActionProps, GameProviderContextType } from "./GameProviderTypes";
 import Connection from "./Hub/FlipNowHubConnection";
-import { HubEventNames } from "./Hub/HubEvents";
+import { HubActionNames, HubActions, HubEventNames } from "./Hub/HubEvents";
 
 // TODO: Provide Player object to GameProviderContext
 export const GameProviderContext = createContext<GameProviderContextType>({
@@ -15,21 +15,7 @@ export const GameProviderContext = createContext<GameProviderContextType>({
   logs: []
 });
 
-export const getHubEventFromAction = (action: GameAction): Nullable<HubEventNames> => {
-  switch (action) {
-    case 'CREATE': return null;
-    case 'DELETE': return 'deleteGame';
-    case 'JOIN': return 'joinGame';
-    case 'LEAVE': return 'leaveGame';
-    case 'KICK': return 'leaveGame'; // Consider adding a 'KickPlayer' event
-    case 'START': return 'startGame';
-    case 'STOP': return 'endGame';
-    case 'FLIP': return 'flipCard';
-    default: return null;
-  }
-}
-
-export async function GameReducer<Action extends GameAction>(
+export async function GameReducer<Action extends HubActionNames>(
   action: Action,
   { game, user, args }: GameActionProps<Action>
 ): Promise<Nullable<ActiveGame>> {
@@ -37,12 +23,9 @@ export async function GameReducer<Action extends GameAction>(
   const { callback } = Actions[action];
 
   try {
-    const eventName = getHubEventFromAction(action);
     const update = await callback({ 
       game, user, args,
-      broadcastToHub: eventName 
-        ? Connection.invokeHandlerLater(eventName, game).bind(Connection) 
-        : undefined,
+      broadcastToHub: Connection.invokeHandlerLater(action, game).bind(Connection) 
     });
 
     return update;

@@ -5,8 +5,9 @@ import { ActiveGame } from 'models/backend';
 import { useUser } from 'providers/UserProvider';
 
 import { GameProviderContext, GameReducer } from './GameProviderConstants';
-import { AdditionalActionProps, GameAction, GameActionProps } from './GameProviderTypes';
+import { GameActionProps } from './GameProviderTypes';
 import { useGetActiveGame, useSingalREvent } from './GameProviderHooks';
+import { HubActionNames, HubActions } from './Hub';
 
 export default function GameProvider({ children }: PropsWithChildren) {
   const [game, setGame] = useState<Nullable<ActiveGame>>(null);
@@ -14,9 +15,9 @@ export default function GameProvider({ children }: PropsWithChildren) {
   const { user } = useUser();
 
   const isClientTurn = game?.turnPlayer.user.username === user?.username;
-  const dispatch = useCallback(async <Action extends GameAction>(
+  const dispatch = useCallback(async <Action extends HubActionNames>(
     action: Action, 
-    ...args: AdditionalActionProps[Action]
+    ...args: HubActions[Action]
   ) => {
     if (!user) throw new Error('User not logged in');
 
