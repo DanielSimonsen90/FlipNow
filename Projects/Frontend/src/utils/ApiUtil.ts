@@ -25,6 +25,7 @@ type RequestOptions<TBody = any> = Omit<RequestInit, 'method' | 'body'> & {
   body?: TBody;
   noHeaders?: boolean;
   controller?: AbortController;
+  query?: Record<string, string>;
 };
 
 export async function Request<TData, Param extends TParam = undefined>(
@@ -34,8 +35,20 @@ export async function Request<TData, Param extends TParam = undefined>(
     body,
     noHeaders = false,
     controller = new AbortController(),
+    query,
   }: RequestOptions | undefined = {}) {
   console.log(`Requesting ${path} with method ${method}`);
+
+  const endpoint = (() => {
+    const result = API_ENDPOINT + ensureSlash(path);
+    if (path.includes('?') || !query) return result;
+
+    const queryString = Object.entries(query)
+      .map(([key, value]) => `${key}=${value}`)
+      .join('&');
+    
+    return path.includes('?') ? `${result}&${queryString}` : `${result}?${queryString}`;
+  })();
 
   const init: RequestInit = {
     method,
@@ -44,7 +57,7 @@ export async function Request<TData, Param extends TParam = undefined>(
     signal: controller.signal,
   };
 
-  const res = await fetch(API_ENDPOINT + ensureSlash(path), init).catch(err => {
+  const res = await fetch(endpoint, init).catch(err => {
     if (err instanceof Error && err.message.includes('Failed to fetch')) {
       return fetch(API_ENDPOINT_SECURE + ensureSlash(path), init);
     }

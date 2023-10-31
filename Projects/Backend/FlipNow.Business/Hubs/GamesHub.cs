@@ -21,24 +21,25 @@ public class GamesHub : Hub, IGamesHub
     // "Events" are methods that can be called from the client
 
     #region Game lifecycle
-    public Task StartGame(string? inviteCode) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_START_GAME, async (players, service) =>
+    public Task StartGame(string inviteCode) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_START_GAME, async (players, service) =>
     {
         service.StartGame();
         return await Task.FromResult(service.Game);
     });
-    public Task EndGame(string? inviteCode) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_END_GAME, async (players, service) =>
+    public Task EndGame(string inviteCode) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_END_GAME, async (players, service) =>
     {
         service.EndGame();
         return await Task.FromResult(service.Game);
     });
-    public Task DeleteGame(string? inviteCode)
+    public Task DeleteGame(string inviteCode) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_DELETE_GAME, async (players, service) =>
     {
-        throw new NotImplementedException();
-    }
+        service.DeleteGame();
+        return await Task.FromResult(service.Game);
+    });
     #endregion
 
     #region PlayerPresence (Join/Leave)
-    public Task JoinGame(string? inviteCode, string? userId) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_JOIN_GAME, async (players, service) =>
+    public Task JoinGame(string inviteCode, string userId) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_JOIN_GAME, async (players, service) =>
     {
         if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId), "UserId cannot be null or empty.");
         User user = await _uow.UserRepository.GetAsync(Guid.Parse(userId));
@@ -51,38 +52,32 @@ public class GamesHub : Hub, IGamesHub
 
         service.AddPlayer(user);
         await Groups.AddToGroupAsync(Context.ConnectionId, inviteCode);
-        await Clients.Group(inviteCode).SendAsync("PlayerJoined", Context.ConnectionId);
         return service.Game;
     });
-    public Task LeaveGame(string? inviteCode, string? playerId) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_LEAVE_GAME, async (players, service) =>
+    public Task LeaveGame(string inviteCode, string playerId) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_LEAVE_GAME, async (players, service) =>
     {
         if (string.IsNullOrEmpty(playerId)) throw new ArgumentNullException(nameof(playerId), "PlayerId cannot be null or empty.");
         Player player = service.GetPlayer(Guid.Parse(playerId)) ?? throw new NullReferenceException("Player not found");
 
         service.RemovePlayer(player.User.Id);
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, inviteCode);
-        await Clients.Group(inviteCode).SendAsync("PlayerLeft", Context.ConnectionId);
         return service.Game;
     });
     #endregion
 
     #region Game Updates
-    public Task FlipCard(string? inviteCode, int? cardIndex) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_UPDATE_GAME, async (players, service) =>
+    public Task FlipCard(string inviteCode, int cardIndex) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_UPDATE_GAME, async (players, service) =>
     {
-        if (cardIndex is not int index) throw new ArgumentNullException(nameof(cardIndex), $"{nameof(cardIndex)} not provided.");
-
-        service.FlipCard(index);
+        service.FlipCard(cardIndex);
         return await Task.FromResult(service.Game);
     });
     #endregion
 
     private delegate Task<ActiveGame> UseActiveGameContext(IClientProxy players, GameService service);
-    private async Task UseActiveGame(string? inviteCode, string eventName, UseActiveGameContext callback)
+    private async Task UseActiveGame(string inviteCode, string eventName, UseActiveGameContext callback)
     {
         try
         {
-            if (string.IsNullOrEmpty(inviteCode)) throw new ArgumentException("Invalid game invite code");
-
             IClientProxy players = Clients.Group(inviteCode);
             ActiveGame game = _sessionService.FindActiveGame(inviteCode) ?? throw new NullReferenceException("Game not found");
             GameService service = new(_uow, _sessionService, game);
@@ -90,6 +85,7 @@ public class GamesHub : Hub, IGamesHub
             await Log("Received", eventName, inviteCode);
 
             ActiveGame updatedGame = await callback(players, service);
+            players = Clients.Group(inviteCode); // Redefine players incase of update
 
             // TODO: Check if updatedGame != game
 
@@ -118,7 +114,7 @@ public class GamesHub : Hub, IGamesHub
         => await Clients.Group(inviteCode).SendAsync(GamesHubConstants.LOG,
             $"{type} \"{eventName}\" from game {inviteCode}" + (string.IsNullOrEmpty(message) ? "" : $": {message}"));
 
-    public Task Ping(string? inviteCode)
+    public Task Ping(string inviteCode)
     {
         return Clients.All.SendAsync(GamesHubConstants.LOG, $"Pong with {inviteCode}");
     }

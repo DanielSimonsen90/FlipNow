@@ -3,51 +3,54 @@ import { Nullable } from "types";
 import { ActiveGame } from "models/backend";
 
 import Actions from './Actions';
-import { GameAction, GameActionProps, GameProviderContextType } from "./GameProviderTypes";
-import Connection from "./Hub/FlipNowHubConnection";
-import { HubEventNames } from "./Hub/HubEvents";
+import { GameActionProps, GameEventProps, GameProviderContextType } from "./GameProviderTypes";
+import Connection, { FlipNowHubConnection } from "./Hub/FlipNowHubConnection";
+import { HubActionNames, HubEventNames } from "./Hub/HubTypes";
+import Events from "./Events";
 
 // TODO: Provide Player object to GameProviderContext
 export const GameProviderContext = createContext<GameProviderContextType>({
   game: null,
   isClientTurn: false,
   dispatch: async (...args) => {},
-  logs: []
+  logs: [],
+  setLogs: () => {},
 });
 
-export const getHubEventFromAction = (action: GameAction): Nullable<HubEventNames> => {
-  switch (action) {
-    case 'CREATE': return null;
-    case 'DELETE': return 'deleteGame';
-    case 'JOIN': return 'joinGame';
-    case 'LEAVE': return 'leaveGame';
-    case 'KICK': return 'leaveGame'; // Consider adding a 'KickPlayer' event
-    case 'START': return 'startGame';
-    case 'STOP': return 'endGame';
-    case 'FLIP': return 'flipCard';
-    default: return null;
-  }
-}
-
-export async function GameReducer<Action extends GameAction>(
+export async function GameActionReducer<Action extends HubActionNames>(
   action: Action,
   { game, user, args }: GameActionProps<Action>
-): Promise<Nullable<ActiveGame>> {
+): Promise<void | ActiveGame> {
   if (!Actions[action]) throw new Error(`Invalid action: ${action}`);
   const { callback } = Actions[action];
+  console.log(`[${action}]: ${JSON.stringify(args)}`)
 
   try {
-    const eventName = getHubEventFromAction(action);
     const update = await callback({ 
       game, user, args,
-      broadcastToHub: eventName 
-        ? Connection.invokeHandlerLater(eventName, game).bind(Connection) 
-        : undefined,
+      broadcastToHub: Connection.sendHandlerLater(action, game ?? { inviteCode: args[0] as string  })
+        .bind(Connection) as ReturnType<FlipNowHubConnection['sendHandlerLater']>
     });
-
     return update;
   } catch (error) {
     console.error(error);
-    return game;
+  }
+}
+
+export async function GameEventReducer<Event extends HubEventNames>(
+  event: Event,
+  { context, user, args }: GameEventProps<Event>
+): Promise<Nullable<ActiveGame>> {
+  if (!Events[event]) throw new Error(`Invalid event: ${event}`);
+  const { callback } = Events[event];
+  console.log(`[${event}]: ${JSON.stringify(args)}`)
+
+  try {
+    const update = await callback({ context, user, args });
+    return update;
+
+  } catch (error) {
+    console.error(error);
+    return context.game;
   }
 }

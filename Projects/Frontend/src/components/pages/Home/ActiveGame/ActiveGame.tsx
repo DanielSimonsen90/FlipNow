@@ -34,7 +34,7 @@ export default function ActiveGame() {
         copy(getInviteUrlFromGame(game))
       }} />
       <Button importance="secondary" onClick={() => {
-        dispatch('DELETE');
+        dispatch('deleteGame');
       }}>Delete game</Button>
       <ConnectionLogger />
     </div>

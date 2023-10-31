@@ -1,7 +1,7 @@
 
 import { HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
 import { API_ENDPOINT_SECURE_SIGNALR, API_ENDPOINT_SIGNALR } from "utils";
-import { HubEventNames, HubEvents } from "./HubEvents";
+import { HubActionNames, HubActions, HubEventNames, HubEvents } from "./HubTypes";
 import { Promiseable } from "types";
 import { ActiveGame } from "models/backend";
 
@@ -33,14 +33,14 @@ class InternalFlipNowHubConnection {
     this._callbacks.set(callback, _callback);
   };
 
-  public async invoke<
-    EventName extends HubEventNames,
-    Arguments extends HubEvents[EventName]
-  >(event: EventName, game: ActiveGame, ...args: Arguments) {
+  public async send<
+    Action extends HubActionNames,
+    Arguments extends HubActions[Action]
+  >(action: Action, game: Pick<ActiveGame, 'inviteCode'>, ...args: Arguments) {
     if (this._hubConnection.state !== HubConnectionState.Connected) return console.warn("Hub connection is not connected")
-    console.log(`Invoking ${event} event`, args);
-    // return this._hubConnection.invoke(event as string, ...args);
-    return this._hubConnection.send(event as string, game.inviteCode, ...args);
+    console.log(`Sending ${action} action`, args);
+    // return this._hubConnection.invoke(action as string, ...args);
+    return this._hubConnection.send(action as string, game.inviteCode, ...args);
   };
 
   public off<
@@ -54,11 +54,11 @@ class InternalFlipNowHubConnection {
     this._hubConnection.off(event as string, _callback);
   }
 
-  public invokeHandlerLater<
-    EventName extends HubEventNames,
-    Arguments extends HubEvents[EventName]
-  >(event: EventName, game: ActiveGame) {
-    return (...args: Arguments) => this.invoke(event, game, ...args);
+  public sendHandlerLater<
+    Action extends HubActionNames,
+    Arguments extends HubActions[Action]
+  >(action: Action, game: Pick<ActiveGame, 'inviteCode'>) {
+    return (...args: Arguments) => this.send(action, game, ...args);
   }
 
   public static getInstance(): InternalFlipNowHubConnection {

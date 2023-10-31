@@ -9,7 +9,7 @@ public class ActiveGame
         _invitePrefix = invitePrefix;
         Cards = cards.Select(c => new GameCard(c)).ToList();
         Host = new Player(host, this);
-        Players = new List<Player>() { Host };
+        Players = new List<Player>();
     }
 
     #region Invite
@@ -31,7 +31,7 @@ public class ActiveGame
             _turnPlayerIndex = value;
         } 
     }
-    public Player TurnPlayer => Players[TurnPlayerIndex];
+    public Player? TurnPlayer => Players.Any() ? Players[TurnPlayerIndex] : null;
     public Player Host { get; }
     public List<Player> Leaderboard => Players.OrderByDescending(p => p.Score).ToList();
     #endregion
