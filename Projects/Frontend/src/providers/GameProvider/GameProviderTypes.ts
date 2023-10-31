@@ -1,6 +1,6 @@
 import { ActiveGame, Player, User } from "models/backend";
 import type { useUser } from "providers/UserProvider";
-import { Nullable } from "types";
+import { Nullable, Promiseable } from "types";
 import { FlipNowHubConnection } from "./Hub/FlipNowHubConnection";
 import { HubActionNames, HubActions } from "./Hub/HubEvents";
 
@@ -28,5 +28,5 @@ export type GameActionProps<Action extends HubActionNames> =
   
 export type GameActionRegisterProps<Action extends HubActionNames> = {
   action: Action,
-  callback: (props: GameActionProps<Action>) => Promise<Nullable<ActiveGame>>;
+  callback: (props: GameActionProps<Action>) => Promise<void | ActiveGame>;
 };

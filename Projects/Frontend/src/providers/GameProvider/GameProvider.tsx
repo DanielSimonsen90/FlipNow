@@ -4,7 +4,7 @@ import { Nullable } from 'types';
 import { ActiveGame } from 'models/backend';
 import { useUser } from 'providers/UserProvider';
 
-import { GameProviderContext, GameReducer } from './GameProviderConstants';
+import { GameProviderContext, GameActionReducer } from './GameProviderConstants';
 import { GameActionProps } from './GameProviderTypes';
 import { useGetActiveGame, useSingalREvent } from './GameProviderHooks';
 import { HubActionNames, HubActions } from './Hub';
@@ -21,11 +21,14 @@ export default function GameProvider({ children }: PropsWithChildren) {
   ) => {
     if (!user) throw new Error('User not logged in');
 
-    const updatedGame = await GameReducer(action, { 
+    const update = await GameActionReducer(action, { 
       user, game, args 
     } as GameActionProps<Action>);
-    setGame(updatedGame);
+    if (update) setGame(update);
+
   }, [user, game]);
+
+  // TODO: GameEventReducer
 
   useGetActiveGame(game, setGame);
 

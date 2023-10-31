@@ -15,10 +15,10 @@ export const GameProviderContext = createContext<GameProviderContextType>({
   logs: []
 });
 
-export async function GameReducer<Action extends HubActionNames>(
+export async function GameActionReducer<Action extends HubActionNames>(
   action: Action,
   { game, user, args }: GameActionProps<Action>
-): Promise<Nullable<ActiveGame>> {
+): Promise<void | ActiveGame> {
   if (!Actions[action]) throw new Error(`Invalid action: ${action}`);
   const { callback } = Actions[action];
 
@@ -27,10 +27,9 @@ export async function GameReducer<Action extends HubActionNames>(
       game, user, args,
       broadcastToHub: Connection.invokeHandlerLater(action, game).bind(Connection) 
     });
-
     return update;
+
   } catch (error) {
     console.error(error);
-    return game;
   }
 }
