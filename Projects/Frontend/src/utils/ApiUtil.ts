@@ -1,11 +1,15 @@
 export const API_ENDPOINT = "http://localhost:5000/api";
 export const API_ENDPOINT_SECURE = "https://localhost:5000/api";
 
+export const API_ENDPOINT_SIGNALR = API_ENDPOINT + "/gameshub";
+export const API_ENDPOINT_SECURE_SIGNALR = API_ENDPOINT_SECURE + "/gameshub";
+
 type TParam = string | undefined;
 
 type ApiEndpoints<Param extends TParam = undefined> =
   | `games?hostId=${Param}` 
   | `games?userId=${Param}`
+  | `games/${Param}` // /{inviteCode}
 
   | `users/${Param}` // /{username}
   | `users/${Param}` // /{userId}

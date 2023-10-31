@@ -1,10 +1,5 @@
 ﻿using FlipNow.Business.Services;
 using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FlipNow.Business.Hubs;
 
@@ -23,6 +18,7 @@ public class GamesHub : Hub, IGamesHub
     #region Game lifecycle
     public Task StartGame(string? inviteCode) => _service.StartGame(inviteCode);
     public Task EndGame(string? inviteCode) => _service.EndGame(inviteCode);
+    public Task DeleteGame(string? inviteCode) => _service.DeleteGame(inviteCode);
     #endregion
 
     #region PlayerPresence (Join/Leave)
@@ -33,4 +29,6 @@ public class GamesHub : Hub, IGamesHub
     #region Game Updates
     public Task FlipCard(string? inviteCode, int? cardIndex) => _service.FlipCard(inviteCode, cardIndex);
     #endregion
+
+    public Task Ping() => _service.Ping();
 }

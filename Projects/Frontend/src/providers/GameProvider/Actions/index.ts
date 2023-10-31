@@ -1,4 +1,4 @@
-import { GameAction, GameActionProps } from '../GameProviderTypes';
+import { GameAction, GameActionRegisterProps } from '../GameProviderTypes';
 
 import GameCreate from './CREATE.game.actions';
 import GameDelete from './DELETE.game.actions';
@@ -9,6 +9,8 @@ import GameLeave from './LEAVE.game.actions';
 import GameStart from './START.game.actions';
 import GameStop from './STOP.game.actions';
 
+import GamePing from './PING.game.actions';
+
 export default {
   CREATE: GameCreate,
   DELETE: GameDelete,
@@ -18,4 +20,5 @@ export default {
   LEAVE: GameLeave,
   START: GameStart,
   STOP: GameStop,
-} as Record<GameAction, GameActionProps<any>>;
+  PING: GamePing
+} as Record<GameAction, GameActionRegisterProps<any>>;

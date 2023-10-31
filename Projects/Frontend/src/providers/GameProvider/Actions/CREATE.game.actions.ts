@@ -2,7 +2,7 @@ import { Request } from "utils";
 import CreateGameAction from "./_CreateGameAction";
 import { ActiveGame } from "models/backend";
 
-export default CreateGameAction('CREATE', async (game, user) => {
+export default CreateGameAction('CREATE', async ({ game, user }) => {
   if (!user) throw new Error('User not logged in');
   if (game) throw new Error('Game already exists');
   
@@ -11,5 +11,6 @@ export default CreateGameAction('CREATE', async (game, user) => {
   });
 
   if (!created.success) throw new Error(`Failed to create game: ${created.text}`);
+  
   return created.data;
 });

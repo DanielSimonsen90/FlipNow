@@ -35,6 +35,11 @@ public class GamesHubService : IGamesHub
         service.EndGame();
         return await Task.FromResult(service.Game);
     });
+
+    public Task DeleteGame(string? inviteCode)
+    {
+        throw new NotImplementedException();
+    }
     #endregion
 
     #region PlayerPresence (Join/Leave)
@@ -87,24 +92,40 @@ public class GamesHubService : IGamesHub
             IClientProxy players = _clients.Group(inviteCode);
             ActiveGame game = _sessionService.FindActiveGame(inviteCode) ?? throw new NullReferenceException("Game not found");
             GameService service = new(_uow, _sessionService, game);
+
+            await Log("Received", eventName, inviteCode);
+
             ActiveGame updatedGame = await callback(players, service);
 
             // TODO: Check if updatedGame != game
 
+            await Log("Sending", eventName, inviteCode);
             await players.SendAsync(eventName, updatedGame);
 
             if (updatedGame.PlayState == PlayState.PLAYING)
             {
                 updatedGame = await service.ProcessGame();
-                await players.SendAsync(updatedGame.PlayState == PlayState.ENDED
+                string eventUpdateName = updatedGame.PlayState == PlayState.ENDED
                     ? GamesHubConstants.EVENTS_END_GAME
-                    : GamesHubConstants.EVENTS_UPDATE_GAME,
-                    updatedGame);
+                    : GamesHubConstants.EVENTS_UPDATE_GAME;
+
+                await Log("Sending", eventUpdateName, inviteCode, $"Updated from {eventName}");
+                await players.SendAsync(eventUpdateName, updatedGame);
             }
         }
         catch (Exception ex)
         {
+            await Log("Failed", eventName, inviteCode, ex.Message);
             await _clients.Caller.SendAsync(GamesHubConstants.RESPONSE_FAILED, ex.Message);
         }
+    }
+
+    private async Task Log(string type, string eventName, string? inviteCode, string message = "") 
+        => await _clients.Group(inviteCode).SendAsync(GamesHubConstants.LOG, 
+            $"{type} \"{eventName}\" from game {inviteCode}" + (string.IsNullOrEmpty(message) ? "" : $": {message}"));
+
+    public Task Ping()
+    {
+        return _clients.All.SendAsync(GamesHubConstants.LOG, "Pong");
     }
 }

@@ -38,13 +38,11 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<GamesHub>($"/{GamesHub.ENDPOINT}");
+app.MapHub<GamesHub>($"/api/{GamesHub.ENDPOINT}");
 
-app.UseCors(builder =>
-{
-    builder.WithOrigins("http://localhost:3000")
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials();
-});
+app.UseCors(builder => builder
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .SetIsOriginAllowed(_ => true)
+    .AllowCredentials());
 app.Run();
