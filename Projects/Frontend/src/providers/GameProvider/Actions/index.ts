@@ -9,8 +9,6 @@ import GameLeave from './LEAVE.game.actions';
 import GameStart from './START.game.actions';
 import GameStop from './STOP.game.actions';
 
-import GamePing from './PING.game.actions';
-
 export default {
   CREATE: GameCreate,
   DELETE: GameDelete,
@@ -20,5 +18,4 @@ export default {
   LEAVE: GameLeave,
   START: GameStart,
   STOP: GameStop,
-  PING: GamePing
 } as Record<GameAction, GameActionRegisterProps<any>>;

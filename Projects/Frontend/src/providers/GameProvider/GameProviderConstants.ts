@@ -25,7 +25,6 @@ export const getHubEventFromAction = (action: GameAction): Nullable<HubEventName
     case 'START': return 'startGame';
     case 'STOP': return 'endGame';
     case 'FLIP': return 'flipCard';
-    case 'PING': return 'ping';
     default: return null;
   }
 }

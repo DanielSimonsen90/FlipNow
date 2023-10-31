@@ -18,7 +18,7 @@ type GameLifeCycle = 'CREATE' | 'START' | 'STOP' | 'DELETE';
 type PlayerLifeCycle = 'JOIN' | 'LEAVE' | 'KICK';
 type GameEvents = 'FLIP';
 
-export type GameAction = GameLifeCycle | PlayerLifeCycle | GameEvents | 'PING';
+export type GameAction = GameLifeCycle | PlayerLifeCycle | GameEvents;
 export type GameActionProps<Action extends GameAction> =
   (Action extends 'CREATE' ? {
     game: Nullable<ActiveGame>;
@@ -46,5 +46,4 @@ export type AdditionalActionProps = {
   'KICK': [player: Player];
 
   'FLIP': [cardIndex: number];
-  'PING': [];
 };

@@ -37,7 +37,6 @@ export default function ActiveGame() {
         dispatch('DELETE');
       }}>Delete game</Button>
       <ConnectionLogger />
-      <Button onClick={() => dispatch('PING')}>Send Ping</Button>
     </div>
   );
 }

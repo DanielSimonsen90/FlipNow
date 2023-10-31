@@ -1,32 +1,36 @@
 import { ActiveGame } from "models/backend";
 
-type ServerHubEvents = {
-  // Game lifecycle
+/**
+ * These events are emitted to the server from the client
+ * Client => Server
+ */
+export type ServerHubEvents = {
   startGame: [];
   endGame: [];
   deleteGame: [];
 
-  // PlayerPresence (join/leave)
   joinGame: [userId: string];
   leaveGame: [playerId: string];
 
-  // Game updates
   flipCard: [cardIndex: number];
 }
 
-type ClientHubEvents = {
-  gameStarted: [ActiveGame];
-  gameUpdated: [ActiveGame];
-  gameReset: [ActiveGame];
-  gameEnded: [ActiveGame];
+/**
+ * These events are emitted to the client from the server
+ * Server => Client
+ */
+export type ClientHubEvents = {
+  gameStarted: [game: ActiveGame];
+  gameUpdated: [game: ActiveGame];
+  gameReset: [game: ActiveGame];
+  gameEnded: [game: ActiveGame];
 
-  playerJoined: [ActiveGame];
-  playerLeft: [ActiveGame];
+  playerJoined: [game: ActiveGame];
+  playerLeft: [game: ActiveGame];
 
   // Development
   broadcastFailed: [message: string];
   log: [message: string];
-  ping: [];
 }
 
 export type HubEvents = ServerHubEvents & ClientHubEvents;

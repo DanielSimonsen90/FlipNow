@@ -1,4 +1,4 @@
-import { useState, PropsWithChildren, useCallback, useEffect } from 'react';
+import { useState, PropsWithChildren, useCallback } from 'react';
 
 import { Nullable } from 'types';
 import { ActiveGame } from 'models/backend';
@@ -6,9 +6,7 @@ import { useUser } from 'providers/UserProvider';
 
 import { GameProviderContext, GameReducer } from './GameProviderConstants';
 import { AdditionalActionProps, GameAction, GameActionProps } from './GameProviderTypes';
-import { useGetActiveGame } from './GameProviderHooks';
-
-import Connection from './Hub/FlipNowHubConnection';
+import { useGetActiveGame, useSingalREvent } from './GameProviderHooks';
 
 export default function GameProvider({ children }: PropsWithChildren) {
   const [game, setGame] = useState<Nullable<ActiveGame>>(null);
@@ -30,16 +28,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
 
   useGetActiveGame(game, setGame);
 
-  useEffect(() => {
-    console.log('Connection', Connection);
-    const callback = (message: string) => {
-      setLogs((logs) => [...logs, message]);
-    };
-    Connection.on('log', callback);
-    return () => {
-      Connection.off('log', callback);
-    }
-  }, [])
+  useSingalREvent('log', message => setLogs((logs) => [...logs, message]));
 
   return (
     <GameProviderContext.Provider value={{
