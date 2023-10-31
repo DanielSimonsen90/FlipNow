@@ -10,7 +10,7 @@ export type HubActions = {
   endGame: [];
   deleteGame: [];
 
-  joinGame: [inviteCode: string, userId: string];
+  joinGame: [inviteCode: string];
   leaveGame: [playerId: string];
 
   flipCard: [cardIndex: number];
