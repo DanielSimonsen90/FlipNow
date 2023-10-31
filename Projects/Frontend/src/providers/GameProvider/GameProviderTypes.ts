@@ -1,6 +1,6 @@
-import { ActiveGame, Player, User } from "models/backend";
+import { ActiveGame } from "models/backend";
 import type { useUser } from "providers/UserProvider";
-import { Nullable, Promiseable } from "types";
+import { Nullable } from "types";
 import { FlipNowHubConnection } from "./Hub/FlipNowHubConnection";
 import { HubActionNames, HubActions } from "./Hub/HubEvents";
 
@@ -15,11 +15,12 @@ export type GameProviderContextType = {
   logs: string[];
 };
 
+// #region Actions
 export type GameActionProps<Action extends HubActionNames> =
   (Action extends 'createGame' ? {
     game: Nullable<ActiveGame>;
   } : {
-    broadcastToHub: ReturnType<FlipNowHubConnection['invokeHandlerLater']>;
+    broadcastToHub: ReturnType<FlipNowHubConnection['sendHandlerLater']>;
   }) & ({
     user: NonNullable<ReturnType<typeof useUser>['user']>;
     game: ActiveGame;
@@ -30,3 +31,4 @@ export type GameActionRegisterProps<Action extends HubActionNames> = {
   action: Action,
   callback: (props: GameActionProps<Action>) => Promise<void | ActiveGame>;
 };
+// #endregion Actions

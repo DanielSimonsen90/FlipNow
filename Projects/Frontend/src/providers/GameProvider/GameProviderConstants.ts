@@ -4,7 +4,7 @@ import { ActiveGame } from "models/backend";
 
 import Actions from './Actions';
 import { GameActionProps, GameProviderContextType } from "./GameProviderTypes";
-import Connection from "./Hub/FlipNowHubConnection";
+import Connection, { FlipNowHubConnection } from "./Hub/FlipNowHubConnection";
 import { HubActionNames, HubActions, HubEventNames } from "./Hub/HubEvents";
 
 // TODO: Provide Player object to GameProviderContext
@@ -25,7 +25,7 @@ export async function GameActionReducer<Action extends HubActionNames>(
   try {
     const update = await callback({ 
       game, user, args,
-      broadcastToHub: Connection.invokeHandlerLater(action, game).bind(Connection) 
+      broadcastToHub: Connection.sendHandlerLater(action, game).bind(Connection) as ReturnType<FlipNowHubConnection['sendHandlerLater']>
     });
     return update;
 

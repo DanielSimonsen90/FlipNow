@@ -6,7 +6,7 @@ export default function DefaultHome() {
 
   return (
     <main>
-      <Button onClick={() => dispatch('CREATE')}>Start playing</Button>
+      <Button onClick={() => dispatch('createGame')}>Start playing</Button>
     </main>
   );
 }

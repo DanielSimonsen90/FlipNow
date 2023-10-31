@@ -9,10 +9,11 @@ export default function Invite() {
   const { game, dispatch } = useGame();
   const navigate = useNavigate();
   const { inviteCode } = useParams();
+  if (!inviteCode) throw new Error('ReactRouter failed to get inviteCode');
 
   useAsyncEffect(async () => {
     if (game) return navigate('/'); 
-    if (user) dispatch('JOIN', user, inviteCode);
+    if (user) dispatch('joinGame', inviteCode, user.id);
   }, [user, game]);
   
   return (
