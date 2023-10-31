@@ -42,7 +42,7 @@ export async function GameReducer<Action extends GameAction>(
     const update = await callback({ 
       game, user, args,
       broadcastToHub: eventName 
-        ? Connection.invokeHandlerLater(eventName, game) 
+        ? Connection.invokeHandlerLater(eventName, game).bind(Connection) 
         : undefined,
     });
 

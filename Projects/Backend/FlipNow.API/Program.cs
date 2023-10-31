@@ -2,7 +2,6 @@ using FlipNow.Business.Hubs;
 using FlipNow.Business.Services;
 using FlipNow.DataAccess;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNet.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +32,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors(builder => builder
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .SetIsOriginAllowed(_ => true)
+        .AllowCredentials());
 }
 
 app.UseHttpsRedirection();
@@ -41,9 +45,4 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<GamesHub>($"/api/{GamesHub.ENDPOINT}");
 
-app.UseCors(builder => builder
-    .AllowAnyHeader()
-    .AllowAnyMethod()
-    .SetIsOriginAllowed(_ => true)
-    .AllowCredentials());
 app.Run();

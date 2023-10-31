@@ -118,8 +118,8 @@ public class GamesHub : Hub, IGamesHub
         => await Clients.Group(inviteCode).SendAsync(GamesHubConstants.LOG,
             $"{type} \"{eventName}\" from game {inviteCode}" + (string.IsNullOrEmpty(message) ? "" : $": {message}"));
 
-    public async Task Ping()
+    public Task Ping(string? inviteCode)
     {
-        await Clients.All.SendAsync(GamesHubConstants.LOG, "Pong");
+        return Clients.All.SendAsync(GamesHubConstants.LOG, $"Pong with {inviteCode}");
     }
 }

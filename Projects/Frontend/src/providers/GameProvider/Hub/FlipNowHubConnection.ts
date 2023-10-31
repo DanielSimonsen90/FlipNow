@@ -33,12 +33,13 @@ class InternalFlipNowHubConnection {
     this._callbacks.set(callback, _callback);
   };
 
-  public invoke<
+  public async invoke<
     EventName extends HubEventNames,
     Arguments extends HubEvents[EventName]
   >(event: EventName, game: ActiveGame, ...args: Arguments) {
     if (this._hubConnection.state !== HubConnectionState.Connected) return console.warn("Hub connection is not connected")
     console.log(`Invoking ${event} event`, args);
+    // return this._hubConnection.invoke(event as string, ...args);
     return this._hubConnection.send(event as string, game.inviteCode, ...args);
   };
 
@@ -56,7 +57,7 @@ class InternalFlipNowHubConnection {
   public invokeHandlerLater<
     EventName extends HubEventNames,
     Arguments extends HubEvents[EventName]
-  >(event: EventName, game: ActiveGame): (...args: Arguments) => void {
+  >(event: EventName, game: ActiveGame) {
     return (...args: Arguments) => this.invoke(event, game, ...args);
   }
 
