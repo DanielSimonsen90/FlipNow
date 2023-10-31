@@ -50,8 +50,13 @@ public class GameService
         if (Game.PlayState != PlayState.PLAYING) throw new InvalidOperationException("Game is not playing");
 
         Game.PlayState = PlayState.ENDED;
+    }
+    public void DeleteGame()
+    {
+        if (Game.PlayState == PlayState.PLAYING) EndGame();
         _sessionService.RemoveGame(_hostId);
     }
+
     private void ResetGame()
     {
         if (Game.TurnPlayerIndex > 0)

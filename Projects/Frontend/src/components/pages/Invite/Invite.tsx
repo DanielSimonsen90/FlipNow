@@ -13,7 +13,10 @@ export default function Invite() {
 
   useAsyncEffect(async () => {
     if (game) return navigate('/'); 
-    if (user) dispatch('joinGame', inviteCode, user.id);
+    if (user) {
+      dispatch('joinGame', inviteCode, user.id);
+      // navigate('/');
+    }
   }, [user, game]);
   
   return (
@@ -21,6 +24,9 @@ export default function Invite() {
       <h1>You have been invited to join a game!</h1>
       <p>Please login to accept the invite.</p>
       <LoginContainerFactory />
+      <button onClick={() => {
+        dispatch('joinGame', inviteCode, user!.id);
+      }}>Send join request</button>
     </main>
   );
 }

@@ -34,5 +34,5 @@ export function useSingalREvent<EventName extends keyof HubEvents>(
   useEffect(() => {
     Connection.on(name, callback);
     return () => Connection.off(name, callback);
-  }, []);
+  }, [name, callback]);
 }

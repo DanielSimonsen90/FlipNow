@@ -6,6 +6,7 @@ public class GamesHubConstants
     public const string EVENTS_UPDATE_GAME = "gameUpdated";
     public const string EVENTS_RESET_GAME = "gameReset";
     public const string EVENTS_END_GAME = "gameEnded";
+    public const string EVENTS_DELETE_GAME = "gameDeleted";
 
     public const string EVENTS_JOIN_GAME = "playerJoined";
     public const string EVENTS_LEAVE_GAME = "playerLeft";

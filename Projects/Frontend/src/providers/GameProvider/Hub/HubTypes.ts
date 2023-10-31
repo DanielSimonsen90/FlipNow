@@ -26,6 +26,7 @@ export type HubEvents = {
   gameUpdated: [game: ActiveGame];
   gameReset: [game: ActiveGame];
   gameEnded: [game: ActiveGame];
+  gameDeleted: [];
 
   playerJoined: [game: ActiveGame];
   playerLeft: [game: ActiveGame];

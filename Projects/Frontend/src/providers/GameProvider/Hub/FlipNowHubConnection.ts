@@ -1,7 +1,7 @@
 
 import { HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
 import { API_ENDPOINT_SECURE_SIGNALR, API_ENDPOINT_SIGNALR } from "utils";
-import { HubActionNames, HubActions, HubEventNames, HubEvents } from "./HubEvents";
+import { HubActionNames, HubActions, HubEventNames, HubEvents } from "./HubTypes";
 import { Promiseable } from "types";
 import { ActiveGame } from "models/backend";
 
@@ -36,10 +36,10 @@ class InternalFlipNowHubConnection {
   public async send<
     Action extends HubActionNames,
     Arguments extends HubActions[Action]
-  >(action: Action, game: ActiveGame, ...args: Arguments) {
+  >(action: Action, game: Pick<ActiveGame, 'inviteCode'>, ...args: Arguments) {
     if (this._hubConnection.state !== HubConnectionState.Connected) return console.warn("Hub connection is not connected")
-    console.log(`Sending ${action} event`, args);
-    // return this._hubConnection.invoke(event as string, ...args);
+    console.log(`Sending ${action} action`, args);
+    // return this._hubConnection.invoke(action as string, ...args);
     return this._hubConnection.send(action as string, game.inviteCode, ...args);
   };
 
@@ -57,7 +57,7 @@ class InternalFlipNowHubConnection {
   public sendHandlerLater<
     Action extends HubActionNames,
     Arguments extends HubActions[Action]
-  >(action: Action, game: ActiveGame) {
+  >(action: Action, game: Pick<ActiveGame, 'inviteCode'>) {
     return (...args: Arguments) => this.send(action, game, ...args);
   }
 
