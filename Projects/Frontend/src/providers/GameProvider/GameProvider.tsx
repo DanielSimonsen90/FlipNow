@@ -9,6 +9,8 @@ import { AdditionalActionProps, GameAction, GameActionProps } from './GameProvid
 import { useGetActiveGame } from './GameProviderHooks';
 import { useAsyncEffect } from 'danholibraryrjs';
 
+Connection.start();
+
 export default function GameProvider({ children }: PropsWithChildren) {
   const [game, setGame] = useState<Nullable<ActiveGame>>(null);
   const [logs, setLogs] = useState<string[]>([]);
@@ -29,12 +31,16 @@ export default function GameProvider({ children }: PropsWithChildren) {
 
   useGetActiveGame(game, setGame);
 
-  useAsyncEffect(async () => {
-    await Connection.start();
-    Connection.on('log', (log: string) => {
-      setLogs((logs) => [...logs, log]);
-    });
-    return () => Connection.stop();
+  useEffect(() => {
+    if (!Connection.started) return;
+    console.log('Connection', Connection);
+    const callback = (message: string) => {
+      setLogs((logs) => [...logs, message]);
+    };
+    Connection.on('log', callback);
+    return () => {
+      Connection.off('log', callback);
+    }
   }, [])
 
   return (

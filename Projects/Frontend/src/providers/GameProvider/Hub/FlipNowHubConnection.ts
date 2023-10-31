@@ -39,7 +39,7 @@ export default class FlipNowHubConnection {
   public stop() {
     if (!this._started) return;
     
-    FlipNowHubConnection._hubConnectionSecure.stop();
+    this._hubConnection.stop();
     // FlipNowHubConnection._hubConnectionUnsecure.stop();
     
     this._started = false;
