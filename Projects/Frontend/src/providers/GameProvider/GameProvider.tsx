@@ -4,12 +4,11 @@ import { Nullable } from 'types';
 import { ActiveGame } from 'models/backend';
 import { useUser } from 'providers/UserProvider';
 
-import { Connection, GameProviderContext, GameReducer } from './GameProviderConstants';
+import { GameProviderContext, GameReducer } from './GameProviderConstants';
 import { AdditionalActionProps, GameAction, GameActionProps } from './GameProviderTypes';
 import { useGetActiveGame } from './GameProviderHooks';
-import { useAsyncEffect } from 'danholibraryrjs';
 
-Connection.start();
+import Connection from './Hub/FlipNowHubConnection';
 
 export default function GameProvider({ children }: PropsWithChildren) {
   const [game, setGame] = useState<Nullable<ActiveGame>>(null);
@@ -32,7 +31,6 @@ export default function GameProvider({ children }: PropsWithChildren) {
   useGetActiveGame(game, setGame);
 
   useEffect(() => {
-    if (!Connection.started) return;
     console.log('Connection', Connection);
     const callback = (message: string) => {
       setLogs((logs) => [...logs, message]);

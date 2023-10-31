@@ -1,60 +1,25 @@
 
-import { HubConnection, HubConnectionBuilder, LogLevel } from "@aspnet/signalr";
+import { HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
 import { API_ENDPOINT_SECURE_SIGNALR, API_ENDPOINT_SIGNALR } from "utils";
 import { HubEventNames, HubEvents } from "./HubEvents";
 import { Promiseable } from "types";
 import { ActiveGame } from "models/backend";
 
-export default class FlipNowHubConnection {
+class InternalFlipNowHubConnection {
+  private static _instance: InternalFlipNowHubConnection;
   private static _hubConnectionSecure = new HubConnectionBuilder()
     .withUrl(API_ENDPOINT_SECURE_SIGNALR)
+    .withAutomaticReconnect()
     .configureLogging(LogLevel.Information)
     .build();
-  // private static _hubConnectionUnsecure = new HubConnectionBuilder()
-  //   .withUrl(API_ENDPOINT_SIGNALR)
-  //   .configureLogging(LogLevel.Information)
-  //   .build();
 
-  private _hubConnection: HubConnection = FlipNowHubConnection._hubConnectionSecure;
+  private _hubConnection: HubConnection = InternalFlipNowHubConnection._hubConnectionSecure;
   private _callbacks: Map<Function, (...args: any[]) => void> = new Map();
 
-  private _started = false;
-  public get started() {
-    return this._started;
+  constructor() {
+    this._hubConnection = InternalFlipNowHubConnection._hubConnectionSecure;
+    this._hubConnection.start().catch(console.error);
   }
-  public start() {
-    if (this._started) return;
-    this._started = true;
-
-    return FlipNowHubConnection._hubConnectionSecure
-      .start()
-      .then(this.onHubConnectionStarted("Secure"))
-      .catch(this.onHubConnectionError("Secure"));
-
-    // FlipNowHubConnection._hubConnectionUnsecure
-    //   .start()
-    //   .then(this.onHubConnectionStarted("Unsecure"))
-    //   .catch(this.onHubConnectionError("Unsecure"));
-  }
-  public stop() {
-    if (!this._started) return;
-    
-    this._hubConnection.stop();
-    // FlipNowHubConnection._hubConnectionUnsecure.stop();
-    
-    this._started = false;
-  }
-
-  private onHubConnectionStarted = (type: string) => () => {
-    console.log(`(${type}) Hub connection started`);
-    this._hubConnection = type === "Secure"
-      ? FlipNowHubConnection._hubConnectionSecure
-      // : FlipNowHubConnection._hubConnectionUnsecure;
-      : undefined as any;
-  };
-  private onHubConnectionError = (type: string) => (err: Error) => {
-    console.error(`(${type}) Hub connection error`, err);
-  };
 
   public on<
     EventName extends HubEventNames,
@@ -72,7 +37,7 @@ export default class FlipNowHubConnection {
     EventName extends HubEventNames,
     Arguments extends HubEvents[EventName]
   >(event: EventName, game: ActiveGame, ...args: Arguments) {
-    if (!this._started) throw new Error("Hub connection not started");
+    if (this._hubConnection.state !== HubConnectionState.Connected) return console.warn("Hub connection is not connected")
     console.log(`Invoking ${event} event`, args);
     return this._hubConnection.send(event as string, game.inviteCode, ...args);
   };
@@ -91,7 +56,15 @@ export default class FlipNowHubConnection {
   public invokeHandlerLater<
     EventName extends HubEventNames,
     Arguments extends HubEvents[EventName]
-    >(event: EventName, game: ActiveGame): (...args: Arguments) => Promise<void> {
+  >(event: EventName, game: ActiveGame): (...args: Arguments) => void {
     return (...args: Arguments) => this.invoke(event, game, ...args);
   }
+
+  public static getInstance(): InternalFlipNowHubConnection {
+    if (!InternalFlipNowHubConnection._instance) InternalFlipNowHubConnection._instance = new InternalFlipNowHubConnection();
+    return InternalFlipNowHubConnection._instance;
+  }
 }
+
+export type FlipNowHubConnection = InternalFlipNowHubConnection;
+export default InternalFlipNowHubConnection.getInstance();

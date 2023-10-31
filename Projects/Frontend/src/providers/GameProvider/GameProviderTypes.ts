@@ -1,7 +1,7 @@
 import { ActiveGame, Player, User } from "models/backend";
 import type { useUser } from "providers/UserProvider";
 import { Nullable } from "types";
-import FlipNowHubConnection from "./Hub/FlipNowHubConnection";
+import { FlipNowHubConnection } from "./Hub/FlipNowHubConnection";
 
 export type GameProviderContextType = {
   game: Nullable<ActiveGame>;

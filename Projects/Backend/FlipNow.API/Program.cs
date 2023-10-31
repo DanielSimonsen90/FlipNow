@@ -2,6 +2,7 @@ using FlipNow.Business.Hubs;
 using FlipNow.Business.Services;
 using FlipNow.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNet.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +17,8 @@ builder.Services.AddDbContext<FlipNowDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddScoped<UnitOfWork>();
-builder.Services.AddSignalR();
 builder.Services.AddSingleton<GameSessionService>();
+builder.Services.AddSignalR();
 
 // Force lowercase endpoints
 builder.Services.Configure<RouteOptions>(options =>

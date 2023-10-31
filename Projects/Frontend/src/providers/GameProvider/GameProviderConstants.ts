@@ -4,7 +4,7 @@ import { ActiveGame } from "models/backend";
 
 import Actions from './Actions';
 import { GameAction, GameActionProps, GameProviderContextType } from "./GameProviderTypes";
-import FlipNowHubConnection from "./Hub/FlipNowHubConnection";
+import Connection from "./Hub/FlipNowHubConnection";
 import { HubEventNames } from "./Hub/HubEvents";
 
 // TODO: Provide Player object to GameProviderContext
@@ -52,5 +52,3 @@ export async function GameReducer<Action extends GameAction>(
     return game;
   }
 }
-
-export const Connection = new FlipNowHubConnection();

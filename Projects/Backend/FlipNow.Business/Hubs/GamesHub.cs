@@ -2,8 +2,6 @@
 using FlipNow.Business.Services;
 using FlipNow.Common.Entities;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
 
 namespace FlipNow.Business.Hubs;
 
