@@ -52,6 +52,9 @@ button,
       colors.$brand-primary,
       colors.$brand-primary);
   }
+  &.tertiary {
+    @include createButton(colors.$background-tertiary);
+  }
 }
 
 .button-container {

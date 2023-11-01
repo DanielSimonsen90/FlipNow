@@ -19,13 +19,14 @@ export default function GameProvider({ children }: PropsWithChildren) {
   const navigate = useNavigate();
 
   const isClientTurn = game?.turnPlayer?.user.username === user?.username;
+  const isHost = useMemo(() => game?.host.user.id === user?.id, [game, user])
   const player = useMemo(() => {
     if (!game || !user) return null;
     return game.players.find(p => p.user.username === user.username) ?? null;
   }, [game, user]);
 
   const actionContext = useMemo(() => ({
-    game, isClientTurn, player, 
+    game, isClientTurn, player, isHost,
     logs, setLogs
   }), [game, isClientTurn, player, logs, setLogs]);
 
@@ -40,7 +41,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
     } as GameActionProps<Action>);
     
     if (update) setGame(update);
-  }, [user, game, navigate]);
+  }, [user, game, navigate, actionContext]);
 
   const contextValue: GameProviderContextType = {
     ...actionContext,
