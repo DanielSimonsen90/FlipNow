@@ -1,5 +1,5 @@
-import { GameActionRegisterProps } from "../GameProviderTypes";
-import { HubActionNames } from "../Hub";
+import { GameActionRegisterProps } from "../../GameProviderTypes";
+import { HubActionNames } from "..";
 
 export default function CreateGameAction<Action extends HubActionNames>(
   action: Action, 

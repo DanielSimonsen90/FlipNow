@@ -1,4 +1,4 @@
-import { ActiveGame } from "models/backend";
+import { ActiveGame, Player } from "models/backend";
 import type { useUser } from "providers/UserProvider";
 import { Nullable } from "types";
 import { FlipNowHubConnection } from "./Hub/FlipNowHubConnection";
@@ -10,8 +10,9 @@ export type Log = {
   message: string;
 }
 
-export type GameProviderContextType = {
-  game: Nullable<ActiveGame>;
+export type GameProviderContextType<AllowNullable extends boolean = true> = {
+  game: AllowNullable extends true ? Nullable<ActiveGame> : ActiveGame;
+  player: AllowNullable extends true ? Nullable<Player> : Player;
   isClientTurn: boolean;
   dispatch<Action extends HubActionNames>(
     action: Action,
@@ -25,11 +26,12 @@ export type GameProviderContextType = {
 // #region Actions
 export type GameActionProps<Action extends HubActionNames> = {
   user: NonNullable<ReturnType<typeof useUser>['user']>;
-  game: Action extends 'createGame' | 'joinGame' ? Nullable<ActiveGame> : ActiveGame;
   args: HubActions[Action];
 
   broadcastToHub: Action extends 'createGame' ? never : ReturnType<FlipNowHubConnection['sendHandlerLater']>;
-};
+} & Omit<GameProviderContextType<false>, 'dispatch' | 'game'> & {
+  game: Action extends 'joinGame' | 'createGame' ? Nullable<ActiveGame> : ActiveGame;
+}
 
 export type GameActionRegisterProps<Action extends HubActionNames> = {
   action: Action,
@@ -46,10 +48,9 @@ type GameEventPropsArgs<Event extends HubEventNames> =
   
 
 export type GameEventProps<Event extends HubEventNames> = {
-  context: Omit<GameProviderContextType, 'dispatch'>;
   user: NonNullable<ReturnType<typeof useUser>['user']>;
   args: GameEventPropsArgs<Event>;
-};
+} & Omit<GameProviderContextType, 'dispatch'>;
 
 export type GameEventRegisterProps<Event extends HubEventNames> = {
   event: Event,

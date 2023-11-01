@@ -7,7 +7,7 @@ import { ActiveGame } from "models/backend";
 import { Nullable, Promiseable } from "types";
 import { useAsyncEffect } from "danholibraryrjs";
 import Connection, { HubEventNames, HubEvents } from './Hub';
-import Events, { GameEventReducer } from "./Events";
+import Events, { GameEventReducer } from "./Hub/Events";
 import { ProvidedUserType } from "providers/UserProvider/UserProviderTypes";
 
 export const useGame = () => useContext(GameProviderContext);
@@ -60,7 +60,7 @@ export function useSignalREvents(
         ); // Update not meant for client
 
         const update = await GameEventReducer(event as HubEventNames, {
-          context,
+          ...context,
           user, args
         } as GameEventProps<any>);
         setGame(update);

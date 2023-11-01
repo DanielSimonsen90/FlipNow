@@ -1,5 +1,5 @@
-import { GameEventRegisterProps } from "../GameProviderTypes";
-import { HubEventNames } from "../Hub";
+import { GameEventRegisterProps } from "../../GameProviderTypes";
+import { HubEventNames } from "..";
 
 export default function CreateGameEvent<Event extends HubEventNames>(
   event: Event,

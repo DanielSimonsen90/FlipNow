@@ -1,4 +1,4 @@
-import { useState, PropsWithChildren, useCallback } from 'react';
+import { useState, PropsWithChildren, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 
 import { Nullable } from 'types';
@@ -10,7 +10,7 @@ import { GameActionProps, GameProviderContextType, Log } from './GameProviderTyp
 import { useGetActiveGame, useSignalREvents } from './GameProviderHooks';
 
 import { HubActionNames, HubActions } from './Hub';
-import { GameActionReducer } from './Actions';
+import { GameActionReducer } from './Hub/Actions';
 
 export default function GameProvider({ children }: PropsWithChildren) {
   const [game, setGame] = useState<Nullable<ActiveGame>>(null);
@@ -19,22 +19,33 @@ export default function GameProvider({ children }: PropsWithChildren) {
   const navigate = useNavigate();
 
   const isClientTurn = game?.turnPlayer?.user.username === user?.username;
+  const player = useMemo(() => {
+    if (!game || !user) return null;
+    return game.players.find(p => p.user.username === user.username) ?? null;
+  }, [game, user]);
+
+  const actionContext = useMemo(() => ({
+    game, isClientTurn, player, 
+    logs, setLogs
+  }), [game, isClientTurn, player, logs, setLogs]);
+
   const dispatch = useCallback(async <Action extends HubActionNames>(
-    action: Action, 
+    action: Action,
     ...args: HubActions[Action]
   ) => {
     if (!user) throw new Error('User not logged in');
 
-    const update = await GameActionReducer(action, { user, game, args } as GameActionProps<Action>);
-    console.log('action update', update);
+    const update = await GameActionReducer(action, { 
+      ...actionContext, user, args 
+    } as GameActionProps<Action>);
+    
     if (update) setGame(update);
   }, [user, game, navigate]);
 
   const contextValue: GameProviderContextType = {
-    game, dispatch,
-    isClientTurn,
-    logs, setLogs
-  }
+    ...actionContext,
+    dispatch
+  };
 
   useSignalREvents(contextValue, setGame, user);
   useGetActiveGame(game, setGame);

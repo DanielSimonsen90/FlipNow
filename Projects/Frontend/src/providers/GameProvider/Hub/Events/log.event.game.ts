@@ -1,7 +1,7 @@
 import CreateGameEvent from "./_CreateGameEvent";
 
 export default CreateGameEvent('log', async ({ 
-  context: { game, logs, setLogs }, 
+  game, logs, setLogs, 
   args: [timestamp, message] 
 }) => {
   setLogs([...logs, { 

@@ -1,4 +1,4 @@
-import CreateGameButton from "../CreateGameButton";
+import CreateGameButton from "../Buttons/CreateGameButton";
 
 export default function DefaultHome() {
   return (

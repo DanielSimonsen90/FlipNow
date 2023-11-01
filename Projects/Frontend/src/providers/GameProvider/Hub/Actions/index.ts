@@ -1,5 +1,5 @@
-import { GameActionRegisterProps } from '../GameProviderTypes';
-import { HubActionNames } from '../Hub';
+import { GameActionRegisterProps } from '../../GameProviderTypes';
+import { HubActionNames } from '..';
 
 import CreateGameAction from './createGame.action.game';
 import DeleteGameAction from './deleteGame.action.game';
