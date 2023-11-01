@@ -89,6 +89,7 @@ public class GameService
         // State check
         if (Game.PlayState != PlayState.PLAYING) throw new InvalidOperationException("Game is not playing");
         if (Game.Cards.All(card => card.Flipped)) throw new InvalidOperationException("All cards are flipped");
+        if (Game.TurnPlayer is null) throw new InvalidOperationException("Unknown TurnPlayer");
 
         // Should check card match
         List<GameCard> unmatchedFlippedCards = Game.Cards.Where(c => c.Flipped && !c.Matched).ToList();

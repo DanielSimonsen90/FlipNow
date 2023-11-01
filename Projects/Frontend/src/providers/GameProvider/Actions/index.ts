@@ -9,6 +9,8 @@ import JoinGameAction from './joinGame.action.game';
 import LeaveGameAction from './leaveGame.action.game';
 import StartGameAction from './startGame.action.game';
 
+export * from './_GameActionReducer';
+
 export default {
   createGame: CreateGameAction,
   deleteGame: DeleteGameAction,

@@ -1,12 +1,14 @@
 import { Dispatch, SetStateAction, useContext, useEffect } from "react";
 import { GameProviderContext } from "./GameProviderConstants";
 import { useUser } from "providers/UserProvider";
-import { GameProviderContextType } from "./GameProviderTypes";
+import { GameEventProps, GameProviderContextType } from "./GameProviderTypes";
 import { Request } from "utils";
 import { ActiveGame } from "models/backend";
 import { Nullable, Promiseable } from "types";
 import { useAsyncEffect } from "danholibraryrjs";
-import Connection, { HubEvents } from './Hub';
+import Connection, { HubEventNames, HubEvents } from './Hub';
+import Events, { GameEventReducer } from "./Events";
+import { ProvidedUserType } from "providers/UserProvider/UserProviderTypes";
 
 export const useGame = () => useContext(GameProviderContext);
 
@@ -27,6 +29,7 @@ export async function useGetActiveGame(
   }, [user]);
 }
 
+// TODO: Unused for now
 export function useSingalREvent<EventName extends keyof HubEvents>(
   name: EventName, 
   callback: (...args: HubEvents[EventName]) => Promiseable<void>
@@ -35,4 +38,34 @@ export function useSingalREvent<EventName extends keyof HubEvents>(
     Connection.on(name, callback);
     return () => Connection.off(name, callback);
   }, [name, callback]);
+}
+const Callbacks: Map<string, Function> = new Map();
+
+export function useSignalREvents(
+  context: GameProviderContextType, 
+  setGame: Dispatch<SetStateAction<typeof context['game']>>, 
+  user: ProvidedUserType
+) {
+  useEffect(() => {
+    Object.keys(Events).forEach(event => {
+      const callback = Events[event as keyof typeof Events];
+      if (!callback) throw new Error(`Event ${event} not found`);
+
+      const _callback = async (...args: HubEvents[HubEventNames]) => {
+        const update = await GameEventReducer(event as HubEventNames, {
+          context,
+          user, args
+        } as GameEventProps<any>);
+        setGame(update);
+      };
+
+      Connection.on(event as HubEventNames, _callback);
+      Callbacks.set(event, _callback);
+    });
+
+    return () => {
+      Callbacks.forEach((callback, event) => Connection.off(event as HubEventNames, callback as any));
+      Callbacks.clear();
+    };
+  }, [context, setGame, user]);
 }

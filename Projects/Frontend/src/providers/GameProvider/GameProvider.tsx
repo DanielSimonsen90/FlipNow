@@ -1,17 +1,16 @@
-import { useState, PropsWithChildren, useCallback, useEffect } from 'react';
+import { useState, PropsWithChildren, useCallback } from 'react';
+import { useNavigate } from 'react-router';
 
 import { Nullable } from 'types';
 import { ActiveGame } from 'models/backend';
 import { useUser } from 'providers/UserProvider';
 
-import { GameProviderContext, GameActionReducer, GameEventReducer } from './GameProviderConstants';
-import { GameActionProps, GameEventProps } from './GameProviderTypes';
-import { useGetActiveGame, useSingalREvent } from './GameProviderHooks';
-import Connection, { HubActionNames, HubActions, HubEventNames, HubEvents } from './Hub';
-import Events from './Events';
-import { useNavigate } from 'react-router';
+import { GameProviderContext } from './GameProviderConstants';
+import { GameActionProps, GameProviderContextType } from './GameProviderTypes';
+import { useGetActiveGame, useSignalREvents } from './GameProviderHooks';
 
-const Callbacks: Map<string, Function> = new Map();
+import { HubActionNames, HubActions } from './Hub';
+import { GameActionReducer } from './Actions';
 
 export default function GameProvider({ children }: PropsWithChildren) {
   const [game, setGame] = useState<Nullable<ActiveGame>>(null);
@@ -32,45 +31,17 @@ export default function GameProvider({ children }: PropsWithChildren) {
     }
   }, [user, game, navigate]);
 
-  useEffect(() => {
-    console.group('Event Registration')
-    console.log(Events);
-    
-    Object.keys(Events).forEach(event => {
-      const callback = Events[event as keyof typeof Events];
-      if (!callback) throw new Error(`Event ${event} not found`);
+  const contextValue: GameProviderContextType = {
+    game, dispatch,
+    isClientTurn,
+    logs, setLogs
+  }
 
-      const _callback = async (...args: HubEvents[HubEventNames]) => {
-        const update = await GameEventReducer(event as HubEventNames, {
-          context: { game, isClientTurn, logs, setLogs },
-          user, args
-        } as GameEventProps<any>);
-        setGame(update);
-      }
-      
-      Connection.on(event as HubEventNames, _callback);
-      Callbacks.set(event, _callback);
-    });
-    console.groupEnd();
-
-    return () => {
-      console.group('Event Unregistration')
-      Callbacks.forEach((callback, event) => Connection.off(event as HubEventNames, callback as any));
-      Callbacks.clear();
-      console.groupEnd();
-    }
-  }, [game, logs, user, isClientTurn]);
-
+  useSignalREvents(contextValue, setGame, user);
   useGetActiveGame(game, setGame);
 
-  useSingalREvent('log', message => setLogs((logs) => [...logs, message]));
-
   return (
-    <GameProviderContext.Provider value={{
-      isClientTurn,
-      game, dispatch,
-      logs, setLogs
-    }}>
+    <GameProviderContext.Provider value={contextValue}>
       {children}
     </GameProviderContext.Provider>
   );
