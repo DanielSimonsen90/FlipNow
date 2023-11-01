@@ -15,7 +15,7 @@ export default function Invite() {
     if (game) return navigate('/'); 
     if (user) {
       dispatch('joinGame', inviteCode, user.id);
-      // navigate('/');
+      navigate('/');
     }
   }, [user, game]);
   

@@ -52,6 +52,13 @@ export function useSignalREvents(
       if (!callback) throw new Error(`Event ${event} not found`);
 
       const _callback = async (...args: HubEvents[HubEventNames]) => {
+        const inviteCode = args.shift();
+        // if (!context.game) throw new Error(`No game stored for event ${event}, ${JSON.stringify([inviteCode, ...args])}`)
+        if (context.game && context.game.inviteCode !== inviteCode) return console.log(
+          `Received event unhandled due to invalid invite code (${context.game?.inviteCode} !== ${inviteCode})`,
+          { inviteCode, context, args, event }
+        ); // Update not meant for client
+
         const update = await GameEventReducer(event as HubEventNames, {
           context,
           user, args

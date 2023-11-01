@@ -22,17 +22,17 @@ export type HubActionNames = keyof HubActions;
  * Server => Client
  */
 export type HubEvents = {
-  gameStarted: [game: ActiveGame];
-  gameUpdated: [game: ActiveGame];
-  gameReset: [game: ActiveGame];
-  gameEnded: [game: ActiveGame];
+  gameStarted: [inviteCode: string, game: ActiveGame];
+  gameUpdated: [inviteCode: string, game: ActiveGame];
+  gameReset: [inviteCode: string, game: ActiveGame];
+  gameEnded: [inviteCode: string, game: ActiveGame];
   gameDeleted: [];
 
-  playerJoined: [game: ActiveGame];
-  playerLeft: [game: ActiveGame];
+  playerJoined: [inviteCode: string, game: ActiveGame];
+  playerLeft: [inviteCode: string, game: ActiveGame];
 
   // Development
-  broadcastFailed: [message: string];
-  log: [message: string];
+  broadcastFailed: [inviteCode: string, message: string];
+  log: [inviteCode: string, message: string];
 }
 export type HubEventNames = keyof HubEvents;

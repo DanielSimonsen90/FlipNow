@@ -27,12 +27,14 @@ export default function ActiveGame() {
   return (
     <div>
       <h1>Game is active</h1>
-      <input style={{ 
+      <div style={{ 
         width: `${game.inviteCode.length}ch`, 
-        textAlign: 'center' 
-      }} contentEditable={false} type="text" value={game?.inviteCode} onClick={() => {
+        textAlign: 'center',
+        padding: '1ch',
+        backgroundColor: 'var(--background-tertiary)'
+      }} contentEditable={false} onClick={() => {
         copy(getInviteUrlFromGame(game))
-      }} />
+      }}>{game?.inviteCode}</div>
       <Button importance="secondary" onClick={() => {
         dispatch('deleteGame');
       }}>Delete game</Button>

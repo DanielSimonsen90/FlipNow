@@ -49,7 +49,7 @@ class InternalFlipNowHubConnection {
   >(event: EventName, callback: (...args: Arguments) => Promiseable<void>) {
     const _callback = this._callbacks.get(callback);
     if (!_callback) return console.warn(`Callback for ${event} event not found`);
-    console.log(`Removing ${event} event callback`);
+    // console.log(`Removing ${event} event callback`);
 
     this._hubConnection.off(event as string, _callback);
   }

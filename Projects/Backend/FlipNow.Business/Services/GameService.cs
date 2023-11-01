@@ -36,6 +36,7 @@ public class GameService
         _unitOfWork = unitOfWork;
         _sessionService = sessionService;
         Game = game;
+        _hostId = game.Host.User.Id;
     }
 
     public void StartGame()

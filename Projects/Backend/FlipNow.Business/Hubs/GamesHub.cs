@@ -51,7 +51,7 @@ public class GamesHub : Hub, IGamesHub
         if (existingPlayerGame is not null) throw new InvalidOperationException("Player already in a game.");
 
         service.AddPlayer(user);
-        await Groups.AddToGroupAsync(Context.ConnectionId, inviteCode);
+        //await Groups.AddToGroupAsync(Context.ConnectionId, inviteCode);
         return service.Game;
     });
     public Task LeaveGame(string inviteCode, string playerId) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_LEAVE_GAME, async (players, service) =>
@@ -60,7 +60,7 @@ public class GamesHub : Hub, IGamesHub
         Player player = service.GetPlayer(Guid.Parse(playerId)) ?? throw new NullReferenceException("Player not found");
 
         service.RemovePlayer(player.User.Id);
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, inviteCode);
+        //await Groups.RemoveFromGroupAsync(Context.ConnectionId, inviteCode);
         return service.Game;
     });
     #endregion
@@ -78,19 +78,20 @@ public class GamesHub : Hub, IGamesHub
     {
         try
         {
-            IClientProxy players = Clients.Group(inviteCode);
+            //IClientProxy players = Clients.Group(inviteCode);
+            IClientProxy players = Clients.All;
             ActiveGame game = _sessionService.FindActiveGame(inviteCode) ?? throw new NullReferenceException("Game not found");
             GameService service = new(_uow, _sessionService, game);
 
             await Log("Received", eventName, inviteCode);
 
             ActiveGame updatedGame = await callback(players, service);
-            players = Clients.Group(inviteCode); // Redefine players incase of update
+            //players = Clients.Group(inviteCode); // Redefine players incase of update
 
             // TODO: Check if updatedGame != game
 
             await Log("Sending", eventName, inviteCode);
-            await players.SendAsync(eventName, updatedGame);
+            await players.SendAsync(eventName, inviteCode, updatedGame);
 
             if (updatedGame.PlayState == PlayState.PLAYING)
             {
@@ -100,22 +101,17 @@ public class GamesHub : Hub, IGamesHub
                     : GamesHubConstants.EVENTS_UPDATE_GAME;
 
                 await Log("Sending", eventUpdateName, inviteCode, $"Updated from {eventName}");
-                await players.SendAsync(eventUpdateName, updatedGame);
+                await players.SendAsync(eventUpdateName, inviteCode, updatedGame);
             }
         }
         catch (Exception ex)
         {
             await Log("Failed", eventName, inviteCode, ex.Message);
-            await Clients.Caller.SendAsync(GamesHubConstants.RESPONSE_FAILED, ex.Message);
+            await Clients.Caller.SendAsync(GamesHubConstants.RESPONSE_FAILED, inviteCode, ex.Message);
         }
     }
 
     private async Task Log(string type, string eventName, string? inviteCode, string message = "")
-        => await Clients.Group(inviteCode).SendAsync(GamesHubConstants.LOG,
+        => await Clients.All.SendAsync(GamesHubConstants.LOG, inviteCode,
             $"{type} \"{eventName}\" from game {inviteCode}" + (string.IsNullOrEmpty(message) ? "" : $": {message}"));
-
-    public Task Ping(string inviteCode)
-    {
-        return Clients.All.SendAsync(GamesHubConstants.LOG, $"Pong with {inviteCode}");
-    }
 }
