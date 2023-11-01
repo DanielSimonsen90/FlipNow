@@ -1,0 +1,14 @@
+.invite-input-container {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+
+  input {
+    background-color: var(--background-tertiary);
+    padding: .25rem .5rem;
+    border-radius: .25rem;
+    color: var(--text-secondary);
+    border: 1px solid var(--background-tertiary);
+    width: 36ch;
+  }
+}

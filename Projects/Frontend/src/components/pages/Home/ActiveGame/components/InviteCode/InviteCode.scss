@@ -34,4 +34,9 @@
     width: 100%;
     height: 1px;
   }
+
+  .copied {
+    margin-left: 1ch;
+    color: var(--crud-success);
+  }
 }

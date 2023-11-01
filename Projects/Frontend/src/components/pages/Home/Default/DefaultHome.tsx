@@ -1,4 +1,5 @@
 import CreateGameButton from "../Buttons/CreateGameButton";
+import { InviteInput } from "./components";
 
 export default function DefaultHome() {
   return (
@@ -6,7 +7,7 @@ export default function DefaultHome() {
       <h1>You are not playing a game??</h1>
       <CreateGameButton />
       <span id="or-seperator">or</span>
-      <input type="text" placeholder="Insert ivnite code" />
+      <InviteInput />
     </main>
   );
 }
