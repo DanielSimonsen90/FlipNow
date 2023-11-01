@@ -1,3 +1,4 @@
+import { Nullable } from "types";
 import GameCard from "./GameCard";
 import PlayState from "./PlayState";
 import Player from "./Player";
@@ -13,7 +14,7 @@ export type ActiveGame = {
   get turnPlayerIndex(): number;
   set turnPlayerIndex(value: number);
 
-  get turnPlayer(): Player;
+  get turnPlayer(): Nullable<Player>;
   get host(): Player;
   get leaderboard(): Array<Player>;
 

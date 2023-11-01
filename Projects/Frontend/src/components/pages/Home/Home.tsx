@@ -1,7 +1,8 @@
+import { useGame } from "providers/GameProvider";
+import ActiveGame from "./ActiveGame";
+import Default from "./Default";
+
 export default function Home() {
-  return (
-    <main>
-      <h1>Home</h1>
-    </main>
-  );
+  const { game } = useGame();
+  return game ? <ActiveGame /> : <Default />;
 }

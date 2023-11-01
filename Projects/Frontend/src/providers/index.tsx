@@ -1,10 +1,13 @@
 import { PropsWithChildren } from "react";
 import UserProvider from "./UserProvider";
+import GameProvider from "./GameProvider";
 
 export default function Providers({ children }: PropsWithChildren) {
   return (
     <UserProvider>
-      {children}
+      <GameProvider>
+        {children}
+      </GameProvider>
     </UserProvider>
   );
 }

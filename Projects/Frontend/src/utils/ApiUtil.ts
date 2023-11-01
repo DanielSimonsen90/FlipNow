@@ -1,10 +1,15 @@
 export const API_ENDPOINT = "http://localhost:5000/api";
 export const API_ENDPOINT_SECURE = "https://localhost:5000/api";
 
+export const API_ENDPOINT_SIGNALR = API_ENDPOINT + "/gameshub";
+export const API_ENDPOINT_SECURE_SIGNALR = API_ENDPOINT_SECURE + "/gameshub";
+
 type TParam = string | undefined;
 
 type ApiEndpoints<Param extends TParam = undefined> =
-  | `games`
+  | `games?hostId=${Param}` 
+  | `games?userId=${Param}`
+  | `games/${Param}` // /{inviteCode}
 
   | `users/${Param}` // /{username}
   | `users/${Param}` // /{userId}
@@ -20,6 +25,7 @@ type RequestOptions<TBody = any> = Omit<RequestInit, 'method' | 'body'> & {
   body?: TBody;
   noHeaders?: boolean;
   controller?: AbortController;
+  query?: Record<string, string>;
 };
 
 export async function Request<TData, Param extends TParam = undefined>(
@@ -29,8 +35,20 @@ export async function Request<TData, Param extends TParam = undefined>(
     body,
     noHeaders = false,
     controller = new AbortController(),
+    query,
   }: RequestOptions | undefined = {}) {
   console.log(`Requesting ${path} with method ${method}`);
+
+  const endpoint = (() => {
+    const result = API_ENDPOINT + ensureSlash(path);
+    if (path.includes('?') || !query) return result;
+
+    const queryString = Object.entries(query)
+      .map(([key, value]) => `${key}=${value}`)
+      .join('&');
+    
+    return path.includes('?') ? `${result}&${queryString}` : `${result}?${queryString}`;
+  })();
 
   const init: RequestInit = {
     method,
@@ -39,7 +57,7 @@ export async function Request<TData, Param extends TParam = undefined>(
     signal: controller.signal,
   };
 
-  const res = await fetch(API_ENDPOINT + ensureSlash(path), init).catch(err => {
+  const res = await fetch(endpoint, init).catch(err => {
     if (err instanceof Error && err.message.includes('Failed to fetch')) {
       return fetch(API_ENDPOINT_SECURE + ensureSlash(path), init);
     }
