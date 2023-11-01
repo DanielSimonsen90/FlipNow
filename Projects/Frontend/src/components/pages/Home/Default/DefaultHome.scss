@@ -1,0 +1,20 @@
+#or-seperator {
+  color: var(--text-muted);
+
+  &::before, &::after {
+    content: '';
+    display: inline-block;
+    width: 2em;
+    height: 1px;
+    background-color: currentColor;
+    vertical-align: middle;
+    border-radius: 1em;
+  }
+
+  &::before {
+    margin-right: .5em;
+  }
+  &::after {
+    margin-left: .5em;
+  }
+}

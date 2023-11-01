@@ -1,12 +1,12 @@
-import { Button } from "danholibraryrjs";
-import { useGame } from "providers/GameProvider";
+import CreateGameButton from "../CreateGameButton";
 
 export default function DefaultHome() {
-  const { dispatch } = useGame();
-
   return (
     <main>
-      <Button onClick={() => dispatch('createGame')}>Start playing</Button>
+      <h1>You are not playing a game??</h1>
+      <CreateGameButton />
+      <span id="or-seperator">or</span>
+      <input type="text" placeholder="Insert ivnite code" />
     </main>
   );
 }
