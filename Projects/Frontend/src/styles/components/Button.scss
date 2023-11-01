@@ -11,10 +11,11 @@
   border: 1px solid $border;
 
   text-decoration: unset;
-  font-size: .75rem;
+  --font-size: .75rem;
+  font-size: var(--font-size);
 
   padding: .5em 1em;
-  max-height: calc(.75rem + 1.25em);
+  max-height: calc(var(--font-size) + 1.25em);
   border-radius: .5em;
   text-align: center;
   display: grid;
