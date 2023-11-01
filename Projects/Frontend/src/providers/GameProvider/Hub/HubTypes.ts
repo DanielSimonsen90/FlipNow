@@ -33,6 +33,6 @@ export type HubEvents = {
 
   // Development
   broadcastFailed: [inviteCode: string, message: string];
-  log: [inviteCode: string, message: string];
+  log: [inviteCode: string, timestamp: string, message: string];
 }
 export type HubEventNames = keyof HubEvents;

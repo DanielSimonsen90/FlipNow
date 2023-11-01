@@ -83,14 +83,14 @@ public class GamesHub : Hub, IGamesHub
             ActiveGame game = _sessionService.FindActiveGame(inviteCode) ?? throw new NullReferenceException("Game not found");
             GameService service = new(_uow, _sessionService, game);
 
-            await Log("Received", eventName, inviteCode);
+            await Log("Received request", eventName, inviteCode);
 
             ActiveGame updatedGame = await callback(players, service);
             //players = Clients.Group(inviteCode); // Redefine players incase of update
 
             // TODO: Check if updatedGame != game
 
-            await Log("Sending", eventName, inviteCode);
+            await Log("Sending response", eventName, inviteCode);
             await players.SendAsync(eventName, inviteCode, updatedGame);
 
             if (updatedGame.PlayState == PlayState.PLAYING)
@@ -100,7 +100,7 @@ public class GamesHub : Hub, IGamesHub
                     ? GamesHubConstants.EVENTS_END_GAME
                     : GamesHubConstants.EVENTS_UPDATE_GAME;
 
-                await Log("Sending", eventUpdateName, inviteCode, $"Updated from {eventName}");
+                await Log("Sending update", eventUpdateName, inviteCode, $"Updated from {eventName}");
                 await players.SendAsync(eventUpdateName, inviteCode, updatedGame);
             }
         }
@@ -112,6 +112,6 @@ public class GamesHub : Hub, IGamesHub
     }
 
     private async Task Log(string type, string eventName, string? inviteCode, string message = "")
-        => await Clients.All.SendAsync(GamesHubConstants.LOG, inviteCode,
+        => await Clients.All.SendAsync(GamesHubConstants.LOG, inviteCode, DateTime.Now,
             $"{type} \"{eventName}\" from game {inviteCode}" + (string.IsNullOrEmpty(message) ? "" : $": {message}"));
 }

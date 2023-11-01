@@ -5,6 +5,11 @@ import { FlipNowHubConnection } from "./Hub/FlipNowHubConnection";
 import { HubActionNames, HubActions, HubEventNames, HubEvents } from "./Hub/HubTypes";
 import { Dispatch, SetStateAction } from "react";
 
+export type Log = {
+  timestamp: Date;
+  message: string;
+}
+
 export type GameProviderContextType = {
   game: Nullable<ActiveGame>;
   isClientTurn: boolean;
@@ -13,8 +18,8 @@ export type GameProviderContextType = {
     ...args: HubActions[Action]
   ): Promise<void>;
 
-  logs: string[];
-  setLogs: Dispatch<SetStateAction<string[]>>;
+  logs: Log[];
+  setLogs: Dispatch<SetStateAction<Log[]>>;
 };
 
 // #region Actions
@@ -33,10 +38,17 @@ export type GameActionRegisterProps<Action extends HubActionNames> = {
 // #endregion Actions
 
 // #region Events
+// HubEvents[Event]; without the first argument
+type GameEventPropsArgs<Event extends HubEventNames> = 
+  HubEvents[Event] extends [arg1: any, ...args: infer Args]
+  ? Args 
+  : never;
+  
+
 export type GameEventProps<Event extends HubEventNames> = {
   context: Omit<GameProviderContextType, 'dispatch'>;
   user: NonNullable<ReturnType<typeof useUser>['user']>;
-  args: HubEvents[Event];
+  args: GameEventPropsArgs<Event>;
 };
 
 export type GameEventRegisterProps<Event extends HubEventNames> = {

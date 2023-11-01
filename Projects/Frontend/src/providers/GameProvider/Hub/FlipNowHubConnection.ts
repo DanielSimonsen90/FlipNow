@@ -15,10 +15,23 @@ class InternalFlipNowHubConnection {
 
   private _hubConnection: HubConnection = InternalFlipNowHubConnection._hubConnectionSecure;
   private _callbacks: Map<Function, (...args: any[]) => void> = new Map();
+  private _startUpQueue = new Array<[action: HubActionNames, inviteCode: string, ...args: any[]]>();
 
   constructor() {
     this._hubConnection = InternalFlipNowHubConnection._hubConnectionSecure;
-    this._hubConnection.start().catch(console.error);
+    this._hubConnection.start()
+      .then(() => {
+        var interval = setInterval(async function executeSendQueue(this: InternalFlipNowHubConnection) {
+          if (this._hubConnection.state !== HubConnectionState.Connected) return;
+
+          for (const [action, inviteCode, ...args] of this._startUpQueue) {
+            await this.send(action, { inviteCode }, ...args as any);
+          }
+          this._startUpQueue.length = 0;
+          clearInterval(interval);
+        }.bind(this), 100);
+      })
+      .catch(console.error);
   }
 
   public on<
@@ -37,7 +50,10 @@ class InternalFlipNowHubConnection {
     Action extends HubActionNames,
     Arguments extends HubActions[Action]
   >(action: Action, game: Pick<ActiveGame, 'inviteCode'>, ...args: Arguments) {
-    if (this._hubConnection.state !== HubConnectionState.Connected) return console.warn("Hub connection is not connected")
+    if (this._hubConnection.state !== HubConnectionState.Connected) {
+      // return console.warn("Hub connection is not connected");
+      this._startUpQueue.push([action, game.inviteCode, ...args])
+    }
     console.log(`Sending ${action} action`, args);
     // return this._hubConnection.invoke(action as string, ...args);
     return this._hubConnection.send(action as string, game.inviteCode, ...args);

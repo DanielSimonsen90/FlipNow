@@ -6,9 +6,15 @@ export default function ConnectionLogger() {
   return (
     <article>
       <h1>SignalR log</h1>
-      <ul>
-        {logs.map((log, i) => (
-          <li key={log}>{log}</li>
+      <ul style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '0.5rem',
+        listStyle: 'none',
+        paddingLeft: '1em'
+      }}>
+        {logs.map(({ timestamp, message }) => (
+          <li key={timestamp.getTime()}>[{timestamp.toLocaleTimeString()}] {message}</li>
         ))}
       </ul>
     </article>
