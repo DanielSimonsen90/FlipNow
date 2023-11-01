@@ -1,16 +1,22 @@
 import { Dispatch, SetStateAction, useContext, useEffect } from "react";
-import { GameProviderContext } from "./GameProviderConstants";
-import { useUser } from "providers/UserProvider";
-import { GameEventProps, GameProviderContextType } from "./GameProviderTypes";
+import { useAsyncEffect } from "danholibraryrjs";
+
 import { Request } from "utils";
 import { ActiveGame } from "models/backend";
+import { useUser } from "providers/UserProvider";
+import { ProvidedUserType } from "providers/UserProvider/UserProviderTypes";
 import { Nullable, Promiseable } from "types";
-import { useAsyncEffect } from "danholibraryrjs";
+
+import { GameProviderContext } from "./GameProviderConstants";
+import { GameEventProps, GameProviderContextType } from "./GameProviderTypes";
 import Connection, { HubEventNames, HubEvents } from './Hub';
 import Events, { GameEventReducer } from "./Hub/Events";
-import { ProvidedUserType } from "providers/UserProvider/UserProviderTypes";
 
-export const useGame = () => useContext(GameProviderContext);
+export function useGame<
+  AllowNullable extends boolean
+>(nullable: AllowNullable = true as AllowNullable): GameProviderContextType<AllowNullable> {
+  return useContext(GameProviderContext) as GameProviderContextType<AllowNullable>;
+}
 
 export async function useGetActiveGame(
   game: Nullable<ActiveGame>,

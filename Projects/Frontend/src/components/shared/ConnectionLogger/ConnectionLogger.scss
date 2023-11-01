@@ -1,0 +1,10 @@
+.connection-logger {
+  display: grid;
+  background-color: var(--background-secondary);
+
+  &:has(.logs-container) {
+    padding: 1em;
+    margin: 1ch;
+    border-radius: 1em;
+  }
+}

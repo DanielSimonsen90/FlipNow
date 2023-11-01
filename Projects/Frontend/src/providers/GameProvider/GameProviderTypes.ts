@@ -13,7 +13,10 @@ export type Log = {
 export type GameProviderContextType<AllowNullable extends boolean = true> = {
   game: AllowNullable extends true ? Nullable<ActiveGame> : ActiveGame;
   player: AllowNullable extends true ? Nullable<Player> : Player;
+  
   isClientTurn: boolean;
+  isHost: boolean;
+
   dispatch<Action extends HubActionNames>(
     action: Action,
     ...args: HubActions[Action]
