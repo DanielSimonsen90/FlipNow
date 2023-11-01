@@ -14,7 +14,7 @@ export default function PlayerList() {
           title={isPlayerTurn(p) ? `It is ${p.user.username}'s turn.` : ''} 
           className={classNames(
             isPlayerTurn(p) ? 'turn' : undefined,
-            game.host.id == p.id ? 'host' : undefined,
+            game.host.id === p.id ? 'host' : undefined,
           )}
           onClick={() => 
             isHost 
