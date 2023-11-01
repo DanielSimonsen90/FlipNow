@@ -1,0 +1,26 @@
+#playerlist {
+  padding: .5em;
+  background-color: var(--background-secondary);
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: .5em;
+
+  li {
+    font-size: 1rem;
+    padding: .5em;
+    display: flex;
+    align-items: center;
+  }
+
+  .turn {
+    border: 1px solid var(--brand-primary);
+    border-radius: 1ch;
+  }
+
+  .host::after {
+    content: '👑';
+    margin-top: -.75ch;
+    margin-left: 1ch;
+  }
+}

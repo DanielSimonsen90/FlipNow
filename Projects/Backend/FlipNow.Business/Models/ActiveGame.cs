@@ -32,7 +32,7 @@ public class ActiveGame
         } 
     }
     public Player? TurnPlayer => Players.Any() ? Players[TurnPlayerIndex] : null;
-    public Player Host { get; }
+    public Player Host { get; internal set; }
     public List<Player> Leaderboard => Players.OrderByDescending(p => p.Score).ToList();
     #endregion
 

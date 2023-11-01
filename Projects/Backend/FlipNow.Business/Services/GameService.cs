@@ -171,6 +171,19 @@ public class GameService
         if (Game.Players.All(p => p.User.Id != userId)) throw new InvalidOperationException("User is not in the game");
 
         Game.Players.Remove(Game.Players.First(p => p.User.Id == userId));
+
+        // No players left, delete game
+        if (!Game.Players.Any())
+        {
+            DeleteGame();
+            return;
+        }
+        
+        // Host left their own game, find new host
+        if (Game.Host.User.Id == userId)
+        {
+            Game.Host = Game.Players.GetRandomItem();
+        }
         UpdateHostedGames();
     }
 }
