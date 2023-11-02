@@ -1,3 +1,5 @@
+@use '../../../../../../styles/colors' as clrs;
+
 $gap: .75em;
 
 ul.gamecard-container {
@@ -17,7 +19,11 @@ ul.gamecard-container {
     width: var(--_card-width);
   }
 
-  &[data-is-turn] .gamecard {
+  &[data-is-turn=true] .gamecard {
     cursor: pointer;
+  }
+  &[data-is-turn=false] .gamecard {
+    background-color: darken(clrs.$card__background, 10%);
+    cursor: not-allowed;
   }
 }

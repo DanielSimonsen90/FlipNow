@@ -11,25 +11,31 @@ $game-size: mixins.calculate-game-size(
 #active-game {
   display: grid;
   place-items: center;
-  gap: 1ch;
+  gap: 1em;
 
   > h1 {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin: 2rem 0 .5rem;
   }
 }
 
 .game-container {
   // PlayState == PLAYING
   display: grid;
+  grid-template-areas: "game leaderboard";
   grid-template-columns: #{$game-size} auto;
   place-items: center;
+  gap: 2em;
   min-height: min(20vh, 75vw);
-  max-width: 80vw;
-  margin: 1em 0;
+  margin-bottom: 2em;
+
+  &:has(.turn-teller) {
+    grid-template-areas: 
+      "turn-teller turn-teller" 
+      "game leaderboard";
+  }
 
   // PlayState == IDLE
-  &:has(.start-game--button) {
+  &:has([class*=start-game]) {
     display: flex;
     flex-direction: column-reverse;
     gap: 1em;
@@ -38,9 +44,15 @@ $game-size: mixins.calculate-game-size(
   // PlayState == ENDED
   &:has(.game-ended) {
     grid-template-areas: "end end" "start leaderboard";
+    margin: 1em 0;
 
     > *:first-child {
       grid-area: end;
+    }
+
+    .game-ended :is(h2, p) {
+      margin: .5ch 0 1ch;
+      text-align: center;
     }
   }
 }

@@ -10,6 +10,7 @@ public class ActiveGame
         Cards = cards.Select(c => new GameCard(c)).ToList();
         Host = new Player(host, this);
         Players = new List<Player>() { Host };
+        Turn = new Turn(Host);
     }
 
     #region Invite

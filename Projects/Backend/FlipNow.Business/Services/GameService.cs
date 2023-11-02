@@ -118,6 +118,7 @@ public class GameService
         {
             Game.TurnPlayerIndex = (Game.TurnPlayerIndex + 1) % Game.Players.Count; // TurnPlayer loses turn
             Game.Turn.Player = Game.Players[Game.TurnPlayerIndex];
+
             Game.Cards = Game.Cards.Select(gc =>
             {
                 if (gc.Flipped && !gc.Matched)
@@ -137,12 +138,8 @@ public class GameService
             IEnumerable<GameCard> flippedThisTurn = Game.Cards.Where(gc => gc.Flipped && !gc.Matched);
             if (flippedThisTurn.Count() > 2) throw new IndexOutOfRangeException("Too many cards flipped are unmatched");
 
-            DateTime? firstTimestamp = flippedThisTurn.First().FlippedTimestamp;
-            DateTime? lastTimestamp = flippedThisTurn.Last().FlippedTimestamp;
-            if (firstTimestamp is null || lastTimestamp is null)
-                throw new NullReferenceException("FlippedTimestamps are null");
-
-            TimeSpan timeSpent = firstTimestamp.Value - lastTimestamp.Value;
+            DateTime lastTimestamp = flippedThisTurn.Last().FlippedTimestamp ?? throw new NullReferenceException("FlippedTimestamps are null");
+            TimeSpan timeSpent = lastTimestamp - Game.Turn.TurnStarted;
 
             Game.Cards = Game.Cards.Select(gc =>
             {
@@ -161,6 +158,8 @@ public class GameService
             await SaveGameAsync();
             return Game;
         }
+
+        Game.Turn.TurnStarted = DateTime.Now;
 
         UpdateHostedGames();
         return Game;

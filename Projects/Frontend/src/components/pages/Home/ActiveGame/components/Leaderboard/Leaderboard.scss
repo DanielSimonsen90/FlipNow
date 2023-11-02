@@ -2,12 +2,15 @@ ul#leaderboard {
   padding: .5em;
   background-color: var(--background-secondary);
   list-style: none;
-  display: grid;
+  display: flex;
   flex-direction: column;
   gap: .5em;
   container-type: inline-size;
   min-width: 25ch;
   margin: 0;
+  grid-area: leaderboard;
+  height: 100%;
+  border-radius: .5rem;
 
   li {
     font-size: 1rem;
@@ -16,6 +19,10 @@ ul#leaderboard {
     align-items: center;
     justify-content: space-between;
     gap: 1em;
+
+    &::after {
+      content: '';
+    }
   }
 
   .turn {
