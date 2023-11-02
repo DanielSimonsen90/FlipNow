@@ -7,7 +7,7 @@ namespace FlipNow.Business.Services;
 public class GameService
 {
     private static bool IsNotMatch(GameCard first, GameCard second) => first.Name != second.Name;
-    
+    private const int FLIPPED_CARD_TIMEOUT_MS = 500;
     public ActiveGame Game { get; private set; }
 
     private readonly UnitOfWork _unitOfWork;
@@ -70,7 +70,7 @@ public class GameService
             {
                 gc.Flipped = false;
                 return gc;
-            }).ToList();
+            }).OrderBy(_ => Guid.NewGuid()).ToList();
     }
 
     /// <summary>
@@ -89,12 +89,19 @@ public class GameService
     {
         // State check
         if (Game.PlayState != PlayState.PLAYING) throw new InvalidOperationException("Game is not playing");
-        if (Game.Cards.All(card => card.Flipped)) throw new InvalidOperationException("All cards are flipped");
+        if (Game.Cards.All(card => card.Flipped))
+        {
+            EndGame();
+            return Game;
+        }
         if (Game.TurnPlayer is null) throw new InvalidOperationException("Unknown TurnPlayer");
 
         // Should check card match
         List<GameCard> unmatchedFlippedCards = Game.Cards.Where(c => c.Flipped && !c.Matched).ToList();
         if (unmatchedFlippedCards.Count <= 1) return Game; // Don't check match
+
+        // Allow clients to receive frontend updates for FLIPPED_CARD_TIMEOUT_MS milliseconds
+        Thread.Sleep(TimeSpan.FromMilliseconds(FLIPPED_CARD_TIMEOUT_MS));
 
         // Handle card match
         if (IsNotMatch(unmatchedFlippedCards[0], unmatchedFlippedCards[1]))

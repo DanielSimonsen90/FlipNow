@@ -1,4 +1,5 @@
 import { useGame } from "providers/GameProvider";
+import Card from "../Card";
 
 export default function CardContainer() {
   const { game, isClientTurn } = useGame(false);
@@ -6,8 +7,8 @@ export default function CardContainer() {
   return (
     <ul className="gamecard-container" data-is-turn={isClientTurn}>
       {game.cards.map((card, i) => (
-        <li key={i} className="gamecard">
-          <span>{card.name}</span>
+        <li key={i}>
+          <Card card={card} index={i} />
         </li>
       ))}
     </ul>
