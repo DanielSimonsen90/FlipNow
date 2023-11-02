@@ -13,7 +13,13 @@ builder.Services.AddSwaggerGen();
 // Add Business services
 builder.Services.AddDbContext<FlipNowDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString(
+#if DEBUG
+        "DefaultConnection"
+#else
+        "ReleaseConnection"
+#endif
+        ));
 });
 builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddSingleton<GameSessionService>();
