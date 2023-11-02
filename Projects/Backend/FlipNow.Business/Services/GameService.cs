@@ -23,7 +23,7 @@ public class GameService
         _sessionService = sessionService;
         Game = new ActiveGame(
             invitePrefix,
-            cards: _unitOfWork.CardRepository.GetAllShuffled(),
+            cards: _unitOfWork.CardRepository.GetAllTwiceShuffled(),
             host);
 
         _hostId = host.Id;
@@ -45,12 +45,14 @@ public class GameService
 
         ResetGame();
         Game.PlayState = PlayState.PLAYING;
+        UpdateHostedGames();
     }
     public void EndGame()
     {
         if (Game.PlayState != PlayState.PLAYING) throw new InvalidOperationException("Game is not playing");
 
         Game.PlayState = PlayState.ENDED;
+        UpdateHostedGames();
     }
     public void DeleteGame()
     {
@@ -69,8 +71,6 @@ public class GameService
                 gc.Flipped = false;
                 return gc;
             }).ToList();
-
-        UpdateHostedGames();
     }
 
     /// <summary>

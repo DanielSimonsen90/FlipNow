@@ -8,3 +8,10 @@
     margin-bottom: 1rem;
   }
 }
+
+.game-container {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  place-items: center;
+  min-height: min(20vh, 75vw);
+}

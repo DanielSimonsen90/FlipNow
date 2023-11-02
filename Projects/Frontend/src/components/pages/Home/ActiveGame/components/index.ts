@@ -1,3 +1,3 @@
 export * from './InviteCode';
-export * from './Game';
+export * from './CardContainer';
 export * from './PlayerList';

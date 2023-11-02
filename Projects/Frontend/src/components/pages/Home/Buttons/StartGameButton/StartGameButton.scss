@@ -1,0 +1,9 @@
+.start-game {
+  &--button {
+    --font-size: 1.25rem;
+  }
+
+  &--text {
+    color: var(--text-secondary);
+  }
+}

@@ -9,7 +9,7 @@ export async function GameActionReducer<Action extends HubActionNames>(
 ): Promise<void | ActiveGame> {
   if (!Actions[action]) throw new Error(`Invalid action: ${action}`);
   const { callback } = Actions[action];
-  console.log(`[${action}]: ${JSON.stringify(args)}`);
+  console.log(`[${action}]`, args);
 
   try {
     const update = await callback({

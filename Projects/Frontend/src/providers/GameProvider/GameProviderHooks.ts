@@ -35,21 +35,11 @@ export async function useGetActiveGame(
   }, [user]);
 }
 
-// TODO: Unused for now
-export function useSingalREvent<EventName extends keyof HubEvents>(
-  name: EventName, 
-  callback: (...args: HubEvents[EventName]) => Promiseable<void>
-) {
-  useEffect(() => {
-    Connection.on(name, callback);
-    return () => Connection.off(name, callback);
-  }, [name, callback]);
-}
 const Callbacks: Map<string, Function> = new Map();
 
 export function useSignalREvents(
   context: GameProviderContextType, 
-  setGame: Dispatch<SetStateAction<typeof context['game']>>, 
+  setGame: Dispatch<SetStateAction<GameProviderContextType['game']>>, 
   user: ProvidedUserType
 ) {
   useEffect(() => {

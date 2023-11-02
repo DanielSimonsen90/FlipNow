@@ -10,10 +10,11 @@ export async function GameEventReducer<Event extends HubEventNames>(
 ): Promise<Nullable<ActiveGame>> {
   if (!Events[event]) throw new Error(`Invalid event: ${event}`);
   const { callback } = Events[event];
-  console.log(`[${event}]: ${JSON.stringify(args)}`);
+  console.log(`[${event}]`, args);
 
   try {
     const update = await callback({ ...context, user, args });
+    console.log('Received update', update);
     return update;
 
   } catch (error) {
