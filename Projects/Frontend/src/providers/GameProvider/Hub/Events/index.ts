@@ -3,6 +3,7 @@ import { HubEventNames } from '..';
 
 import BroadcastFailedEvent from './broadcastFailed.event.game';
 
+import CardFlippedEvent from './cardFlipped.event.game';
 import GameDeletedEvent from './gameDeleted.event.game';
 import GameEndedEvent from './gameEnded.event.game';
 import GameStartedEvent from './gameStarted.event.game';
@@ -17,6 +18,7 @@ export * from './_GameEventReducer';
 
 export default {
   broadcastFailed: BroadcastFailedEvent,
+  cardFlipped: CardFlippedEvent,
   gameDeleted: GameDeletedEvent,
   gameEnded: GameEndedEvent,
   gameStarted: GameStartedEvent,

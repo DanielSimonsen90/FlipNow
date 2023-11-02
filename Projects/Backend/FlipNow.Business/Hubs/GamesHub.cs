@@ -83,7 +83,7 @@ public class GamesHub : Hub, IGamesHub
     #endregion
 
     #region Game Updates
-    public Task FlipCard(string inviteCode, int cardIndex) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_UPDATE_GAME, async (players, service) =>
+    public Task FlipCard(string inviteCode, int cardIndex) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_FLIP_CARD, async (players, service) =>
     {
         service.FlipCard(cardIndex);
         return await Task.FromResult(service.Game);

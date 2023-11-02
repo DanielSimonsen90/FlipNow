@@ -4,3 +4,13 @@
     transition: all var(--transition-time) ease-in-out;
   }
 }
+
+@function calculate-game-size(
+  $cardWidth,
+  $gap,
+  $cardsPerRow,
+) {
+  @return calc(
+    #{$cardWidth} * #{$cardsPerRow} + #{$gap} * (#{$cardsPerRow} - 1)
+  );
+}

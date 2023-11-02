@@ -9,6 +9,18 @@ export async function GameEventReducer<Event extends HubEventNames>(
   { user, args, ...context }: GameEventProps<Event>
 ): Promise<Nullable<ActiveGame>> {
   if (!Events[event]) throw new Error(`Invalid event: ${event}`);
+  if (
+    !context.player 
+    && !(
+      event === 'playerJoined' 
+      && (args as unknown as GameEventProps<'playerJoined'>['args'])
+        [0].players.some(p => p.user.id === user.id)
+      )
+    ) {
+    console.log('No player found for event', event, context, args);
+    return context.game;
+  }
+
   const { callback } = Events[event];
   console.log(`[${event}]`, args);
 

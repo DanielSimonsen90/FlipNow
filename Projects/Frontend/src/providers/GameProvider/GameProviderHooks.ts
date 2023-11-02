@@ -2,10 +2,10 @@ import { Dispatch, SetStateAction, useContext, useEffect } from "react";
 import { useAsyncEffect } from "danholibraryrjs";
 
 import { Request } from "utils";
-import { ActiveGame } from "models/backend";
+import { ActiveGame, Player } from "models/backend";
 import { useUser } from "providers/UserProvider";
 import { ProvidedUserType } from "providers/UserProvider/UserProviderTypes";
-import { Nullable, Promiseable } from "types";
+import { Nullable } from "types";
 
 import { GameProviderContext } from "./GameProviderConstants";
 import { GameEventProps, GameProviderContextType } from "./GameProviderTypes";
@@ -71,4 +71,15 @@ export function useSignalREvents(
       Callbacks.clear();
     };
   }, [context, setGame, user]);
+}
+
+export function useUserLoggedOutWhileInGame(
+  player: Nullable<Player>,
+  dispatch: GameProviderContextType['dispatch']
+) {
+  const { user } = useUser();
+
+  useEffect(() => {
+    if (!user && player) dispatch('leaveGame', player.id);
+  }, [user, dispatch, player]);
 }

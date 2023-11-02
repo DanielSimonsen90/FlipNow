@@ -1,7 +1,7 @@
 import { useGame } from "providers/GameProvider";
 import ConnectionLogger from "components/shared/ConnectionLogger";
 
-import { CardContainer, InviteCode, PlayerList } from "./components";
+import { CardContainer, InviteCode, Leaderboard } from "./components";
 import { DeleteGameButton, EndGameButton, GiveUpButton } from "../Buttons";
 import { PlayState } from "models/backend";
 import StartGameButton from "../Buttons/StartGameButton";
@@ -9,6 +9,7 @@ import StartGameButton from "../Buttons/StartGameButton";
 export default function ActiveGame() {
   const { game } = useGame(false);
   const started = game.playState === PlayState.PLAYING;
+  const ended = game.playState === PlayState.ENDED;
 
   return (
     <div id="active-game">
@@ -16,8 +17,14 @@ export default function ActiveGame() {
       <InviteCode />
 
       <div className="game-container">
+        {ended && (
+          <div className="game-ended">
+            <h2>Game Over!</h2>
+            <p>{game.leaderboard[0].user.username} won the game!</p>
+          </div>
+        )}
         {started ? <CardContainer /> : <StartGameButton />}
-        <PlayerList />
+        <Leaderboard />
       </div>
 
       <div className="button-container">
