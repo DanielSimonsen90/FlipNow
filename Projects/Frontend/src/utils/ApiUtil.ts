@@ -1,5 +1,6 @@
 export const API_ENDPOINT = "http://localhost:5000/api";
-export const API_ENDPOINT_SECURE = "https://localhost:5000/api";
+// export const API_ENDPOINT_SECURE = "https://localhost:5000/api";
+export const API_ENDPOINT_SECURE = "https://flipnowapi.azurewebsites.net/api";
 
 export const API_ENDPOINT_SIGNALR = API_ENDPOINT + "/gameshub";
 export const API_ENDPOINT_SECURE_SIGNALR = API_ENDPOINT_SECURE + "/gameshub";
