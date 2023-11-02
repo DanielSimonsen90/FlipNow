@@ -23,7 +23,7 @@ public class GameService
         _sessionService = sessionService;
         Game = new ActiveGame(
             invitePrefix,
-            cards: _unitOfWork.CardRepository.GetAllShuffled(),
+            cards: _unitOfWork.CardRepository.GetAllTwiceShuffled(),
             host);
 
         _hostId = host.Id;
