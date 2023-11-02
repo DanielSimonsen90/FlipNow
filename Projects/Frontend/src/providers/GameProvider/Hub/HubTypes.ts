@@ -23,6 +23,7 @@ export type HubActionNames = keyof HubActions;
  */
 export type HubEvents = {
   gameStarted: [inviteCode: string, game: ActiveGame];
+  cardFlipped: [inviteCode: string, game: ActiveGame]
   gameUpdated: [inviteCode: string, game: ActiveGame];
   gameReset: [inviteCode: string, game: ActiveGame];
   gameEnded: [inviteCode: string, game: ActiveGame];

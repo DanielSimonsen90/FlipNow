@@ -16,4 +16,4 @@ export type FormEvent = React.FormEvent<HTMLFormElement> & {
 }
 
 export type Guid = string;
-export type TimeSpan = object;
+export type TimeSpan = string;

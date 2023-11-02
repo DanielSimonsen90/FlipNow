@@ -1,16 +1,21 @@
-#playerlist {
+ul#leaderboard {
   padding: .5em;
   background-color: var(--background-secondary);
   list-style: none;
-  display: flex;
+  display: grid;
   flex-direction: column;
   gap: .5em;
+  container-type: inline-size;
+  min-width: 25ch;
+  margin: 0;
 
   li {
     font-size: 1rem;
     padding: .5em;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 1em;
   }
 
   .turn {
@@ -20,7 +25,7 @@
 
   .host::after {
     content: '👑';
-    margin-top: -.75ch;
-    margin-left: 1ch;
+    margin-top: -.6ch;
+    width: 2ch;
   }
 }

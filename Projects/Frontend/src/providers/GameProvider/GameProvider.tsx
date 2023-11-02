@@ -7,7 +7,7 @@ import { useUser } from 'providers/UserProvider';
 
 import { GameProviderContext } from './GameProviderConstants';
 import { GameActionProps, GameProviderContextType, Log } from './GameProviderTypes';
-import { useGetActiveGame, useSignalREvents } from './GameProviderHooks';
+import { useGetActiveGame, useSignalREvents, useUserLoggedOutWhileInGame } from './GameProviderHooks';
 
 import { HubActionNames, HubActions } from './Hub';
 import { GameActionReducer } from './Hub/Actions';
@@ -50,6 +50,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
 
   useSignalREvents(contextValue, setGame, user);
   useGetActiveGame(game, setGame);
+  useUserLoggedOutWhileInGame(player, dispatch);
 
   return (
     <GameProviderContext.Provider value={contextValue}>

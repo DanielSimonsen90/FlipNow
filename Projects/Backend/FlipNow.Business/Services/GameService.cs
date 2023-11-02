@@ -62,15 +62,21 @@ public class GameService
 
     private void ResetGame()
     {
+        // Reset turn
         if (Game.TurnPlayerIndex > 0)
             Game.TurnPlayerIndex = 0;
 
+        // Unflip, unmatch and reorder cards
         if (Game.Cards.Any(c => c.Flipped))
             Game.Cards = Game.Cards.Select(gc =>
             {
                 gc.Flipped = false;
+                gc.MatchedBy = null;
                 return gc;
             }).OrderBy(_ => Guid.NewGuid()).ToList();
+
+        // Reset score
+        Game.Players.ForEach(p => p.CardMatches = 0);
     }
 
     /// <summary>
