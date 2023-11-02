@@ -41,7 +41,7 @@ export async function Request<TData, Param extends TParam = undefined>(
   console.log(`Requesting ${path} with method ${method}`);
 
   const endpoint = (() => {
-    const result = API_ENDPOINT + ensureSlash(path);
+    const result = API_ENDPOINT_SECURE + ensureSlash(path);
     if (path.includes('?') || !query) return result;
 
     const queryString = Object.entries(query)
