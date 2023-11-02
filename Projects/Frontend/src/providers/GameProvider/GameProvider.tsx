@@ -16,7 +16,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
   const [logs, setLogs] = useState<Array<Log>>([]);
   const { user } = useUser();
 
-  const isClientTurn = game?.turnPlayer?.user.username === user?.username;
+  const isClientTurn = game?.turn.player?.user.username === user?.username;
   const isHost = useMemo(() => game?.host.user.id === user?.id, [game, user])
   const player = useMemo(() => {
     if (!game || !user) return null;

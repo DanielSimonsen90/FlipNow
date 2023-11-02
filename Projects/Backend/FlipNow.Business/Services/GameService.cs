@@ -88,7 +88,10 @@ public class GameService
     {
         if (index < 0 || index >= Game.Cards.Count) throw new ArgumentOutOfRangeException(nameof(index));
 
-        Game.Cards[index].Flipped = true;
+        GameCard card = Game.Cards[index];
+        card.Flipped = true;
+        card.FlippedTimestamp = DateTime.Now;
+
         UpdateHostedGames();
     }
     public async Task<ActiveGame> ProcessGame()
@@ -101,7 +104,7 @@ public class GameService
             await SaveGameAsync();
             return Game;
         }
-        if (Game.TurnPlayer is null) throw new InvalidOperationException("Unknown TurnPlayer");
+        if (Game.Turn.Player is null) throw new InvalidOperationException("Unknown TurnPlayer");
 
         // Should check card match
         List<GameCard> unmatchedFlippedCards = Game.Cards.Where(c => c.Flipped && !c.Matched).ToList();
@@ -114,9 +117,14 @@ public class GameService
         if (IsNotMatch(unmatchedFlippedCards[0], unmatchedFlippedCards[1]))
         {
             Game.TurnPlayerIndex = (Game.TurnPlayerIndex + 1) % Game.Players.Count; // TurnPlayer loses turn
+            Game.Turn.Player = Game.Players[Game.TurnPlayerIndex];
             Game.Cards = Game.Cards.Select(gc =>
             {
-                if (gc.Flipped && !gc.Matched) gc.Flipped = false;
+                if (gc.Flipped && !gc.Matched)
+                {
+                    gc.Flipped = false;
+                    gc.FlippedTimestamp = null;
+                }
                 return gc;
             }).ToList();
 
@@ -125,10 +133,24 @@ public class GameService
         }
         else
         {
-            Game.TurnPlayer.CardMatches++;
+            Game.Turn.Player.CardMatches++;
+            IEnumerable<GameCard> flippedThisTurn = Game.Cards.Where(gc => gc.Flipped && !gc.Matched);
+            if (flippedThisTurn.Count() > 2) throw new IndexOutOfRangeException("Too many cards flipped are unmatched");
+
+            DateTime? firstTimestamp = flippedThisTurn.First().FlippedTimestamp;
+            DateTime? lastTimestamp = flippedThisTurn.Last().FlippedTimestamp;
+            if (firstTimestamp is null || lastTimestamp is null)
+                throw new NullReferenceException("FlippedTimestamps are null");
+
+            TimeSpan timeSpent = firstTimestamp.Value - lastTimestamp.Value;
+
             Game.Cards = Game.Cards.Select(gc =>
             {
-                if (gc.Flipped && !gc.Matched) gc.MatchedBy = Game.TurnPlayer;
+                if (gc.Flipped && !gc.Matched)
+                {
+                    gc.MatchedBy = Game.Turn.Player;
+                    Game.Turn.Player.TimeSpentTotal = Game.Turn.Player.TimeSpentTotal.Add(timeSpent);
+                }
                 return gc;
             }).ToList();
         }
@@ -153,7 +175,7 @@ public class GameService
         IEnumerable<UserScore> scores = Game.Players.Select(p => new UserScore()
         {
             Score = p.Score,
-            Time = p.TimeSpent,
+            Time = p.TimeSpentTotal,
             User = users.First(u => u.Id == p.User.Id),
         });
 

@@ -31,21 +31,7 @@ public class ActiveGame
             _turnPlayerIndex = value;
         } 
     }
-    public Player? TurnPlayer
-    {
-        get
-        {
-            try
-            {
-                return Players.Any() ? Players[TurnPlayerIndex] : null;
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                TurnPlayerIndex = 0;
-                return TurnPlayer;
-            }
-        }
-    }
+    public Turn Turn { get; }
     public Player Host { get; internal set; }
     public List<Player> Leaderboard => Players.OrderByDescending(p => p.Score).ToList();
     #endregion

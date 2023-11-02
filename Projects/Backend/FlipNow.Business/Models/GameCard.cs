@@ -15,6 +15,7 @@ public class GameCard
     public string Name { get; }
 
     public bool Flipped { get; set; } = false;
+    public DateTime? FlippedTimestamp { get; set; }
 
     public Player? MatchedBy { get; set; }
     public bool Matched => Flipped && MatchedBy is not null;
