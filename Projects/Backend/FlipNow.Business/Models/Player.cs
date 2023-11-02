@@ -16,9 +16,10 @@ public class Player
 
     public Guid Id { get; } = Guid.NewGuid();
     public UserDTO User { get; }
-    public double Score => CardMatches * 1000 - TimeSpent.Seconds;
+    public double Score => CardMatches * 1000 - TimeSpentTotal.Seconds;
     public int CardMatches { get; set; } = 0;
     public int CardMatchesLeft => _gameCardsAmount / 2 - CardMatches;
     public bool Finished { get; set; }
-    public TimeSpan TimeSpent { get; set; } // TODO: Implement TimeSpent
+    public TimeSpan TimeSpentTurn { get; set; }
+    public TimeSpan TimeSpentTotal { get; set; } // TODO: Implement TimeSpent
 }

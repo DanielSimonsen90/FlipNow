@@ -88,19 +88,23 @@ public class GameService
     {
         if (index < 0 || index >= Game.Cards.Count) throw new ArgumentOutOfRangeException(nameof(index));
 
-        Game.Cards[index].Flipped = true;
+        GameCard card = Game.Cards[index];
+        card.Flipped = true;
+        card.FlippedTimestamp = DateTime.Now;
+
         UpdateHostedGames();
     }
     public async Task<ActiveGame> ProcessGame()
     {
         // State check
         if (Game.PlayState != PlayState.PLAYING) throw new InvalidOperationException("Game is not playing");
-        if (Game.Cards.All(card => card.Flipped))
+        if (Game.Cards.All(card => card.Matched))
         {
             EndGame();
+            await SaveGameAsync();
             return Game;
         }
-        if (Game.TurnPlayer is null) throw new InvalidOperationException("Unknown TurnPlayer");
+        if (Game.Turn.Player is null) throw new InvalidOperationException("Unknown TurnPlayer");
 
         // Should check card match
         List<GameCard> unmatchedFlippedCards = Game.Cards.Where(c => c.Flipped && !c.Matched).ToList();
@@ -113,9 +117,15 @@ public class GameService
         if (IsNotMatch(unmatchedFlippedCards[0], unmatchedFlippedCards[1]))
         {
             Game.TurnPlayerIndex = (Game.TurnPlayerIndex + 1) % Game.Players.Count; // TurnPlayer loses turn
+            Game.Turn.Player = Game.Players[Game.TurnPlayerIndex];
+
             Game.Cards = Game.Cards.Select(gc =>
             {
-                if (gc.Flipped && !gc.Matched) gc.Flipped = false;
+                if (gc.Flipped && !gc.Matched)
+                {
+                    gc.Flipped = false;
+                    gc.FlippedTimestamp = null;
+                }
                 return gc;
             }).ToList();
 
@@ -124,20 +134,32 @@ public class GameService
         }
         else
         {
-            Game.TurnPlayer.CardMatches++;
+            Game.Turn.Player.CardMatches++;
+            IEnumerable<GameCard> flippedThisTurn = Game.Cards.Where(gc => gc.Flipped && !gc.Matched);
+            if (flippedThisTurn.Count() > 2) throw new IndexOutOfRangeException("Too many cards flipped are unmatched");
+
+            DateTime lastTimestamp = flippedThisTurn.Last().FlippedTimestamp ?? throw new NullReferenceException("FlippedTimestamps are null");
+            TimeSpan timeSpent = lastTimestamp - Game.Turn.TurnStarted;
+
             Game.Cards = Game.Cards.Select(gc =>
             {
-                if (gc.Flipped && !gc.Matched) gc.MatchedBy = Game.TurnPlayer;
+                if (gc.Flipped && !gc.Matched)
+                {
+                    gc.MatchedBy = Game.Turn.Player;
+                    Game.Turn.Player.TimeSpentTotal = Game.Turn.Player.TimeSpentTotal.Add(timeSpent);
+                }
                 return gc;
             }).ToList();
         }
 
-        // Check game finish
-        if (Game.Cards.All(card => card.Matched))
+        if (Game.Cards.All(c => c.Matched))
         {
             EndGame();
             await SaveGameAsync();
+            return Game;
         }
+
+        Game.Turn.TurnStarted = DateTime.Now;
 
         UpdateHostedGames();
         return Game;
@@ -145,23 +167,27 @@ public class GameService
 
     private async Task SaveGameAsync()
     {
-        IEnumerable<Guid> playerIds = Game.Players.Select(p => p.Id);
+        IEnumerable<Guid> playerIds = Game.Players.Select(p => p.User.Id);
         IEnumerable<User> users = _unitOfWork.UserRepository.GetAll(u => playerIds.Contains(u.Id));
-        IEnumerable<Card> cards = _unitOfWork.CardRepository.GetAll(c => Game.Cards.Any(gc => gc.Name == c.Name));
+        IEnumerable<string> gameCardNames = Game.Cards.Select(gameCard => gameCard.Name);
+        IEnumerable<Card> cards = _unitOfWork.CardRepository.GetAll(c => gameCardNames.Contains(c.Name));
         IEnumerable<UserScore> scores = Game.Players.Select(p => new UserScore()
         {
             Score = p.Score,
-            Time = p.TimeSpent,
-            User = users.First(u => u.Id == p.Id),
+            Time = p.TimeSpentTotal,
+            User = users.First(u => u.Id == p.User.Id),
         });
 
-        await _unitOfWork.UserScoreRepository.AddRangeAsync(scores.ToArray());
-        await _unitOfWork.GameRepository.AddAsync(new()
+        foreach (UserScore score in scores)
+            await _unitOfWork.UserScoreRepository.AddAsync(score);
+
+        Game game = new()
         {
-            Cards = cards,
-            PlayingUsers = users,
-            Scores = scores,
-        });
+            Cards = cards.ToList(),
+            PlayingUsers = users.ToList(),
+            Scores = scores.ToList(),
+        };
+        var addedGame = await _unitOfWork.GameRepository.AddAsync(game);
 
         await _unitOfWork.SaveChangesAsync();
     }

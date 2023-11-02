@@ -10,6 +10,9 @@
 }
 
 .logs-container {
+  display: grid;
+  gap: 1em;
+
   header {
     display: flex;
     justify-content: space-between;
@@ -22,10 +25,10 @@
   }
 
   ul {
-      display: flex;
-      flex-direction: column-reverse;
-      gap: .5rem;
-      list-style: none;
-      padding-left: 1em;
-    }
+    display: flex;
+    flex-direction: column-reverse;
+    gap: .5rem;
+    list-style: none;
+    padding-left: 0;
+  }
 }

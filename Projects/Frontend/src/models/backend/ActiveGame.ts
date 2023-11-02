@@ -1,7 +1,7 @@
-import { Nullable } from "types";
 import GameCard from "./GameCard";
 import PlayState from "./PlayState";
 import Player from "./Player";
+import { Turn } from "./Turn";
 
 export type ActiveGame = {
   readonly _invitePrefix: string;
@@ -14,7 +14,7 @@ export type ActiveGame = {
   get turnPlayerIndex(): number;
   set turnPlayerIndex(value: number);
 
-  get turnPlayer(): Nullable<Player>;
+  get turn(): Turn;
   get host(): Player;
   get leaderboard(): Array<Player>;
 

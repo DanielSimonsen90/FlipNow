@@ -1,7 +1,7 @@
 import { useGame } from "providers/GameProvider";
 import ConnectionLogger from "components/shared/ConnectionLogger";
 
-import { CardContainer, InviteCode, Leaderboard } from "./components";
+import { CardContainer, InviteCode, Leaderboard, TurnTeller } from "./components";
 import { DeleteGameButton, EndGameButton, GiveUpButton } from "../Buttons";
 import { PlayState } from "models/backend";
 import StartGameButton from "../Buttons/StartGameButton";
@@ -17,14 +17,15 @@ export default function ActiveGame() {
       <InviteCode />
 
       <div className="game-container">
+        <TurnTeller />
+        {started ? <CardContainer /> : <StartGameButton />}
+        <Leaderboard />
         {ended && (
           <div className="game-ended">
             <h2>Game Over!</h2>
             <p>{game.leaderboard[0].user.username} won the game!</p>
           </div>
         )}
-        {started ? <CardContainer /> : <StartGameButton />}
-        <Leaderboard />
       </div>
 
       <div className="button-container">

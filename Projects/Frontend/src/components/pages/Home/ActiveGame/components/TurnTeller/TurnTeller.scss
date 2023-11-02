@@ -1,0 +1,18 @@
+.turn-teller {
+  display: grid;
+  gap: 1ch;
+  grid-area: turn-teller;
+
+  &[data-is-turn=true] h3 {
+    color: var(--brand-primary);
+    text-decoration: underline;
+
+    &::after {
+      content: '!';
+    }
+  }
+
+  * {
+    text-align: center;
+  }
+}

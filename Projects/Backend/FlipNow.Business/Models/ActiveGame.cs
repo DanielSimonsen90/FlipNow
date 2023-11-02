@@ -10,6 +10,7 @@ public class ActiveGame
         Cards = cards.Select(c => new GameCard(c)).ToList();
         Host = new Player(host, this);
         Players = new List<Player>() { Host };
+        Turn = new Turn(Host);
     }
 
     #region Invite
@@ -31,21 +32,7 @@ public class ActiveGame
             _turnPlayerIndex = value;
         } 
     }
-    public Player? TurnPlayer
-    {
-        get
-        {
-            try
-            {
-                return Players.Any() ? Players[TurnPlayerIndex] : null;
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                TurnPlayerIndex = 0;
-                return TurnPlayer;
-            }
-        }
-    }
+    public Turn Turn { get; }
     public Player Host { get; internal set; }
     public List<Player> Leaderboard => Players.OrderByDescending(p => p.Score).ToList();
     #endregion
