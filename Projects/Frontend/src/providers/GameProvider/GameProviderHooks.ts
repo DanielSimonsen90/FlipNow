@@ -81,5 +81,5 @@ export function useUserLoggedOutWhileInGame(
 
   useEffect(() => {
     if (!user && player) dispatch('leaveGame', player.id);
-  }, [user]);
+  }, [user, dispatch, player]);
 }

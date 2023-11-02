@@ -1,5 +1,4 @@
 import { useState, PropsWithChildren, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router';
 
 import { Nullable } from 'types';
 import { ActiveGame } from 'models/backend';
@@ -16,7 +15,6 @@ export default function GameProvider({ children }: PropsWithChildren) {
   const [game, setGame] = useState<Nullable<ActiveGame>>(null);
   const [logs, setLogs] = useState<Array<Log>>([]);
   const { user } = useUser();
-  const navigate = useNavigate();
 
   const isClientTurn = game?.turnPlayer?.user.username === user?.username;
   const isHost = useMemo(() => game?.host.user.id === user?.id, [game, user])
@@ -28,7 +26,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
   const actionContext = useMemo(() => ({
     game, isClientTurn, player, isHost,
     logs, setLogs
-  }), [game, isClientTurn, player, logs, setLogs]);
+  }), [game, isClientTurn, player, logs, setLogs, isHost]);
 
   const dispatch = useCallback(async <Action extends HubActionNames>(
     action: Action,
@@ -41,7 +39,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
     } as GameActionProps<Action>);
     
     if (update) setGame(update);
-  }, [user, game, navigate, actionContext]);
+  }, [user, actionContext]);
 
   const contextValue: GameProviderContextType = {
     ...actionContext,
