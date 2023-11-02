@@ -3,8 +3,8 @@ import { useGame } from "providers/GameProvider";
 import { useState } from "react";
 
 export default function ConnectionLogger() {
-  const [showLogs, setShowLogs] = useState(false);
-  const { logs } = useGame();
+  const { logs, isHost } = useGame();
+  const [showLogs, setShowLogs] = useState(isHost);
 
   return (
     <div className="connection-logger">
@@ -12,15 +12,9 @@ export default function ConnectionLogger() {
       {showLogs && (
         <article className="logs-container">
           <h1>SignalR log</h1>
-          <ul style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem',
-            listStyle: 'none',
-            paddingLeft: '1em'
-          }}>
+          <ul>
             {logs.map(({ timestamp, message }) => (
-              <li key={timestamp.getTime()}>[{timestamp.toLocaleTimeString()}] {message}</li>
+              <li key={timestamp.getTime() + message}>[{timestamp.toLocaleTimeString()}] {message}</li>
             ))}
           </ul>
         </article>

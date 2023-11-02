@@ -8,3 +8,11 @@
     border-radius: 1em;
   }
 }
+
+.logs-container ul {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: .5rem;
+  list-style: none;
+  padding-left: 1em;
+}

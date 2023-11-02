@@ -49,7 +49,7 @@ const Callbacks: Map<string, Function> = new Map();
 
 export function useSignalREvents(
   context: GameProviderContextType, 
-  setGame: Dispatch<SetStateAction<typeof context['game']>>, 
+  setGame: Dispatch<SetStateAction<GameProviderContextType['game']>>, 
   user: ProvidedUserType
 ) {
   useEffect(() => {
