@@ -11,6 +11,7 @@ export default function Card({ card, index }: Props) {
 
   function onClick() {
     if (isClientTurn || !card.flipped) dispatch('flipCard', index);
+    else if (!isClientTurn) alert('Not your turn!')
   }
 
   return (
