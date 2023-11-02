@@ -1,3 +1,13 @@
+@use '../../../../styles/mixins' as mixins;
+@use './components/Card/Card.scss' as card;
+@use './components/CardContainer/CardContainer.scss' as cardContainer;
+
+$game-size: mixins.calculate-game-size(
+  card.$card-width,
+  cardContainer.$gap,
+  5
+);
+
 #active-game {
   display: grid;
   place-items: center;
@@ -12,7 +22,7 @@
 .game-container {
   // PlayState == PLAYING
   display: grid;
-  grid-template-columns: 3fr 1fr;
+  grid-template-columns: #{$game-size} auto;
   place-items: center;
   min-height: min(20vh, 75vw);
   max-width: 80vw;

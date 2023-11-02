@@ -1,0 +1,36 @@
+@use '../../../../../../styles/colors' as clrs;
+
+$card-width: 100px;
+$card-height: 150px;
+
+.gamecard {
+  display: grid;
+  place-items: center;
+
+  --_card-height: #{$card-height};
+  --_card-width: #{$card-width};
+  height: var(--_card-height);
+  width: var(--_card-width);
+
+  border-radius: .5rem;
+  overflow: hidden;
+
+  &:has(.card-back) {
+    --_card__background: #{clrs.$card__background};
+    --_card__title: #{clrs.$card__title};
+    --_card__title--hovered: #{clrs.$card__title--hovered};
+
+    background-color: var(--_card__background);
+    color: var(--_card__title);
+
+    &:hover {
+      color: var(--_card__title--hovered);
+    }
+  }
+
+  img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+}

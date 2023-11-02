@@ -1,0 +1,23 @@
+$gap: .75em;
+
+ul.gamecard-container {
+  list-style: none;
+  padding: unset;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: #{$gap};
+
+  li {
+    display: grid;
+    place-items: center;
+    height: var(--_card-height);
+    width: var(--_card-width);
+  }
+
+  &[data-is-turn] .gamecard {
+    cursor: pointer;
+  }
+}
