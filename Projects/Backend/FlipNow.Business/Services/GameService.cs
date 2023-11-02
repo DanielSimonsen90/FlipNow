@@ -95,7 +95,7 @@ public class GameService
     {
         // State check
         if (Game.PlayState != PlayState.PLAYING) throw new InvalidOperationException("Game is not playing");
-        if (Game.Cards.All(card => card.Flipped))
+        if (Game.Cards.All(card => card.Matched))
         {
             EndGame();
             await SaveGameAsync();
@@ -131,6 +131,13 @@ public class GameService
                 if (gc.Flipped && !gc.Matched) gc.MatchedBy = Game.TurnPlayer;
                 return gc;
             }).ToList();
+        }
+
+        if (Game.Cards.All(c => c.Matched))
+        {
+            EndGame();
+            await SaveGameAsync();
+            return Game;
         }
 
         UpdateHostedGames();

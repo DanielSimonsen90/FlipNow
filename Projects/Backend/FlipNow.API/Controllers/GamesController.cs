@@ -2,6 +2,7 @@
 using FlipNow.Business.Models;
 using FlipNow.Business.Services;
 using FlipNow.Common.Entities;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlipNow.API.Controllers;
