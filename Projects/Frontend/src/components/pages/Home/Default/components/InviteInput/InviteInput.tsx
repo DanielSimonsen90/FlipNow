@@ -8,7 +8,7 @@ import { useUser, useUserWithPrompt } from 'providers/UserProvider';
 library.add(faSearch);
 
 export default function InviteInput() {
-  const { user, getUser } = useUserWithPrompt();
+  const { getUser } = useUserWithPrompt();
   const { dispatch } = useGame();
 
   async function onSubmit(e?: React.FormEvent<HTMLFormElement>) {

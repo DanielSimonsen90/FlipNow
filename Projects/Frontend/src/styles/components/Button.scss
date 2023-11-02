@@ -18,7 +18,7 @@
   max-height: calc(var(--font-size) + 1.25em);
   border-radius: .5em;
   text-align: center;
-  display: grid;
+  display: flex;
 
   &:hover:not(:disabled) {
     $background: lighten($main, 3%);
