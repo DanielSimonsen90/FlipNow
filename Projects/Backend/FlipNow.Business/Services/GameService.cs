@@ -98,6 +98,7 @@ public class GameService
         if (Game.Cards.All(card => card.Flipped))
         {
             EndGame();
+            await SaveGameAsync();
             return Game;
         }
         if (Game.TurnPlayer is null) throw new InvalidOperationException("Unknown TurnPlayer");
@@ -132,36 +133,33 @@ public class GameService
             }).ToList();
         }
 
-        // Check game finish
-        if (Game.Cards.All(card => card.Matched))
-        {
-            EndGame();
-            await SaveGameAsync();
-        }
-
         UpdateHostedGames();
         return Game;
     }
 
     private async Task SaveGameAsync()
     {
-        IEnumerable<Guid> playerIds = Game.Players.Select(p => p.Id);
+        IEnumerable<Guid> playerIds = Game.Players.Select(p => p.User.Id);
         IEnumerable<User> users = _unitOfWork.UserRepository.GetAll(u => playerIds.Contains(u.Id));
-        IEnumerable<Card> cards = _unitOfWork.CardRepository.GetAll(c => Game.Cards.Any(gc => gc.Name == c.Name));
+        IEnumerable<string> gameCardNames = Game.Cards.Select(gameCard => gameCard.Name);
+        IEnumerable<Card> cards = _unitOfWork.CardRepository.GetAll(c => gameCardNames.Contains(c.Name));
         IEnumerable<UserScore> scores = Game.Players.Select(p => new UserScore()
         {
             Score = p.Score,
             Time = p.TimeSpent,
-            User = users.First(u => u.Id == p.Id),
+            User = users.First(u => u.Id == p.User.Id),
         });
 
-        await _unitOfWork.UserScoreRepository.AddRangeAsync(scores.ToArray());
-        await _unitOfWork.GameRepository.AddAsync(new()
+        foreach (UserScore score in scores)
+            await _unitOfWork.UserScoreRepository.AddAsync(score);
+
+        Game game = new()
         {
-            Cards = cards,
-            PlayingUsers = users,
-            Scores = scores,
-        });
+            Cards = cards.ToList(),
+            PlayingUsers = users.ToList(),
+            Scores = scores.ToList(),
+        };
+        var addedGame = await _unitOfWork.GameRepository.AddAsync(game);
 
         await _unitOfWork.SaveChangesAsync();
     }

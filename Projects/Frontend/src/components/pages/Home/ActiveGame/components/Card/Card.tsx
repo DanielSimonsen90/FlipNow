@@ -16,11 +16,9 @@ export default function Card({ card, index }: Props) {
 
   return (
     <div className="gamecard" onClick={onClick}>
-      {card.flipped ? (
-        <img src={`/assets/cards/${card.name}.png`} alt={card.name} />
-      ) : (
-        <div className="card-back">FlipNow</div>
-      )}
+      {card.flipped 
+        ? <img src={`/assets/cards/${card.name}.png`} alt={card.name} />
+        : <div className="card-back">FlipNow</div>}
     </div>
   );
 }

@@ -5,7 +5,7 @@ namespace FlipNow.Common.Entities;
 
 public class Game : BaseEntity<Guid>
 {
-    public IEnumerable<UserScore> Scores { get; set; }
-    public IEnumerable<User> PlayingUsers { get; set; }
-    public IEnumerable<Card> Cards { get; set; }
+    public ICollection<UserScore> Scores { get; set; }
+    public ICollection<User> PlayingUsers { get; set; }
+    public ICollection<Card> Cards { get; set; }
 }

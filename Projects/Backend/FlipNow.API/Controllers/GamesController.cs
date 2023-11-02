@@ -49,10 +49,14 @@ public class GamesController : BaseController
 #if !DEBUG
         if (string.IsNullOrEmpty(userId)) return BadQueryRequest(nameof(userId));
 #else
-        if (string.IsNullOrEmpty(userId)) return Ok(_unitOfWork.GameRepository.GetAll());
+        if (string.IsNullOrEmpty(userId)) return Ok(_unitOfWork.GameRepository.GetAllWithRelations(
+            g => g.PlayingUsers,
+            g => g.Cards,
+            g => g.Scores));
 #endif
         Guid id = Guid.Parse(userId);
-        User? user = _unitOfWork.UserRepository.Get(id);
+        User? user = _unitOfWork.UserRepository.GetWithRelations(id, 
+            u => u.Scores);
         if (user is null) return NotFound($"User with id {userId} not found.");
 
         ActiveGame? game = _sessionService.FindGameFromUser(user);

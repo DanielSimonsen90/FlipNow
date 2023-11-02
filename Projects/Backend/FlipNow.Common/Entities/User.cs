@@ -8,5 +8,5 @@ public class User : BaseEntity<Guid>
     public string Username { get; set; }
     public double AvgScore { get; set; } = 0;
     
-    public IEnumerable<UserScore> Scores { get; set; }
+    public ICollection<UserScore> Scores { get; set; }
 }
