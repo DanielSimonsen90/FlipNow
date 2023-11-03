@@ -5,18 +5,22 @@ namespace FlipNow.Business.Services;
 
 public class GameSessionService
 {
-    public readonly Dictionary<Guid, ActiveGame> HostedGames = new();
+    public readonly Dictionary<Guid, GameService> HostedGames = new();
     public readonly Dictionary<string, Guid> ConnectedUsers = new();
-    public ActiveGame? FindActiveGame(string invideCode) => HostedGames.FirstOrDefault(kvp => kvp.Value.InviteCode == invideCode).Value;
+
+    #region Find game
+    public ActiveGame? FindActiveGame(string invideCode) => HostedGames.FirstOrDefault(kvp => kvp.Value.Game.InviteCode == invideCode).Value?.Game;
     public ActiveGame? FindGameFromUser(User user) => FindGameFromUserId(user.Id);
     public ActiveGame? FindGameFromUserId(Guid userId) => HostedGames.FirstOrDefault(kvp => 
-        kvp.Value.Players.Any(p => p.User.Id == userId)
-        || kvp.Value.Host.User.Id == userId
-    ).Value;
+        kvp.Value.Game.Players.Any(p => p.User.Id == userId)
+        || kvp.Value.Game.Host.User.Id == userId
+    ).Value?.Game;
+    #endregion
 
-    public void AddGame(Guid hostId, ActiveGame game) => HostedGames.Add(hostId, game);
+    #region HostedGame CRUD
+    public void AddGame(Guid hostId, GameService gameService) => HostedGames.Add(hostId, gameService);
     public bool HasGame(Guid userId) => HostedGames.ContainsKey(userId);
-    public void Update(Guid hostId, ActiveGame game) => HostedGames[hostId] = game;
+    public void Update(Guid hostId, GameService gameService) => HostedGames[hostId] = gameService;
     public void RemoveGame(Guid hostId) => HostedGames.Remove(hostId);
 
     public Guid GetUserIdFromConnectionId(string connectionId) => ConnectedUsers.GetValueOrDefault(connectionId);

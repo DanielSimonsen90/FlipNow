@@ -5,4 +5,5 @@ export type Turn = {
   player: Nullable<Player>
   turnStarted: string;
   count: number;
+  timeout: number;
 }

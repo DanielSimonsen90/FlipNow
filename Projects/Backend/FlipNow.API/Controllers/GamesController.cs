@@ -1,9 +1,12 @@
 ﻿using FlipNow.Business.Hubs;
 using FlipNow.Business.Models;
 using FlipNow.Business.Services;
+using FlipNow.Common.DTOs;
+using FlipNow.Common.DTOs.Get;
 using FlipNow.Common.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.PortableExecutable;
 
 namespace FlipNow.API.Controllers;
 
@@ -47,14 +50,27 @@ public class GamesController : BaseController
     [HttpGet]
     public IActionResult GetGame(string? userId)
     {
-#if !DEBUG
-        if (string.IsNullOrEmpty(userId)) return BadQueryRequest(nameof(userId));
-#else
-        if (string.IsNullOrEmpty(userId)) return Ok(_unitOfWork.GameRepository.GetAllWithRelations(
-            g => g.PlayingUsers,
-            g => g.Cards,
-            g => g.Scores));
-#endif
+        if (string.IsNullOrEmpty(userId))
+        {
+            TypeAdapterConfig config = new();
+            config.ForType<User, UserDTO>().MapWith(u => u.Adapt<UserDTO>());
+            config.ForType<UserScore, UserScoreDTO>().MapWith(us => us.Adapt<UserScoreDTO>());
+
+            config.NewConfig<Game, GetGameDTO>()
+                .Map(dto => dto.PlayingUsers, game => game.PlayingUsers)
+                .Map(dto => dto.Scores, game => game.Scores)
+                .Map(dto => dto.Cards, game => game.Cards);
+
+            IEnumerable<GetGameDTO> games = _unitOfWork.GameRepository.GetAllWithRelations(
+                g => g.PlayingUsers,
+                g => g.Cards,
+                g => g.Scores)
+                .AsQueryable()
+                .ProjectToType<GetGameDTO>(config)
+                .AsEnumerable();
+            return Ok(games);
+        }
+
         Guid id = Guid.Parse(userId);
         User? user = _unitOfWork.UserRepository.GetWithRelations(id, 
             u => u.Scores);
