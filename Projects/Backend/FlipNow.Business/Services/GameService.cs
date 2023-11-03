@@ -7,7 +7,7 @@ namespace FlipNow.Business.Services;
 public class GameService
 {
     private static bool IsNotMatch(GameCard first, GameCard second) => first.Name != second.Name;
-    private const int FLIPPED_CARD_TIMEOUT_MS = 500;
+    private const int FLIPPED_CARD_TIMEOUT_MS = 500; // TODO: Increase 
     public ActiveGame Game { get; private set; }
 
     private readonly UnitOfWork _unitOfWork;
@@ -127,9 +127,6 @@ public class GameService
                 }
                 return gc;
             }).ToList();
-
-            UpdateHostedGames();
-            return Game;
         }
         else
         {
@@ -159,6 +156,7 @@ public class GameService
         }
 
         Game.Turn.TurnStarted = DateTime.Now;
+        Game.Turn.Count++;
 
         UpdateHostedGames();
         return Game;
