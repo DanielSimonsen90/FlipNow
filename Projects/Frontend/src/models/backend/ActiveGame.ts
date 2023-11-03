@@ -5,6 +5,7 @@ import { Turn } from "./Turn";
 
 export type ActiveGame = {
   get inviteCode(): string;
+  get maxPlayersAllowed(): number;
 
   get players(): Array<Player>
 

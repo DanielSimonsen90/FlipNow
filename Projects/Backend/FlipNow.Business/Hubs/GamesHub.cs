@@ -2,7 +2,6 @@
 using FlipNow.Business.Services;
 using FlipNow.Common.Entities;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.IdentityModel.Tokens;
 
 namespace FlipNow.Business.Hubs;
 
@@ -60,6 +59,7 @@ public class GamesHub : Hub, IGamesHub
     public Task JoinGame(string inviteCode, string userId) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_JOIN_GAME, async (players, service) =>
     {
         if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId), "UserId cannot be null or empty.");
+        if (!service.CanAddPlayer) throw new InvalidOperationException("There are too many players in this game!");
         
         User user = await _uow.UserRepository.GetAsync(Guid.Parse(userId));
         Player? player = service.GetPlayer(user);

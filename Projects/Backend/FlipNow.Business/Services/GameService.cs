@@ -6,9 +6,12 @@ namespace FlipNow.Business.Services;
 
 public class GameService
 {
+    public const int MAX_PLAYERS_ALLOWED = 10;
+    
     private static bool IsNotMatch(GameCard first, GameCard second) => first.Name != second.Name;
     private const int FLIPPED_CARD_TIMEOUT_MS = 1000;
     public ActiveGame Game { get; private set; }
+    public bool CanAddPlayer => Game.Players.Count < MAX_PLAYERS_ALLOWED;
 
     private readonly UnitOfWork _unitOfWork;
     private readonly GameSessionService _sessionService;

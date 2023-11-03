@@ -14,9 +14,9 @@ export default function CreateGameButton() {
       if (err instanceof Error && err.message === 'User not logged in') {
         const username = prompt('Insert your username');
         if (username) createOrFind(username).then(() => dispatch('createGame'));
-        
-        setPressed(false);
       }
+      
+      setPressed(false);
     })
   }
 
