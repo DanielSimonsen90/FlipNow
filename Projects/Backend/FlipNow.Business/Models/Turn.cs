@@ -9,4 +9,5 @@ public class Turn
 
     public Player Player { get; set; }
     public DateTime TurnStarted { get; set; } = DateTime.Now;
+    public int Count { get; set; } = 1;
 }
