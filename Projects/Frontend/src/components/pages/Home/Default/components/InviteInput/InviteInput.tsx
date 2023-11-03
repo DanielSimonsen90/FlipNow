@@ -2,8 +2,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { Button } from 'danholibraryrjs';
+
 import { useGame } from 'providers/GameProvider';
-import { useUser, useUserWithPrompt } from 'providers/UserProvider';
+import { useUserWithPrompt } from 'providers/UserProvider';
 
 library.add(faSearch);
 

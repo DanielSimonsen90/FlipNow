@@ -4,9 +4,7 @@ import Player from "./Player";
 import { Turn } from "./Turn";
 
 export type ActiveGame = {
-  readonly _invitePrefix: string;
   get inviteCode(): string;
-  get inviteUrl(): string;
 
   get players(): Array<Player>
 

@@ -15,14 +15,13 @@ public class GameService
     private readonly Guid _hostId;
 
     public GameService(UnitOfWork unitOfWork, GameSessionService sessionService, 
-        string invitePrefix, User host)
+        User host)
     {
         if (sessionService.HasGame(host.Id)) throw new InvalidOperationException("User is already hosting a game");
 
         _unitOfWork = unitOfWork;
         _sessionService = sessionService;
         Game = new ActiveGame(
-            invitePrefix,
             cards: _unitOfWork.CardRepository.GetAllTwiceShuffled(),
             host);
 
