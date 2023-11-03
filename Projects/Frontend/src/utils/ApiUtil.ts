@@ -1,19 +1,23 @@
-export const API_ENDPOINT = "http://localhost:5000/api";
-// export const API_ENDPOINT_SECURE = "https://localhost:5000/api";
-export const API_ENDPOINT_SECURE = "https://flipnowapi.azurewebsites.net/api";
+if (process.env.NODE_ENV === 'development') {
+  var API_ENDPOINT_SECURE = "https://localhost:5000/api";
+  console.log('Running development build');
+} else {
+  API_ENDPOINT_SECURE = "https://flipnowapi.azurewebsites.net/api";
+  console.log('Running production build');
+}
+export { API_ENDPOINT_SECURE };
 
-export const API_ENDPOINT_SIGNALR = API_ENDPOINT + "/gameshub";
 export const API_ENDPOINT_SECURE_SIGNALR = API_ENDPOINT_SECURE + "/gameshub";
 
 type TParam = string | undefined;
 
 type ApiEndpoints<Param extends TParam = undefined> =
-  | `games?hostId=${Param}` 
+  | `games?hostId=${Param}`
   | `games?userId=${Param}`
   | `games/${Param}` // /{inviteCode}
 
   | `users/${Param}` // /{username}
-  | `users/${Param}` // /{userId}
+  | `users/${Param}`; // /{userId}
 
 export type HttpMethods =
   | 'GET'
@@ -47,7 +51,7 @@ export async function Request<TData, Param extends TParam = undefined>(
     const queryString = Object.entries(query)
       .map(([key, value]) => `${key}=${value}`)
       .join('&');
-    
+
     return path.includes('?') ? `${result}&${queryString}` : `${result}?${queryString}`;
   })();
 

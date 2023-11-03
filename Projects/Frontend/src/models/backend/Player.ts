@@ -9,8 +9,6 @@ export type Player = {
   user: User<false>;
   game: ActiveGame;
   cardMatches: number;
-  finished: boolean;
-  timeSpentTurn: TimeSpan;
   timeSpentTotal: TimeSpan;
   get cardMatchesLeft(): number;
   get score(): number;

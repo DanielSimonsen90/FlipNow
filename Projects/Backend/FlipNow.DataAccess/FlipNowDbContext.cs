@@ -21,21 +21,6 @@ public class FlipNowDbContext : DbContext
         DefineEntityRelationships(builder);
         InsertSeedData(builder);
     }
-    
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        base.OnConfiguring(optionsBuilder);
-
-        if (optionsBuilder.IsConfigured) return;
-
-        optionsBuilder.UseSqlServer(new List<string>()
-        {
-            "Server=(localdb)\\MSSqlLocalDb",
-            "Database=FlipNow",
-            "Trusted_Connection=True",
-            "MultipleActiveResultSets=true"
-        }.Aggregate((a, b) => $"{a};{b}"));
-    }
 
     private static void DefineEntityRelationships(ModelBuilder builder)
     {
