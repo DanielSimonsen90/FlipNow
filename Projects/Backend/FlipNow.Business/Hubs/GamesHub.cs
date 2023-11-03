@@ -85,7 +85,15 @@ public class GamesHub : Hub, IGamesHub
     #region Game Updates
     public Task FlipCard(string inviteCode, int cardIndex) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_FLIP_CARD, async (players, service) =>
     {
-        service.FlipCard(cardIndex);
+        // -1 was given from client timeout
+        if (cardIndex > -1) service.FlipCard(cardIndex);
+        else
+        {
+            Player currentTurnPlayer = service.ForceChangeTurn();
+            await Log("Sending turn change", GamesHubConstants.EVENTS_TURN_EXPIRED, inviteCode);
+            await players.SendAsync(GamesHubConstants.EVENTS_TURN_EXPIRED, inviteCode, service.Game, currentTurnPlayer);
+        }
+        
         return await Task.FromResult(service.Game);
     });
     #endregion
