@@ -27,5 +27,5 @@ public class Player
     }
     public int CardMatches { get; set; } = 0;
     public int CardMatchesLeft => _gameCardsAmount / 2 - CardMatches;
-    public TimeSpan TimeSpentTotal { get; set; } // TODO: Implement TimeSpent
+    public TimeSpan TimeSpentTotal { get; set; }
 }
