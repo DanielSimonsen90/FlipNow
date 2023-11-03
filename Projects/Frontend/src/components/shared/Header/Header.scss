@@ -1,18 +1,33 @@
 .site-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   background-color: var(--background-secondary);
   padding: 1ch;
   height: 4em;
 
   h1 {
-    margin: auto;
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
-  @media (max-width: 650px) {
+  .login-container {
+    margin-left: auto;
+  }
+
+  @media (max-width: 730px) {
     flex-direction: column;
     height: auto;
     gap: 1ch;
     padding: 1em;
+
+    h1 {
+      position: relative;
+      display: block;
+      text-align: center;
+      width: 100%;
+    }
   }
 }

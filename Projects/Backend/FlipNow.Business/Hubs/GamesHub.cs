@@ -21,6 +21,7 @@ public class GamesHub : Hub, IGamesHub
 
     // "Events" are methods that can be called from the client
 
+    #region Connection lifecycle
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         Guid userId = _sessionService.GetUserIdFromConnectionId(Context.ConnectionId);
@@ -34,6 +35,7 @@ public class GamesHub : Hub, IGamesHub
 
         await LeaveGame(game.InviteCode, player.Id.ToString());
     }
+    #endregion
 
     #region Game lifecycle
     public Task StartGame(string inviteCode) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_START_GAME, async (players, service) =>
@@ -57,8 +59,9 @@ public class GamesHub : Hub, IGamesHub
     public Task JoinGame(string inviteCode, string userId) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_JOIN_GAME, async (players, service) =>
     {
         if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId), "UserId cannot be null or empty.");
+        if (!service.CanAddPlayer) throw new InvalidOperationException("There are too many players in this game!");
+        
         User user = await _uow.UserRepository.GetAsync(Guid.Parse(userId));
-
         Player? player = service.GetPlayer(user);
         if (player is not null) throw new InvalidOperationException("Player already joined.");
 
@@ -66,7 +69,7 @@ public class GamesHub : Hub, IGamesHub
         if (existingPlayerGame is not null) throw new InvalidOperationException("Player already in a game.");
 
         service.AddPlayer(user);
-        _sessionService.ConnectedUsers.Add(Context.ConnectionId, user.Id);
+        _sessionService.AddUserConnection(Context.ConnectionId, user.Id);
         //await Groups.AddToGroupAsync(Context.ConnectionId, inviteCode);
         return service.Game;
     });
@@ -76,7 +79,7 @@ public class GamesHub : Hub, IGamesHub
         Player player = service.GetPlayer(Guid.Parse(playerId)) ?? throw new NullReferenceException("Player not found");
 
         service.RemovePlayer(player.User.Id);
-        _sessionService.ConnectedUsers.Remove(Context.ConnectionId);
+        _sessionService.RemoveUserConnection(Context.ConnectionId);
         //await Groups.RemoveFromGroupAsync(Context.ConnectionId, inviteCode);
         return service.Game;
     });

@@ -12,6 +12,7 @@ public class GameService
     
     private static bool IsNotMatch(GameCard first, GameCard second) => first.Name != second.Name;
     public ActiveGame Game { get; private set; }
+    public bool CanAddPlayer => Game.Players.Count < MAX_PLAYERS_ALLOWED;
 
     private readonly UnitOfWork _unitOfWork;
     private readonly GameSessionService _sessionService;
@@ -66,7 +67,7 @@ public class GameService
     {
         // Reset turn
         if (Game.TurnPlayerIndex > 0)
-            Game.TurnPlayerIndex = 0;
+            Game.TurnPlayerIndex = new Random().Next(Game.Players.Count);
 
         // Unflip, unmatch and reorder cards
         if (Game.Cards.Any(c => c.Flipped))

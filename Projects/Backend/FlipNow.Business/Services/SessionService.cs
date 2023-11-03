@@ -22,6 +22,11 @@ public class GameSessionService
     public bool HasGame(Guid userId) => HostedGames.ContainsKey(userId);
     public void Update(Guid hostId, GameService gameService) => HostedGames[hostId] = gameService;
     public void RemoveGame(Guid hostId) => HostedGames.Remove(hostId);
-
+    #endregion
+    
+    #region ConnectedUsers CRUD
     public Guid GetUserIdFromConnectionId(string connectionId) => ConnectedUsers.GetValueOrDefault(connectionId);
+    public void AddUserConnection(string connectionId, Guid userId) => ConnectedUsers.Add(connectionId, userId);
+    public void RemoveUserConnection(string connectionId) => ConnectedUsers.Remove(connectionId);
+    #endregion
 }

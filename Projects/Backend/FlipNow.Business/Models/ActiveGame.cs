@@ -1,4 +1,5 @@
-﻿using FlipNow.Common.Entities;
+﻿using FlipNow.Business.Services;
+using FlipNow.Common.Entities;
 
 namespace FlipNow.Business.Models;
 
@@ -13,6 +14,7 @@ public class ActiveGame
     }
 
     public string InviteCode { get; } = Guid.NewGuid().ToString();
+    public int MaxPlayersAllowed => GameService.MAX_PLAYERS_ALLOWED;
 
     #region Players
     public List<Player> Players { get; }

@@ -8,6 +8,10 @@ $game-size: mixins.calculate-game-size(
   5
 );
 
+main {
+  margin: unset;
+}
+
 #active-game {
   display: grid;
   place-items: center;
