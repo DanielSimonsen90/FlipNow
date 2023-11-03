@@ -10,6 +10,7 @@ namespace FlipNow.API.Controllers;
 public class GamesController : BaseController
 {
     private readonly GameSessionService _sessionService;
+    private const string ADMIN_KEY = "dev";
 
     public GamesController(UnitOfWork unitOfWork, GameSessionService sessionService) : base(unitOfWork) 
     {
@@ -61,5 +62,12 @@ public class GamesController : BaseController
 
         ActiveGame? game = _sessionService.FindGameFromUser(user);
         return Ok(game);
+    }
+
+    [HttpGet("active")]
+    public IActionResult GetAllActive(string key)
+    {
+        if (key != ADMIN_KEY) return NotFound();
+        return Ok(_sessionService.HostedGames);
     }
 }
