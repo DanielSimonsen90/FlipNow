@@ -1,6 +1,6 @@
 
 import { HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
-import { API_ENDPOINT_SECURE_SIGNALR, API_ENDPOINT_SIGNALR } from "utils";
+import { API_ENDPOINT_SECURE_SIGNALR } from "utils";
 import { HubActionNames, HubActions, HubEventNames, HubEvents } from "./HubTypes";
 import { Promiseable } from "types";
 import { ActiveGame } from "models/backend";

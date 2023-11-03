@@ -8,7 +8,6 @@ namespace FlipNow.API.Controllers;
 public abstract class BaseController : ControllerBase
 {
     protected readonly UnitOfWork _unitOfWork;
-    protected const string API_URL = "https://localhost:5001/api/";
 
     public BaseController(UnitOfWork unitOfWork)
     {

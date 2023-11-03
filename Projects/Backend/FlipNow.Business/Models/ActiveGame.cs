@@ -4,20 +4,15 @@ namespace FlipNow.Business.Models;
 
 public class ActiveGame
 {
-    public ActiveGame(string invitePrefix, IEnumerable<Card> cards, User host)
+    public ActiveGame(IEnumerable<Card> cards, User host)
     {
-        _invitePrefix = invitePrefix;
         Cards = cards.Select(c => new GameCard(c)).ToList();
         Host = new Player(host, this);
         Players = new List<Player>() { Host };
         Turn = new Turn(Host);
     }
 
-    #region Invite
-    private readonly string _invitePrefix;
     public string InviteCode { get; } = Guid.NewGuid().ToString();
-    public string InviteUrl => FlipNowHelper.EnsureSlash(_invitePrefix, start: false) + InviteCode;
-    #endregion
 
     #region Players
     public List<Player> Players { get; }
