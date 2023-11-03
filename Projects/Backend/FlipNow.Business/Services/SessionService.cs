@@ -8,8 +8,11 @@ public class GameSessionService
     public readonly Dictionary<Guid, ActiveGame> HostedGames = new();
     public readonly Dictionary<string, Guid> ConnectedUsers = new();
     public ActiveGame? FindActiveGame(string invideCode) => HostedGames.FirstOrDefault(kvp => kvp.Value.InviteCode == invideCode).Value;
-    public ActiveGame? FindGameFromUser(User user) => HostedGames.FirstOrDefault(kvp => kvp.Value.Players.Any(p => p.User.Id == user.Id)).Value;
-    public ActiveGame? FindGameFromUserId(Guid userId) => HostedGames.FirstOrDefault(kvp => kvp.Value.Players.Any(p => p.User.Id == userId)).Value;
+    public ActiveGame? FindGameFromUser(User user) => FindGameFromUserId(user.Id);
+    public ActiveGame? FindGameFromUserId(Guid userId) => HostedGames.FirstOrDefault(kvp => 
+        kvp.Value.Players.Any(p => p.User.Id == userId)
+        || kvp.Value.Host.User.Id == userId
+    ).Value;
 
     public void AddGame(Guid hostId, ActiveGame game) => HostedGames.Add(hostId, game);
     public bool HasGame(Guid userId) => HostedGames.ContainsKey(userId);
