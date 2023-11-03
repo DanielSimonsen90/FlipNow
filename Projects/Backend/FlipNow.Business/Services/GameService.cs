@@ -63,7 +63,7 @@ public class GameService
     {
         // Reset turn
         if (Game.TurnPlayerIndex > 0)
-            Game.TurnPlayerIndex = 0;
+            Game.TurnPlayerIndex = new Random().Next(Game.Players.Count);
 
         // Unflip, unmatch and reorder cards
         if (Game.Cards.Any(c => c.Flipped))
