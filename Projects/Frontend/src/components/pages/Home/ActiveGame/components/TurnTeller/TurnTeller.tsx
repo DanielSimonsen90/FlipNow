@@ -9,6 +9,7 @@ const getDifferenceInSeconds = (date1: Date, date2: Date) => {
 export default function TurnTeller() {
   const { game, dispatch, isClientTurn } = useGame(false);
   const secondsSpent = getDifferenceInSeconds(new Date(), new Date(game.turn.turnStarted));
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Used for re-rendering
   const [_, setRenderCount] = useState(0); // Would use value from getDifferenceInSeconds, but initialValue isn't calculated properly
   const started = game.playState === PlayState.PLAYING;
   const turnPlayername = game.turn.player?.user.username ?? "Nobody";
@@ -28,7 +29,7 @@ export default function TurnTeller() {
     if (started && isClientTurn && secondsSpent >= game.turn.timeout) {
       dispatch('flipCard', -1);
     }
-  }, [secondsSpent, started, isClientTurn, game.turn.timeout])
+  }, [secondsSpent, started, isClientTurn, game.turn.timeout, dispatch])
 
   return started ? (
     <div className="turn-teller" data-is-turn={isClientTurn}>

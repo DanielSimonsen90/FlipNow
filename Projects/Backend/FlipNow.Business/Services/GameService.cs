@@ -66,8 +66,8 @@ public class GameService
     private void ResetGame()
     {
         // Reset turn
-        if (Game.TurnPlayerIndex > 0)
-            Game.TurnPlayerIndex = new Random().Next(Game.Players.Count);
+        Game.TurnPlayerIndex = new Random().Next(Game.Players.Count);
+        Game.Turn.TurnStarted = DateTime.Now;    
 
         // Unflip, unmatch and reorder cards
         if (Game.Cards.Any(c => c.Flipped))
