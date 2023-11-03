@@ -5,7 +5,7 @@ export default function GiveUpButton() {
   const { isHost, player, dispatch } = useGame(false);
 
   const onGiveUpClicked = () => {
-    if (!player || isHost || !window.confirm('Are you sure you want to give up?')) return;
+    if (!player || !window.confirm('Are you sure you want to give up?')) return;
 
     dispatch('leaveGame', player.id);
   }
