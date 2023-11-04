@@ -11,11 +11,10 @@ import { ProvidedUserType } from "providers/UserProvider/UserProviderTypes";
 import { GameProviderContext } from "./GameProviderConstants";
 import { GameProviderContextType } from "./GameProviderTypes";
 
-import Events, { 
-  HubEventNames, HubEvents, 
-  GameEventProps, GameEventReducer 
-} from 'providers/ConnectionHubProvider/Events';
-import { useConnectionHub } from "providers/ConnectionHubProvider";
+import GameEvents from 'providers/ConnectionHubProvider/Events/GameEvents';
+import { HubEventNames, GameEventProps, GameEventReducer } from 'providers/ConnectionHubProvider/Events';
+import { useSignalREvents } from "providers/ConnectionHubProvider";
+
 
 export function useGame<
   AllowNullable extends boolean
@@ -40,44 +39,27 @@ export async function useGetActiveGame(
   }, [user]);
 }
 
-const Callbacks: Map<string, Function> = new Map();
-
-export function useSignalREvents(
+export function useGameEvents(
   context: GameProviderContextType, 
   setGame: Dispatch<SetStateAction<GameProviderContextType['game']>>, 
   user: ProvidedUserType
 ) {
-  const connection = useConnectionHub();
+  useSignalREvents(GameEvents, async (event, ...args) => {
+    const inviteCode = args.shift();
+    // if (!context.game) throw new Error(`No game stored for event ${event}, ${JSON.stringify([inviteCode, ...args])}`)
+    
+    // Update not meant for client
+    if (context.game && context.game.inviteCode !== inviteCode) return console.log(
+      `Received event unhandled due to invalid invite code (${context.game?.inviteCode} !== ${inviteCode})`,
+      { inviteCode, context, args, event }
+    ); 
 
-  useEffect(() => {
-    Object.keys(Events).forEach(event => {
-      const callback = Events[event as keyof typeof Events];
-      if (!callback) throw new Error(`Event ${event} not found`);
-
-      const _callback = async (...args: HubEvents[HubEventNames]) => {
-        const inviteCode = args.shift();
-        // if (!context.game) throw new Error(`No game stored for event ${event}, ${JSON.stringify([inviteCode, ...args])}`)
-        if (context.game && context.game.inviteCode !== inviteCode) return console.log(
-          `Received event unhandled due to invalid invite code (${context.game?.inviteCode} !== ${inviteCode})`,
-          { inviteCode, context, args, event }
-        ); // Update not meant for client
-
-        const update = await GameEventReducer(event as HubEventNames, {
-          ...context,
-          user, args
-        } as GameEventProps<any>);
-        setGame(update);
-      };
-
-      connection.on(event as HubEventNames, _callback);
-      Callbacks.set(event, _callback);
-    });
-
-    return () => {
-      Callbacks.forEach((callback, event) => connection.off(event as HubEventNames, callback as any));
-      Callbacks.clear();
-    };
-  }, [context, setGame, user, connection]);
+    const update = await GameEventReducer(event as HubEventNames, {
+      ...context,
+      user, args
+    } as GameEventProps<any>);
+    setGame(update);
+  });
 }
 
 export function useUserLoggedOutWhileInGame(

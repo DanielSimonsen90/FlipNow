@@ -3,7 +3,9 @@ import { HubUserEventNames, UserEventRegisterProps } from './Setup/_UserEventTyp
 import UserLoggedInEvent from './userLoggedIn.event.user';
 import UserLoggedOutEvent from './userLoggedOut.event.user';
 
-export default {
+const UserEvents = {
   userLoggedIn: UserLoggedInEvent,
   userLoggedOut: UserLoggedOutEvent,
 } as Record<HubUserEventNames, UserEventRegisterProps<any>>;
+
+export default UserEvents;

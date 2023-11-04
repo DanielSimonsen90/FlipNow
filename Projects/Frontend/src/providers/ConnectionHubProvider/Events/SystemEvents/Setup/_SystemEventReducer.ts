@@ -1,8 +1,18 @@
+import SystemEvents from "..";
 import { HubSystemEventNames, SystemEventProps } from "./_SystemEventTypes";
 
 export default async function SystemEventReducer<Event extends HubSystemEventNames>(
   event: Event,
-  callback: (props: SystemEventProps<Event>) => Promise<void>,
+  props: SystemEventProps<Event>,
 ): Promise<void> {
-  throw new Error('Not implemented');
+  if (!SystemEvents[event]) throw new Error(`Invalid event: ${event}`);
+
+  const { callback } = SystemEvents[event];
+  console.log(`[${event}]`, props);
+
+  try {
+    await callback(props);
+  } catch (error) {
+    console.error(error);
+  }
 }

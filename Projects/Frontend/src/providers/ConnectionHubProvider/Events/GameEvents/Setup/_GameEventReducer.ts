@@ -1,7 +1,7 @@
 import { Nullable } from 'types';
 import { ActiveGame } from 'models/backend'
 
-import Events from "../..";
+import Events from "../";
 import { GameEventProps, HubGameEventNames } from './_GameEventTypes';
 
 export default async function GameEventReducer<Event extends HubGameEventNames>(

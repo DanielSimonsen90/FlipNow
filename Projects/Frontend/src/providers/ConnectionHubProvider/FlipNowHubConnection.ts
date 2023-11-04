@@ -18,7 +18,7 @@ export default class FlipNowHubConnection {
   private _callbacks: Map<Function, (...args: any[]) => void> = new Map();
   private _startUpQueue = new Array<[action: HubActionNames, ...args: any[]]>();
 
-  constructor() {
+  private constructor() {
     this._hubConnection = FlipNowHubConnection._hubConnectionSecure;
     this._hubConnection.start()
       .then(() => {

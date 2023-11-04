@@ -2,7 +2,7 @@ import { Nullable } from "types";
 import { ActiveGame, Player } from "models/backend";
 
 import { GameProviderContextType } from "providers/GameProvider/GameProviderTypes";
-import { useUser } from "providers/UserProvider/UserProviderHooks";
+import { ProvidedUserType } from "providers/UserProvider/UserProviderTypes";
 
 /**
  * These events are emitted to the client from the server
@@ -15,7 +15,7 @@ export type HubGameEvents = {
   gameUpdated: [inviteCode: string, game: ActiveGame];
   turnExpired: [inviteCode: string, game: ActiveGame, turnPlayerAffected: Player];
 
-  gameReset: [inviteCode: string, game: ActiveGame];
+  // gameReset: [inviteCode: string, game: ActiveGame];
   gameEnded: [inviteCode: string, game: ActiveGame];
   gameDeleted: [];
 
@@ -25,13 +25,13 @@ export type HubGameEvents = {
 export type HubGameEventNames = keyof HubGameEvents;
 
 type GameEventPropsArgs<Event extends HubGameEventNames> =
-  HubGameEvents[Event] extends [arg1: any, ...args: infer Args]
+  HubGameEvents[Event] extends [inviteCode: string, ...args: infer Args]
   ? Args
-  : never;
+  : any[];
 
 
 export type GameEventProps<Event extends HubGameEventNames> = {
-  user: NonNullable<ReturnType<typeof useUser>['user']>;
+  user: NonNullable<ProvidedUserType>;
   args: GameEventPropsArgs<Event>;
 } & Omit<GameProviderContextType, 'dispatch'>;
 

@@ -9,7 +9,7 @@ import PlayerJoinedEvent from './playerJoined.event.game';
 import PlayerLeftEvent from './playerLeft.event.game';
 import TurnExpiredEvent from './turnExpired.event.game';
 
-export default {
+const GameEvents = {
   cardFlipped: CardFlippedEvent,
   gameDeleted: GameDeletedEvent,
   gameEnded: GameEndedEvent,
@@ -18,4 +18,5 @@ export default {
   playerJoined: PlayerJoinedEvent,
   playerLeft: PlayerLeftEvent,
   turnExpired: TurnExpiredEvent,
-} as Record<HubGameEventNames, GameEventRegisterProps<any>>;
+} as Record<HubGameEventNames, GameEventRegisterProps<HubGameEventNames>>;
+export default GameEvents;

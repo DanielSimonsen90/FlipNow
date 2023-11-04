@@ -8,7 +8,7 @@ public class GamesHubConstants
     public const string EVENTS_FLIP_CARD = "cardFlipped";
     public const string EVENTS_TURN_EXPIRED = "turnExpired";
 
-    public const string EVENTS_RESET_GAME = "gameReset";
+    //public const string EVENTS_RESET_GAME = "gameReset";
     public const string EVENTS_END_GAME = "gameEnded";
     public const string EVENTS_DELETE_GAME = "gameDeleted";
 

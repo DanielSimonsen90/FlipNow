@@ -3,11 +3,12 @@ import GameEvents from './GameEvents';
 import HubEvents from './SystemEvents';
 import UserEvents from './UserEvents';
 
-export default {
+const Events = {
   ...GameEvents,
   ...HubEvents,
   ...UserEvents
 } as Record<HubEventNames, BaseCreateHubEvent<string, any, any>>;
+export default Events;
 
 export * from './HubEventTypes';
 
