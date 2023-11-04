@@ -73,7 +73,7 @@ public class GamesHub : Hub, IGamesHub
         }
         
         _sessionService.AddUserConnection(Context.ConnectionId, user.Id);
-        await Clients.Caller.SendAsync(GamesHubConstants.EVENTS_USER_LOGIN, true);
+        await Clients.Caller.SendAsync(GamesHubConstants.EVENTS_USER_LOGIN, true, "Login successful", user);
         return;
     }
     public async Task Logout()
@@ -168,11 +168,12 @@ public class GamesHub : Hub, IGamesHub
         catch (Exception ex)
         {
             await Log("Failed", eventName, inviteCode, ex.Message);
-            await Clients.Caller.SendAsync(GamesHubConstants.RESPONSE_FAILED, inviteCode, ex.Message);
+            await Clients.Caller.SendAsync(GamesHubConstants.RESPONSE_FAILED, ex.Message, inviteCode);
         }
     }
 
     private async Task Log(string type, string eventName, string? inviteCode, string message = "")
-        => await Clients.All.SendAsync(GamesHubConstants.LOG, inviteCode, DateTime.Now,
-            $"{type} \"{eventName}\" from game {inviteCode}" + (string.IsNullOrEmpty(message) ? "" : $": {message}"));
+        => await Clients.All.SendAsync(GamesHubConstants.LOG, DateTime.Now,
+            $"{type} \"{eventName}\" from game {inviteCode}" + (string.IsNullOrEmpty(message) ? "" : $": {message}", 
+            inviteCode));
 }

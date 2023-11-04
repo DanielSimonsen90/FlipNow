@@ -4,20 +4,19 @@ import { Nullable } from 'types';
 import { ActiveGame } from 'models/backend';
 import { useUser } from 'providers/UserProvider';
 
-import { GameProviderContext } from './GameProviderConstants';
-import { GameActionProps, GameProviderContextType, Log } from './GameProviderTypes';
-import { useGetActiveGame, useSignalREvents, useUserLoggedOutWhileInGame } from './GameProviderHooks';
+import { GameActionReducer, HubGameActionNames, HubGameActions } from 'providers/ConnectionHubProvider/Actions/GameActions/Setup';
+import { GameActiontReducerProps } from 'providers/ConnectionHubProvider/Actions/GameActions/Setup/_GameActionReducer';
 
-import { HubActionNames, HubActions } from 'services/Hub';
-import { GameActionReducer } from 'services/Hub/Actions';
+import { GameProviderContext } from './GameProviderConstants';
+import { useGetActiveGame, useSignalREvents, useUserLoggedOutWhileInGame } from './GameProviderHooks';
+import { GameProviderContextType } from './GameProviderTypes';
 
 export default function GameProvider({ children }: PropsWithChildren) {
   const [game, setGame] = useState<Nullable<ActiveGame>>(null);
-  const [logs, setLogs] = useState<Array<Log>>([]);
   const { user } = useUser();
 
   const isClientTurn = game?.turn.player?.user.username === user?.username;
-  const isHost = useMemo(() => game?.host.user.id === user?.id, [game, user])
+  const isHost = useMemo(() => game?.host.user.id === user?.id, [game, user]);
   const player = useMemo(() => {
     if (!game || !user) return null;
     return game.players.find(p => p.user.username === user.username) ?? null;
@@ -25,19 +24,15 @@ export default function GameProvider({ children }: PropsWithChildren) {
 
   const actionContext = useMemo(() => ({
     game, isClientTurn, player, isHost,
-    logs, setLogs
-  }), [game, isClientTurn, player, logs, setLogs, isHost]);
+  }), [game, isClientTurn, player, isHost]);
 
-  const dispatch = useCallback(async <Action extends HubActionNames>(
+  const dispatch = useCallback(async <Action extends HubGameActionNames>(
     action: Action,
-    ...args: HubActions[Action]
+    ...args: HubGameActions[Action]
   ) => {
     if (!user) throw new Error('User not logged in');
 
-    const update = await GameActionReducer(action, { 
-      ...actionContext, user, args 
-    } as GameActionProps<Action>);
-    
+    const update = await GameActionReducer(action, { ...actionContext, user, args } as GameActiontReducerProps<Action>);
     if (update) setGame(update);
   }, [user, actionContext]);
 

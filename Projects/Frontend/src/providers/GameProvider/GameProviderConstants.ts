@@ -8,7 +8,4 @@ export const GameProviderContext = createContext<GameProviderContextType>({
   isHost: false,
   dispatch: async (...args) => {},
   player: null,
-
-  logs: [],
-  setLogs: () => {},
 });

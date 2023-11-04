@@ -3,14 +3,19 @@ import { useAsyncEffect } from "danholibraryrjs";
 
 import { Request } from "utils";
 import { ActiveGame, Player } from "models/backend";
-import { useUser } from "providers/UserProvider";
-import { ProvidedUserType } from "providers/UserProvider/UserProviderTypes";
 import { Nullable } from "types";
 
+import { useUser } from "providers/UserProvider";
+import { ProvidedUserType } from "providers/UserProvider/UserProviderTypes";
+
 import { GameProviderContext } from "./GameProviderConstants";
-import { GameEventProps, GameProviderContextType } from "./GameProviderTypes";
-import Connection, { HubEventNames, HubEvents } from 'services/Hub';
-import Events, { GameEventReducer } from "services/Hub/Events";
+import { GameProviderContextType } from "./GameProviderTypes";
+
+import Events, { 
+  HubEventNames, HubEvents, 
+  GameEventProps, GameEventReducer 
+} from 'providers/ConnectionHubProvider/Events';
+import { useConnectionHub } from "providers/ConnectionHubProvider";
 
 export function useGame<
   AllowNullable extends boolean
@@ -42,6 +47,8 @@ export function useSignalREvents(
   setGame: Dispatch<SetStateAction<GameProviderContextType['game']>>, 
   user: ProvidedUserType
 ) {
+  const connection = useConnectionHub();
+
   useEffect(() => {
     Object.keys(Events).forEach(event => {
       const callback = Events[event as keyof typeof Events];
@@ -62,12 +69,12 @@ export function useSignalREvents(
         setGame(update);
       };
 
-      Connection.on(event as HubEventNames, _callback);
+      connection.on(event as HubEventNames, _callback);
       Callbacks.set(event, _callback);
     });
 
     return () => {
-      Callbacks.forEach((callback, event) => Connection.off(event as HubEventNames, callback as any));
+      Callbacks.forEach((callback, event) => connection.off(event as HubEventNames, callback as any));
       Callbacks.clear();
     };
   }, [context, setGame, user]);
