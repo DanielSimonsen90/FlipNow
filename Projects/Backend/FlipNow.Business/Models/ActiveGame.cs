@@ -14,7 +14,7 @@ public class ActiveGame
     }
 
     public string InviteCode { get; } = Guid.NewGuid().ToString();
-    public int MaxPlayersAllowed => GameService.MAX_PLAYERS_ALLOWED;
+    public int MaxPlayersAllowed { get; } = GameService.MAX_PLAYERS_ALLOWED;
 
     #region Players
     public List<Player> Players { get; }

@@ -27,6 +27,7 @@ public class GameSessionService
     #region ConnectedUsers CRUD
     public Guid GetUserIdFromConnectionId(string connectionId) => ConnectedUsers.GetValueOrDefault(connectionId);
     public void AddUserConnection(string connectionId, Guid userId) => ConnectedUsers.Add(connectionId, userId);
+    public bool UserIsAlreadyConnected(Guid userId) => ConnectedUsers.Any(kvp => kvp.Value == userId);
     public void RemoveUserConnection(string connectionId) => ConnectedUsers.Remove(connectionId);
     #endregion
 }

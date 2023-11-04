@@ -15,6 +15,9 @@ public class GamesHubConstants
     public const string EVENTS_JOIN_GAME = "playerJoined";
     public const string EVENTS_LEAVE_GAME = "playerLeft";
 
+    public const string EVENTS_USER_LOGIN = "userLogin";
+    public const string EVENTS_USER_LOGOUT = "userLogout";
+
     public const string RESPONSE_FAILED = "broadcastFailed";
     public const string LOG = "log";
 }
