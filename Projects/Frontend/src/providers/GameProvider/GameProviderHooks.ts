@@ -9,8 +9,8 @@ import { Nullable } from "types";
 
 import { GameProviderContext } from "./GameProviderConstants";
 import { GameEventProps, GameProviderContextType } from "./GameProviderTypes";
-import Connection, { HubEventNames, HubEvents } from './Hub';
-import Events, { GameEventReducer } from "./Hub/Events";
+import Connection, { HubEventNames, HubEvents } from 'services/Hub';
+import Events, { GameEventReducer } from "services/Hub/Events";
 
 export function useGame<
   AllowNullable extends boolean

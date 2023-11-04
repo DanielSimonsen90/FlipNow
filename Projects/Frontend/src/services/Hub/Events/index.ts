@@ -1,4 +1,4 @@
-import { GameEventRegisterProps } from '../../GameProviderTypes';
+import { GameEventRegisterProps } from 'providers/GameProvider/GameProviderTypes';
 import { HubEventNames } from '..';
 
 import BroadcastFailedEvent from './broadcastFailed.event.game';

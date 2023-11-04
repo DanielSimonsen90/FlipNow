@@ -8,8 +8,8 @@ import { GameProviderContext } from './GameProviderConstants';
 import { GameActionProps, GameProviderContextType, Log } from './GameProviderTypes';
 import { useGetActiveGame, useSignalREvents, useUserLoggedOutWhileInGame } from './GameProviderHooks';
 
-import { HubActionNames, HubActions } from './Hub';
-import { GameActionReducer } from './Hub/Actions';
+import { HubActionNames, HubActions } from 'services/Hub';
+import { GameActionReducer } from 'services/Hub/Actions';
 
 export default function GameProvider({ children }: PropsWithChildren) {
   const [game, setGame] = useState<Nullable<ActiveGame>>(null);
