@@ -25,6 +25,8 @@ public class GamesHub : Hub, IGamesHub
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         Guid userId = _sessionService.GetUserIdFromConnectionId(Context.ConnectionId);
+        await Logout();
+
         ActiveGame? game = _sessionService.FindGameFromUserId(userId);
         if (game is null) return;
 
@@ -55,7 +57,40 @@ public class GamesHub : Hub, IGamesHub
     });
     #endregion
 
-    #region PlayerPresence (Join/Leave)
+    #region PlayerPresence
+    public async Task Login(string username, string? connectionId)
+    {
+        User? user = _uow.UserRepository.GetByUsername(username);
+        if (user is null)
+        {
+            await Clients.Caller.SendAsync(GamesHubConstants.EVENTS_USER_LOGIN, false, "User not found");
+            Context.Abort();
+            return;
+        }
+        if (_sessionService.UserIsAlreadyConnected(user.Id))
+        {
+            await Clients.Caller.SendAsync(GamesHubConstants.EVENTS_USER_LOGIN, false, "User already connected");
+            Context.Abort();
+            return;
+        }
+        
+        _sessionService.SetUserConnection(Context.ConnectionId, user.Id);
+        await Clients.Caller.SendAsync(GamesHubConstants.EVENTS_USER_LOGIN, true, "Login successful", user);
+        return;
+    }
+    public async Task Logout()
+    {
+        Guid userId = _sessionService.GetUserIdFromConnectionId(Context.ConnectionId);
+        ActiveGame? game = _sessionService.FindGameFromUserId(userId);
+        Player? player = game?.Players.Find(p => p.User.Id == userId);
+        
+        if (game is not null 
+            && player is not null) 
+            await LeaveGame(game.InviteCode, player.Id.ToString());
+
+        _sessionService.RemoveUserConnection(Context.ConnectionId);
+        await Clients.Caller.SendAsync(GamesHubConstants.EVENTS_USER_LOGOUT, true);
+    }
     public Task JoinGame(string inviteCode, string userId) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_JOIN_GAME, async (players, service) =>
     {
         if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId), "UserId cannot be null or empty.");
@@ -69,7 +104,7 @@ public class GamesHub : Hub, IGamesHub
         if (existingPlayerGame is not null) throw new InvalidOperationException("Player already in a game.");
 
         service.AddPlayer(user);
-        _sessionService.AddUserConnection(Context.ConnectionId, user.Id);
+        _sessionService.SetUserConnection(Context.ConnectionId, user.Id);
         //await Groups.AddToGroupAsync(Context.ConnectionId, inviteCode);
         return service.Game;
     });
@@ -135,11 +170,12 @@ public class GamesHub : Hub, IGamesHub
         catch (Exception ex)
         {
             await Log("Failed", eventName, inviteCode, ex.Message);
-            await Clients.Caller.SendAsync(GamesHubConstants.RESPONSE_FAILED, inviteCode, ex.Message);
+            await Clients.Caller.SendAsync(GamesHubConstants.RESPONSE_FAILED, ex.Message, inviteCode);
         }
     }
 
     private async Task Log(string type, string eventName, string? inviteCode, string message = "")
-        => await Clients.All.SendAsync(GamesHubConstants.LOG, inviteCode, DateTime.Now,
-            $"{type} \"{eventName}\" from game {inviteCode}" + (string.IsNullOrEmpty(message) ? "" : $": {message}"));
+        => await Clients.All.SendAsync(GamesHubConstants.LOG, DateTime.Now,
+            $"{type} \"{eventName}\" from game {inviteCode}" + (string.IsNullOrEmpty(message) ? "" : $": {message}", 
+            inviteCode));
 }
