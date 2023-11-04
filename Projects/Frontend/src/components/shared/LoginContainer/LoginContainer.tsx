@@ -19,7 +19,7 @@ export default function LoginContainer({ className, dispatch }: LoginContainerPr
     });
 
     setLoading(true);
-    dispatch('login', e.target.username.value);
+    dispatch('login', e.target.username.value, connection.connectionId);
   };
 
   return (

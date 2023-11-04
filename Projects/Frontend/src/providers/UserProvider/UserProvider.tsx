@@ -13,6 +13,8 @@ import { useConnectionHub } from "providers/ConnectionHubProvider";
 import { useEffectOnce } from "danholibraryrjs";
 import { useUserEvents } from "./UserProviderHooks";
 
+let sentLoginRequest = false;
+
 export default function UserProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<ProvidedUserType>(null);
   const connection = useConnectionHub();
@@ -32,7 +34,10 @@ export default function UserProvider({ children }: PropsWithChildren) {
       ? JSON.parse(STORAGE.getItem(STORAGE_KEY) as string) as Exclude<ProvidedUserType, null>
       : null;
     if (!storedUser) return;
-    if ('username' in storedUser) dispatch('login', storedUser.username);
+    if ('username' in storedUser && !sentLoginRequest) {
+      sentLoginRequest = true;
+      dispatch('login', storedUser.username, connection.connectionId);
+    }
   })
 
   return (

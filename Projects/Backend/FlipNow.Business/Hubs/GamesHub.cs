@@ -25,6 +25,8 @@ public class GamesHub : Hub, IGamesHub
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         Guid userId = _sessionService.GetUserIdFromConnectionId(Context.ConnectionId);
+        await Logout();
+
         ActiveGame? game = _sessionService.FindGameFromUserId(userId);
         if (game is null) return;
 
@@ -56,7 +58,7 @@ public class GamesHub : Hub, IGamesHub
     #endregion
 
     #region PlayerPresence
-    public async Task Login(string username)
+    public async Task Login(string username, string? connectionId)
     {
         User? user = _uow.UserRepository.GetByUsername(username);
         if (user is null)
@@ -72,7 +74,7 @@ public class GamesHub : Hub, IGamesHub
             return;
         }
         
-        _sessionService.AddUserConnection(Context.ConnectionId, user.Id);
+        _sessionService.SetUserConnection(Context.ConnectionId, user.Id);
         await Clients.Caller.SendAsync(GamesHubConstants.EVENTS_USER_LOGIN, true, "Login successful", user);
         return;
     }
@@ -102,7 +104,7 @@ public class GamesHub : Hub, IGamesHub
         if (existingPlayerGame is not null) throw new InvalidOperationException("Player already in a game.");
 
         service.AddPlayer(user);
-        _sessionService.AddUserConnection(Context.ConnectionId, user.Id);
+        _sessionService.SetUserConnection(Context.ConnectionId, user.Id);
         //await Groups.AddToGroupAsync(Context.ConnectionId, inviteCode);
         return service.Game;
     });

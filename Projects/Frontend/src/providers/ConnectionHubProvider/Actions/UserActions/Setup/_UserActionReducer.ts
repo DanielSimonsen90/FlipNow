@@ -16,6 +16,6 @@ export default async function UserActionReducer<Action extends HubUserActionName
       broadcastToHub: (...args) => connection.send(action, ...args)
     });
   } catch (error) {
-    console.error(error);
+    console.error(error, connection);
   }
 }

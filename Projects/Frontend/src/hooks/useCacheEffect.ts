@@ -6,6 +6,5 @@ export default function useCacheEffect<TValue>(value: TValue, options: StorageOp
   
   useEffect(() => {
     if (value) storage.setItem(STORAGE_KEY, JSON.stringify(value));
-    else storage.removeItem(STORAGE_KEY);
   }, [storage, STORAGE_KEY, value, dependencies]);
 }

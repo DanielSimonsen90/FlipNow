@@ -1,8 +1,9 @@
 import { ProvidedUserType } from "providers/UserProvider/UserProviderTypes";
 import { BaseActionProps } from "../../HubActionTypes";
+import { Nullable } from "types";
 
 export type HubUserActions = {
-  login: [username: string]
+  login: [username: string, connectionId: Nullable<string>]
   logout: []
 }
 export type HubUserActionNames = keyof HubUserActions;

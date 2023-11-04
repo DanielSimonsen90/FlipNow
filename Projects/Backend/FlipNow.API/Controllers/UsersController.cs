@@ -6,7 +6,12 @@ namespace FlipNow.API.Controllers;
 
 public class UsersController : BaseController
 {
-    public UsersController(UnitOfWork unitOfWork) : base(unitOfWork) { }
+    private readonly GameSessionService _sessionService;
+
+    public UsersController(UnitOfWork unitOfWork, GameSessionService sessionService) : base(unitOfWork)
+    {
+        this._sessionService = sessionService;
+    }
 
     [HttpPost("{username}"), HttpGet("{username}")]
     public async Task<IActionResult> CreateOrFindUser(string username)
@@ -33,5 +38,21 @@ public class UsersController : BaseController
 #if DEBUG
     [HttpGet]
     public async Task<IActionResult> GetAllUsers() => await Task.FromResult(Ok(_unitOfWork.UserRepository.GetAll()));
+
+    [HttpGet("connections")]
+    public async Task<IActionResult> GetAllConnectedUsers() => await Task.FromResult(Ok(_sessionService.ConnectedUsers));
+
+    [HttpDelete("connections/{username}")]
+    public async Task<IActionResult> ForceDisconnectUser(string username)
+    {
+        User? user = _unitOfWork.UserRepository.GetByUsername(username);
+        if (user is null) return NotFound();
+
+        string connectionId = _sessionService.ConnectedUsers.FirstOrDefault(kvp => kvp.Value == user.Id).Key;
+        if (string.IsNullOrEmpty(connectionId)) return Ok("User already disconnected");
+
+        _sessionService.RemoveUserConnection(connectionId);
+        return await Task.FromResult(Ok("User disconnected"));
+    }
 #endif
 }

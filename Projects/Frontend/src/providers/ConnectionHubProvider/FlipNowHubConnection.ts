@@ -20,19 +20,32 @@ export default class FlipNowHubConnection {
 
   private constructor() {
     this._hubConnection = FlipNowHubConnection._hubConnectionSecure;
-    this._hubConnection.start()
-      .then(() => {
-        var interval = setInterval(async function executeSendQueue(this: FlipNowHubConnection) {
-          if (this._hubConnection.state !== HubConnectionState.Connected) return;
 
-          for (const [action, ...args] of this._startUpQueue) {
-            await this.send(action, ...args as any);
-          }
-          this._startUpQueue.length = 0;
-          clearInterval(interval);
-        }.bind(this), 100);
-      })
+  }
+
+  private connect() {
+    return this._hubConnection.start()
+      .then(() => this.startQueue())
       .catch(console.error);
+  }
+  private startQueue() {
+    var interval = setInterval(async function executeSendQueue(this: FlipNowHubConnection) {
+      if (this._hubConnection.state !== HubConnectionState.Connected) return;
+
+      for (const [action, ...args] of this._startUpQueue) {
+        await this.send(action, ...args as any);
+      }
+      this._startUpQueue.length = 0;
+      clearInterval(interval);
+    }.bind(this), 100);
+
+    setTimeout(() => {
+      if (this._startUpQueue.length) this.connect();
+    }, 1000);
+  }
+
+  public get connectionId() {
+    return this._hubConnection.connectionId;
   }
 
   public on<
@@ -51,9 +64,9 @@ export default class FlipNowHubConnection {
     Action extends HubActionNames,
     Arguments extends HubActions[Action]
   >(action: Action, ...args: Arguments) {
-    if (this._hubConnection.state !== HubConnectionState.Connected) {
-      // return console.warn("Hub connection is not connected");
-      this._startUpQueue.push([action, ...args])
+    if (this._hubConnection.state !== HubConnectionState.Connected || !this.connectionId) {
+      this._startUpQueue.push([action, ...args]);
+      return this.startQueue();
     }
     console.log(`Sending ${action} action`, args);
     return this._hubConnection.send(action as string, ...args);
