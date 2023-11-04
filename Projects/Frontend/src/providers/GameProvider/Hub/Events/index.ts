@@ -14,6 +14,8 @@ import LogEvent from './log.event.game';
 import PlayerJoinedEvent from './playerJoined.event.game';
 import PlayerLeftEvent from './playerLeft.event.game';
 
+import TurnExpiredEvent from './turnExpired.event.game';
+
 export * from './_GameEventReducer';
 
 export default {
@@ -26,4 +28,5 @@ export default {
   log: LogEvent,
   playerJoined: PlayerJoinedEvent,
   playerLeft: PlayerLeftEvent,
+  turnExpired: TurnExpiredEvent,
 } as Record<HubEventNames, GameEventRegisterProps<any>>;

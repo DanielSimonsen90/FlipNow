@@ -1,14 +1,18 @@
 ﻿using DanhoLibrary.Extensions;
 using FlipNow.Business.Models;
 using FlipNow.Common.Entities;
+using Microsoft.AspNetCore.SignalR;
 
 namespace FlipNow.Business.Services;
 
 public class GameService
 {
+    public const int MAX_PLAYERS_ALLOWED = 10; // Lobby can only contain 10 players in order for lobby not being overloaded in memory
+    private const int FLIPPED_CARD_TIMEOUT_MS = 1000; // 2 selected cards should be visible for a second before unflipping
+    
     private static bool IsNotMatch(GameCard first, GameCard second) => first.Name != second.Name;
-    private const int FLIPPED_CARD_TIMEOUT_MS = 2000;
     public ActiveGame Game { get; private set; }
+    public bool CanAddPlayer => Game.Players.Count < MAX_PLAYERS_ALLOWED;
 
     private readonly UnitOfWork _unitOfWork;
     private readonly GameSessionService _sessionService;
@@ -27,7 +31,7 @@ public class GameService
 
         _hostId = host.Id;
 
-        sessionService.AddGame(_hostId, Game);
+        sessionService.AddGame(_hostId, this);
     }
     public GameService(UnitOfWork unitOfWork, GameSessionService sessionService,
         ActiveGame game)
@@ -62,8 +66,8 @@ public class GameService
     private void ResetGame()
     {
         // Reset turn
-        if (Game.TurnPlayerIndex > 0)
-            Game.TurnPlayerIndex = 0;
+        Game.TurnPlayerIndex = new Random().Next(Game.Players.Count);
+        Game.Turn.TurnStarted = DateTime.Now;    
 
         // Unflip, unmatch and reorder cards
         if (Game.Cards.Any(c => c.Flipped))
@@ -148,6 +152,7 @@ public class GameService
             }).ToList();
         }
 
+        // Check if game is over
         if (Game.Cards.All(c => c.Matched))
         {
             EndGame();
@@ -155,11 +160,29 @@ public class GameService
             return Game;
         }
 
-        Game.Turn.TurnStarted = DateTime.Now;
-        Game.Turn.Count++;
+        // Update turn variables for next turn
+        UpdateTurn(false);
 
+        // Update and return game
         UpdateHostedGames();
         return Game;
+    }
+    private void UpdateTurn(bool changeTurn)
+    {
+        if (changeTurn)
+        {
+            Game.TurnPlayerIndex = (Game.TurnPlayerIndex + 1) % Game.Players.Count;
+            Game.Turn.Player = Game.Players[Game.TurnPlayerIndex];
+        }
+
+        Game.Turn.TurnStarted = DateTime.Now;
+        Game.Turn.Count++;
+    }
+    public Player ForceChangeTurn()
+    {
+        Player currentTurnPlayer = Game.Players.First(p => p.Id == Game.Turn.Player.Id);
+        UpdateTurn(true);
+        return currentTurnPlayer;
     }
 
     private async Task SaveGameAsync()
@@ -190,7 +213,7 @@ public class GameService
     }
     private void UpdateHostedGames()
     {
-        _sessionService.Update(_hostId, Game);
+        _sessionService.Update(_hostId, this);
     }
 
     public void AddPlayer(User user)
@@ -223,4 +246,3 @@ public class GameService
         UpdateHostedGames();
     }
 }
-
