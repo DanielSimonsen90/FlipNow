@@ -77,7 +77,7 @@ export function useSignalREvents(
       Callbacks.forEach((callback, event) => connection.off(event as HubEventNames, callback as any));
       Callbacks.clear();
     };
-  }, [context, setGame, user]);
+  }, [context, setGame, user, connection]);
 }
 
 export function useUserLoggedOutWhileInGame(

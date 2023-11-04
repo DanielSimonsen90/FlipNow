@@ -10,10 +10,12 @@ import { GameActiontReducerProps } from 'providers/ConnectionHubProvider/Actions
 import { GameProviderContext } from './GameProviderConstants';
 import { useGetActiveGame, useSignalREvents, useUserLoggedOutWhileInGame } from './GameProviderHooks';
 import { GameProviderContextType } from './GameProviderTypes';
+import { useConnectionHub } from 'providers/ConnectionHubProvider';
 
 export default function GameProvider({ children }: PropsWithChildren) {
   const [game, setGame] = useState<Nullable<ActiveGame>>(null);
   const { user } = useUser();
+  const connection = useConnectionHub();
 
   const isClientTurn = game?.turn.player?.user.username === user?.username;
   const isHost = useMemo(() => game?.host.user.id === user?.id, [game, user]);
@@ -23,8 +25,8 @@ export default function GameProvider({ children }: PropsWithChildren) {
   }, [game, user]);
 
   const actionContext = useMemo(() => ({
-    game, isClientTurn, player, isHost,
-  }), [game, isClientTurn, player, isHost]);
+    game, isClientTurn, player, isHost, connection,
+  }), [game, isClientTurn, player, isHost, connection]);
 
   const dispatch = useCallback(async <Action extends HubGameActionNames>(
     action: Action,

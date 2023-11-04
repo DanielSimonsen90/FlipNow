@@ -9,14 +9,14 @@ export function useUser<
 }
 
 export function useUserWithPrompt() {
-  const { user, createOrFind } = useUser();
+  const { user, dispatch } = useUser();
 
   async function getUser() {
     if (user) return user;
     const username = prompt("What is your username?");
     if (!username) return null;
 
-    return createOrFind(username);
+    return dispatch('login', username);
   }
 
   return { user, getUser };

@@ -1,18 +1,20 @@
+import { User } from "models/backend";
 import Actions from "../";
-import { HubUserActionNames, UserActionProps } from "./_UserActionTypes";
+import { HubUserActionNames, UserActiontReducerProps } from "./_UserActionTypes";
 
 export default async function UserActionReducer<Action extends HubUserActionNames>(
   action: Action,
-  { broadcastToHub, args }: UserActionProps<Action>
-): Promise<void> {
+  { args, connection, ...props }: UserActiontReducerProps<Action>
+): Promise<void | User<true>> {
   if (!Actions[action]) throw new Error(`Invalid action: ${action}`);
   const { callback } = Actions[action];
   console.log(`[${action}]`, args);
   
   try {
     await callback({
-      args,
-      broadcastToHub,
+      args, connection,
+      ...props,
+      broadcastToHub: (...args) => connection.send(action, ...args)
     });
   } catch (error) {
     console.error(error);

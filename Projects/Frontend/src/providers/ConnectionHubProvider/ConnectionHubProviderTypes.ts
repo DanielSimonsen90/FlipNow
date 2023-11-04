@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
-import { FlipNowHubConnection } from "./FlipNowHubConnection";
+import { FlipNowHubConnectionType } from "./FlipNowHubConnection";
 
 export type ConnectionHubProviderContextType = {
-  connection: FlipNowHubConnection;
+  connection: FlipNowHubConnectionType;
   
   logs: Log[];
   setLogs: Dispatch<SetStateAction<Log[]>>;

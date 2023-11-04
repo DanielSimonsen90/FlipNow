@@ -3,7 +3,7 @@ import { ConnectionHubProviderContextType } from "./ConnectionHubProviderTypes";
 import FlipNowHubConnection from "./FlipNowHubConnection";
 
 export const ConnectionHubProviderContext = createContext<ConnectionHubProviderContextType>({
-  connection: FlipNowHubConnection,
+  connection: {} as FlipNowHubConnection,
   logs: [],
   setLogs: () => { }
 });

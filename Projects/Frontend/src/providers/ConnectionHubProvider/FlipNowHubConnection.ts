@@ -2,32 +2,31 @@ import { HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } fro
 
 import { Promiseable } from "types";
 import { API_ENDPOINT_SECURE_SIGNALR } from "utils";
-import { ActiveGame } from "models/backend";
 
 import { HubActionNames, HubActions } from "./Actions/HubActionTypes";
 import { HubEventNames, HubEvents } from "./Events/HubEventTypes";
 
-class InternalFlipNowHubConnection {
-  private static _instance: InternalFlipNowHubConnection;
+export default class FlipNowHubConnection {
+  private static _instance: FlipNowHubConnection;
   private static _hubConnectionSecure = new HubConnectionBuilder()
     .withUrl(API_ENDPOINT_SECURE_SIGNALR)
     .withAutomaticReconnect()
     .configureLogging(LogLevel.Information)
     .build();
 
-  private _hubConnection: HubConnection = InternalFlipNowHubConnection._hubConnectionSecure;
+  private _hubConnection: HubConnection = FlipNowHubConnection._hubConnectionSecure;
   private _callbacks: Map<Function, (...args: any[]) => void> = new Map();
-  private _startUpQueue = new Array<[action: HubActionNames, inviteCode: string, ...args: any[]]>();
+  private _startUpQueue = new Array<[action: HubActionNames, ...args: any[]]>();
 
   constructor() {
-    this._hubConnection = InternalFlipNowHubConnection._hubConnectionSecure;
+    this._hubConnection = FlipNowHubConnection._hubConnectionSecure;
     this._hubConnection.start()
       .then(() => {
-        var interval = setInterval(async function executeSendQueue(this: InternalFlipNowHubConnection) {
+        var interval = setInterval(async function executeSendQueue(this: FlipNowHubConnection) {
           if (this._hubConnection.state !== HubConnectionState.Connected) return;
 
-          for (const [action, inviteCode, ...args] of this._startUpQueue) {
-            await this.send(action, { inviteCode }, ...args as any);
+          for (const [action, ...args] of this._startUpQueue) {
+            await this.send(action, ...args as any);
           }
           this._startUpQueue.length = 0;
           clearInterval(interval);
@@ -51,14 +50,13 @@ class InternalFlipNowHubConnection {
   public async send<
     Action extends HubActionNames,
     Arguments extends HubActions[Action]
-  >(action: Action, game: Pick<ActiveGame, 'inviteCode'>, ...args: Arguments) {
+  >(action: Action, ...args: Arguments) {
     if (this._hubConnection.state !== HubConnectionState.Connected) {
       // return console.warn("Hub connection is not connected");
-      this._startUpQueue.push([action, game.inviteCode, ...args])
+      this._startUpQueue.push([action, ...args])
     }
     console.log(`Sending ${action} action`, args);
-    // return this._hubConnection.invoke(action as string, ...args);
-    return this._hubConnection.send(action as string, game.inviteCode, ...args);
+    return this._hubConnection.send(action as string, ...args);
   };
 
   public off<
@@ -72,18 +70,10 @@ class InternalFlipNowHubConnection {
     this._hubConnection.off(event as string, _callback);
   }
 
-  public sendHandlerLater<
-    Action extends HubActionNames,
-    Arguments extends HubActions[Action]
-  >(action: Action, game: Pick<ActiveGame, 'inviteCode'>) {
-    return (...args: Arguments) => this.send(action, game, ...args);
-  }
-
-  public static getInstance(): InternalFlipNowHubConnection {
-    if (!InternalFlipNowHubConnection._instance) InternalFlipNowHubConnection._instance = new InternalFlipNowHubConnection();
-    return InternalFlipNowHubConnection._instance;
+  public static getInstance(): FlipNowHubConnection {
+    if (!FlipNowHubConnection._instance) FlipNowHubConnection._instance = new FlipNowHubConnection();
+    return FlipNowHubConnection._instance;
   }
 }
 
-export type FlipNowHubConnection = InternalFlipNowHubConnection;
-export default InternalFlipNowHubConnection.getInstance();
+export type FlipNowHubConnectionType = FlipNowHubConnection;

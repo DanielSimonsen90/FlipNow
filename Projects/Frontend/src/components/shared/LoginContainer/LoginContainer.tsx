@@ -3,13 +3,13 @@ import { FormEvent } from "types";
 import { LoginContainerProps } from "./LoginContainerProps";
 import { useState } from "react";
 
-export default function LoginContainer({ className, createOrFind }: LoginContainerProps) {
+export default function LoginContainer({ className, dispatch }: LoginContainerProps) {
   const [loading, setLoading] = useState(false);
   
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    createOrFind(e.target.username.value);
+    dispatch('login', e.target.username.value);
   };
 
   return (
