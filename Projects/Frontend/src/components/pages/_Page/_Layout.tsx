@@ -1,11 +1,14 @@
+import { Outlet } from "react-router";
+
 import Providers from "providers";
 import Header from "components/shared/Header";
-import { Outlet } from "react-router";
+import Footer from "components/shared/Footer";
 
 const Layout = () => (
   <Providers>
     <Header />
     <Outlet />
+    <Footer />
   </Providers>
 );
 

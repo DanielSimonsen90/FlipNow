@@ -1,0 +1,12 @@
+.site-footer {
+  background-color: var(--background-secondary);
+  color: var(--text-muted);
+  border-top: 1px solid var(--brand-muted);
+  
+  $padding: 1.5rem;
+  padding: #{$padding + .5} 0 #{$padding};
+  text-align: center;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}

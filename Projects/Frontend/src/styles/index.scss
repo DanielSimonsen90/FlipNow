@@ -24,6 +24,8 @@
 
   --crud-success: #{clrs.$crud-success};
 
+  --link: #{clrs.$link};
+
   font-size: 16px;
   font-family: Arial;
 }
@@ -31,14 +33,23 @@
 body {
   background-color: var(--background-primary);
   color: var(--text-primary);
-  margin: 0 0 2em;
+}
+
+#root { 
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 }
 
 main {
   display: grid;
   justify-items: center;
   gap: 1.5em;
-  margin: .5em 1em;
+  margin: .5em 1em 2em;
+}
+
+a {
+  color: var(--link);
 }
 
 [title] {

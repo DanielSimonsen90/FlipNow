@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router';
+import { SITE_NAME } from 'Constants';
 import LoginContainer from '../LoginContainer';
 
 export default function Header() {
@@ -6,7 +7,7 @@ export default function Header() {
   
   return (
     <header className='site-header'>
-      <h1 onClick={() => navigate('/')}>Danho's FlipNow Game</h1>
+      <h1 onClick={() => navigate('/')}>{SITE_NAME}</h1>
       <LoginContainer />
     </header>
   );
