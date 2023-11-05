@@ -20,6 +20,7 @@ export type ActiveGame = {
   get leaderboard(): Array<Player>;
 
   get cards(): Array<GameCard>;
+  get maxCardsAllowed(): number;
   playState: PlayState;
 }
 

@@ -11,7 +11,7 @@ type Props = {
 };
 
 export default function SettingsModal({ modalRef }: Props) {
-  const { game: { settings, maxPlayersAllowed }, dispatch } = useGame(false);
+  const { game: { settings, maxPlayersAllowed, maxCardsAllowed }, dispatch } = useGame(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -42,7 +42,8 @@ export default function SettingsModal({ modalRef }: Props) {
           errorMessage={`Must be between 1 and ${maxPlayersAllowed}`}
         />
         <Input group label model={settings} name="cards"
-          type="number" min={0} errorMessage={`0 is minimum`} 
+          type="number" min={0} max={maxCardsAllowed} 
+          errorMessage={`Must be between 0 and ${maxCardsAllowed}`}
         />
         <div className="button-container reverse">
           <input type="submit" value="Update settings" />

@@ -64,5 +64,6 @@ public class ActiveGame
     #endregion
 
     public List<GameCard> Cards { get; internal set; }
+    public int MaxCardsAllowed { get; } = GameService.MAX_CARDS_ALLOWED;
     public PlayState PlayState { get; set; } = PlayState.IDLE;
 }
