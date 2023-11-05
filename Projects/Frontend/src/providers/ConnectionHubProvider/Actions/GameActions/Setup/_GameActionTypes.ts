@@ -20,7 +20,7 @@ export type HubGameActions = {
   leaveGame: [playerId: string];
 
   flipCard: [cardIndex: number];
-  updateSettings: [settings: GameSettings];
+  updateGameSettings: [settings: GameSettings];
 };
 export type HubGameActionNames = keyof HubGameActions;
 

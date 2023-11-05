@@ -9,7 +9,6 @@ import {
 
 import { STORAGE, STORAGE_KEY, UserProviderContext } from "./UserProviderConstants";
 import type { ProvidedUserType } from './UserProviderTypes';
-import { useConnectionHub } from "providers/ConnectionHubProvider";
 import { useEffectOnce } from "danholibraryrjs";
 import { useUserEvents } from "./UserProviderHooks";
 
@@ -18,8 +17,7 @@ let sentLoginRequest = false;
 export default function UserProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<ProvidedUserType>(null);
   const [loggingIn, setLoggingIn] = useState(false);
-  const connection = useConnectionHub();
-  const actionContext = useMemo(() => ({ connection, user, setLoggingIn }), [user, connection, setLoggingIn]);
+  const actionContext = useMemo(() => ({user, setLoggingIn }), [user, setLoggingIn]);
   const dispatch = useCallback(async <Action extends HubUserActionNames>(
     action: Action,
     ...args: HubUserActions[Action]

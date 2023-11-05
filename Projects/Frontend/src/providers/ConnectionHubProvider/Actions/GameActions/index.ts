@@ -7,7 +7,7 @@ import FlipCardAction from './flipCard.action.game';
 import JoinGameAction from './joinGame.action.game';
 import LeaveGameAction from './leaveGame.action.game';
 import StartGameAction from './startGame.action.game';
-import UpdateSettingsAction from './updateSettings.action.game';
+import UpdateGameSettingsAction from './updateGameSettings.action.game';
 
 export default {
   createGame: CreateGameAction,
@@ -17,5 +17,5 @@ export default {
   joinGame: JoinGameAction,
   leaveGame: LeaveGameAction,
   startGame: StartGameAction,
-  updateSettings: UpdateSettingsAction,
+  updateGameSettings: UpdateGameSettingsAction,
 } as Record<HubGameActionNames, GameActionRegisterProps<any>>;

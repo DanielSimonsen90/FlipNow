@@ -121,11 +121,11 @@ public class GamesHub : Hub, IGamesHub
     #endregion
 
     #region Game Updates
-    //public Task UpdateGameSettings(string inviteCode, GameSettings settings) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_GAME_SETTINGS_UPDATE, async (players, service) =>
-    //{
-    //    service.UpdateSettings(settings);
-    //    return await Task.FromResult(service.Game);
-    //});
+    public Task UpdateGameSettings(string inviteCode, GameSettings settings) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_GAME_SETTINGS_UPDATE, async (players, service) =>
+    {
+        service.UpdateSettings(settings);
+        return await Task.FromResult(service.Game);
+    });
     public Task FlipCard(string inviteCode, int cardIndex) => UseActiveGame(inviteCode, GamesHubConstants.EVENTS_FLIP_CARD, async (players, service) =>
     {
         // -1 was given from client timeout

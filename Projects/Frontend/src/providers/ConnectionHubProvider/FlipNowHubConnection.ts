@@ -15,8 +15,8 @@ export default class FlipNowHubConnection {
     .build();
 
   private _hubConnection: HubConnection = FlipNowHubConnection._hubConnectionSecure;
-  private _callbacks: Map<Function, (...args: any[]) => void> = new Map();
   private _startUpQueue = new Array<[action: HubActionNames, ...args: any[]]>();
+  public callbacks: Map<[event: string, originalHandler: Function], (...args: any[]) => void> = new Map();
 
   private constructor() {
     this._hubConnection = FlipNowHubConnection._hubConnectionSecure;
@@ -57,7 +57,7 @@ export default class FlipNowHubConnection {
       callback(...args as Arguments);
     };
     this._hubConnection.on(event, _callback);
-    this._callbacks.set(callback, _callback);
+    this.callbacks.set([event, callback], _callback);
   };
 
   public async send<
@@ -76,11 +76,18 @@ export default class FlipNowHubConnection {
     EventName extends HubEventNames,
     Arguments extends HubEvents[EventName]
   >(event: EventName, callback: (...args: Arguments) => Promiseable<void>) {
-    const _callback = this._callbacks.get(callback);
+    const _callback = this.callbacks.get([event, callback]);
     if (!_callback) return console.warn(`Callback for ${event} event not found`);
     // console.log(`Removing ${event} event callback`);
 
     this._hubConnection.off(event as string, _callback);
+  }
+
+  public clear(events: Array<string>) {
+    this.callbacks.forEach((callback, [event]) => {
+      if (!events.includes(event)) return;
+      this._hubConnection.off(event, callback);
+    });
   }
 
   public static getInstance(): FlipNowHubConnection {

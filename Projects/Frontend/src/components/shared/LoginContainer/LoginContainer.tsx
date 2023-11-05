@@ -2,14 +2,14 @@ import { useRef } from "react";
 import { Button, classNames } from "danholibraryrjs";
 
 import { FormEvent } from "types";
-import { useConnectionHub } from "providers/ConnectionHubProvider";
 import { LoginContainerProps } from "./LoginContainerProps";
+import FlipNowHubConnection from "providers/ConnectionHubProvider/FlipNowHubConnection";
 
 const LoginMessage = 'Logging you in...';
 
 export default function LoginContainer({ className, dispatch, loggingIn, setLoggingIn }: LoginContainerProps) {
   const usernameInputRef = useRef<HTMLInputElement>(null);
-  const connection = useConnectionHub();
+  const connection = FlipNowHubConnection.getInstance();
   
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();

@@ -1,7 +1,7 @@
 import { PlayState } from "models/backend";
 import { CreateGameAction } from "./Setup";
 
-export default CreateGameAction('updateSettings', async ({
+export default CreateGameAction('updateGameSettings', async ({
   game, isHost,
   args: [updatedSettings],
   broadcastToHub
