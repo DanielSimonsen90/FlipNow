@@ -58,7 +58,7 @@ public class GamesHub : Hub, IGamesHub
     #endregion
 
     #region PlayerPresence
-    public async Task Login(string username, string? connectionId)
+    public async Task Login(string username)
     {
         User? user = _uow.UserRepository.GetByUsername(username);
         if (user is null)
