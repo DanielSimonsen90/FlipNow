@@ -26,7 +26,7 @@ export default function LoginContainer({ className, dispatch, loggingIn, setLogg
 
   return (
     <form className={classNames(className, 'login')} onSubmit={onSubmit}>
-      <input ref={usernameInputRef} type="text" name="username" placeholder={loggingIn ? LoginMessage : 'Select your username...'} disabled={loggingIn} />
+      <input ref={usernameInputRef} type="text" name="username" disabled={loggingIn} placeholder={loggingIn ? LoginMessage : 'Select your username...'} />
       <Button importance="primary" type="submit" disabled={loggingIn}>{loggingIn ? LoginMessage : 'Login'}</Button>
     </form>
   );

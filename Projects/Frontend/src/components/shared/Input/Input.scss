@@ -1,0 +1,24 @@
+@use '../../../styles/colors' as clrs;
+
+.input-group {
+  display: grid;
+}
+
+label {
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+input {
+  background-color: lighten(clrs.$background-primary, 10%);
+  color: var(--text-secondary);
+  border: 1px solid var(--background-primary);
+  border-radius: .5em;
+  padding: .25em;
+
+  &:focus {
+    outline: none;
+    border: 1px solid var(--text-primary);
+    color: var(--text-primary);
+  }
+}

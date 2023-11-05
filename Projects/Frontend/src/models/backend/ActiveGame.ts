@@ -9,7 +9,7 @@ export type ActiveGame = {
   get inviteCode(): string;
   get lobbyLimit(): number;
   readonly maxPlayersAllowed: number;
-  gameSettings: GameSettings;
+  settings: GameSettings;
 
   get players(): Array<Player>
   _turnPlayerIndex: number;

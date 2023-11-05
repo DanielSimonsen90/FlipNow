@@ -21,6 +21,7 @@
 
   display: flex;
   align-items: center;
+  justify-content: center;
 
   &:hover:not(:disabled) {
     $background: lighten($main, 3%);

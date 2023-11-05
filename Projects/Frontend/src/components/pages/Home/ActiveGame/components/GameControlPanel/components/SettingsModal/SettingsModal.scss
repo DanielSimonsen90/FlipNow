@@ -1,0 +1,17 @@
+.game-settings {
+  h1 {
+    color: var(--text-primary);
+    margin: unset;
+    text-align: center;
+  }
+
+  .button-container * {
+    --font-size: 1rem;
+
+    &.close:hover {
+      background-color: unset;
+      box-shadow: unset;
+      text-decoration: underline;
+    }
+  }
+}
