@@ -12,7 +12,7 @@ public class GameService
     
     private static bool IsNotMatch(GameCard first, GameCard second) => first.Name != second.Name;
     public ActiveGame Game { get; private set; }
-    public bool CanAddPlayer => Game.Players.Count < MAX_PLAYERS_ALLOWED;
+    public bool CanAddPlayer => Game.Players.Count < Game.LobbyLimit;
 
     private readonly UnitOfWork _unitOfWork;
     private readonly GameSessionService _sessionService;
