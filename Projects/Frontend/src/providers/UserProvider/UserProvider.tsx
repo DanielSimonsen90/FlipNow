@@ -7,7 +7,7 @@ import {
   UserActionReducer, UserActiontReducerProps 
 } from "providers/ConnectionHubProvider/Actions/UserActions/Setup";
 
-import { STORAGE, STORAGE_KEY, UserProviderContext } from "./UserProviderConstants";
+import { RegisterUserEvents, STORAGE, STORAGE_KEY, UserProviderContext } from "./UserProviderConstants";
 import type { ProvidedUserType } from './UserProviderTypes';
 import { useEffectOnce } from "danholibraryrjs";
 import { useUserEvents } from "./UserProviderHooks";

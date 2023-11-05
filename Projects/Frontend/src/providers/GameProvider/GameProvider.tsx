@@ -7,8 +7,8 @@ import { useUser } from 'providers/UserProvider';
 import { GameActionReducer, HubGameActionNames, HubGameActions } from 'providers/ConnectionHubProvider/Actions/GameActions/Setup';
 import { GameActiontReducerProps } from 'providers/ConnectionHubProvider/Actions/GameActions/Setup/_GameActionReducer';
 
-import { GameProviderContext } from './GameProviderConstants';
-import { useGetActiveGame, useGameEvents, useUserLoggedOutWhileInGame } from './GameProviderHooks';
+import { GameProviderContext, RegisterGameEvents } from './GameProviderConstants';
+import { useGameEvents, useGetActiveGame, useUserLoggedOutWhileInGame } from './GameProviderHooks';
 import { GameProviderContextType } from './GameProviderTypes';
 import FlipNowHubConnection from 'providers/ConnectionHubProvider/FlipNowHubConnection';
 

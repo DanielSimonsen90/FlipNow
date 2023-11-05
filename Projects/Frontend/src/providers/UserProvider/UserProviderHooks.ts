@@ -1,10 +1,8 @@
-import { useContext } from "react";
-import { UserProviderContext } from "./UserProviderConstants";
+import { useContext, useEffect } from "react";
+import { RegisterUserEvents, UserProviderContext } from "./UserProviderConstants";
 import { UserProviderContextType } from "./UserProviderTypes";
-
-import UserEvents from "providers/ConnectionHubProvider/Events/UserEvents";
-import { HubUserEventNames, UserEventProps, UserEventReducer } from "providers/ConnectionHubProvider/Events";
-import { useSignalREvents } from "providers/ConnectionHubProvider";
+import FlipNowHubConnection from "providers/ConnectionHubProvider/FlipNowHubConnection";
+import { UserEventProps, HubUserEventNames } from "providers/ConnectionHubProvider/Events";
 
 export function useUser<
   AllowNullable extends boolean
@@ -26,5 +24,7 @@ export function useUserWithPrompt() {
   return { user, getUser };
 }
 
-export const useUserEvents = (props: Omit<UserEventProps<HubUserEventNames>, 'args'>) => 
-  useSignalREvents(UserEvents, async (event, ...args) => await UserEventReducer(event, { ...props, args }));
+export const useUserEvents = (props: Omit<UserEventProps<HubUserEventNames>, 'args'>) =>
+  useEffect(() => {
+    RegisterUserEvents(props);
+  }, [props]);

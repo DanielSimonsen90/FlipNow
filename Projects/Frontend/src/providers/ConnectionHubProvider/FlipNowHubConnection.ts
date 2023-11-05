@@ -4,7 +4,8 @@ import { Promiseable } from "types";
 import { API_ENDPOINT_SECURE_SIGNALR } from "utils";
 
 import { HubActionNames, HubActions } from "./Actions/HubActionTypes";
-import { HubEventNames, HubEvents } from "./Events/HubEventTypes";
+import { BaseCreateHubEvent, HubEventNames, HubEvents } from "./Events/HubEventTypes";
+import Events from "./Events";
 
 export default class FlipNowHubConnection {
   private static _instance: FlipNowHubConnection;
@@ -18,11 +19,16 @@ export default class FlipNowHubConnection {
   private _startUpQueue = new Array<[action: HubActionNames, ...args: any[]]>();
   public callbacks: Map<[event: string, originalHandler: Function], (...args: any[]) => void> = new Map();
 
-  private constructor() {
-    this._hubConnection = FlipNowHubConnection._hubConnectionSecure;
-
+  public static getInstance(): FlipNowHubConnection {
+    if (!FlipNowHubConnection._instance) FlipNowHubConnection._instance = new FlipNowHubConnection();
+    return FlipNowHubConnection._instance;
   }
 
+  private constructor() {
+    this._hubConnection = FlipNowHubConnection._hubConnectionSecure;
+  }
+
+  //#region Startup
   private connect() {
     return this._hubConnection.start()
       .then(() => this.startQueue())
@@ -43,11 +49,13 @@ export default class FlipNowHubConnection {
       if (this._startUpQueue.length) this.connect();
     }, 1000);
   }
+  //#endregion
 
   public get connectionId() {
     return this._hubConnection.connectionId;
   }
 
+  //#region Events
   public on<
     EventName extends HubEventNames,
     Arguments extends HubEvents[EventName]
@@ -88,12 +96,36 @@ export default class FlipNowHubConnection {
       if (!events.includes(event)) return;
       this._hubConnection.off(event, callback);
     });
-  }
 
-  public static getInstance(): FlipNowHubConnection {
-    if (!FlipNowHubConnection._instance) FlipNowHubConnection._instance = new FlipNowHubConnection();
-    return FlipNowHubConnection._instance;
+    this.callbacks = this.callbacks.filter((_, [event]) => !events.includes(event));
   }
+  //#endregion
+
+  //#region Register site events
+  public reigster<
+    EventNames extends HubEventNames,
+    Events extends HubEvents,
+  >(
+    events: Record<EventNames, BaseCreateHubEvent<string, any, any>>,
+    callback: <EventName extends EventNames>(
+      event: EventName,
+      ...args: Events[EventName]
+    ) => ReturnType<FlipNowHubConnection['on']>
+  ) {
+    if (this.callbacks.keyArr().some(([event]) => event in events)) {
+      this.clear(Object.keys(events));
+    }
+
+    Object.keysOf(Events).forEach((event) => {
+      if (!(event in events)) return;
+
+      const _callback = <EventName extends EventNames>(...args: Events[EventName]) => callback(event as EventName, ...args);
+      this.on(event, _callback);
+    });
+
+    // console.log('Registered events', this.callbacks.keyArr().map(([event]) => event));
+  }
+  //#endregion
 }
 
 export type FlipNowHubConnectionType = FlipNowHubConnection;
