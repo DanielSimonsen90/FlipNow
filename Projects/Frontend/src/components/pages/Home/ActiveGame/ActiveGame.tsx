@@ -13,7 +13,7 @@ export default function ActiveGame() {
 
   return (
     <div id="active-game">
-      <h1>{game.host.user.username}'s Game</h1>
+      <h1>{game.lobbyName}</h1>
       <InviteCode />
 
       <div className="game-container">

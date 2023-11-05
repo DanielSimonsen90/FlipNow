@@ -1,13 +1,11 @@
 import { Button } from "danholibraryrjs";
-import { useConnectionHub } from "providers/ConnectionHubProvider";
 import { useGame } from "providers/GameProvider";
 import { useUser } from "providers/UserProvider";
 import { useState } from "react";
 
 export default function CreateGameButton() {
-  const { dispatch: userDispatch } = useUser();
+  const { dispatch: userDispatch, loggingIn } = useUser();
   const { dispatch: gameDispatch } = useGame();
-  const { connectionId } = useConnectionHub();
   const [pressed, setPressed] = useState(false);
 
   function onClick() {
@@ -15,7 +13,7 @@ export default function CreateGameButton() {
     gameDispatch('createGame').catch(err => {
       if (err instanceof Error && err.message === 'User not logged in') {
         const username = prompt('Insert your username');
-        if (username) userDispatch('login', username, connectionId).then(() => gameDispatch('createGame'));
+        if (username) userDispatch('login', username).then(() => gameDispatch('createGame'));
       }
       
       setPressed(false);
@@ -24,8 +22,12 @@ export default function CreateGameButton() {
 
   return (
     <Button id="create-game" importance="primary" 
-      disabled={pressed}
+      disabled={pressed || loggingIn}
       onClick={onClick}
-    >{pressed ? 'Creating your game...' : 'Start playing'}</Button>
+    >{
+      pressed ? 'Creating your game...' :
+      loggingIn ? 'You are being logged in' : 
+      'Start playing'
+    }</Button>
   );
 }

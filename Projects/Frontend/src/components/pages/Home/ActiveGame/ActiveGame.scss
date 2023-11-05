@@ -15,6 +15,7 @@ main {
 #active-game {
   display: grid;
   place-items: center;
+  grid-auto-rows: min-content;
   gap: 1em;
 
   > h1 {

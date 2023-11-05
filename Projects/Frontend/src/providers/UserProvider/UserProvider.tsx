@@ -17,8 +17,9 @@ let sentLoginRequest = false;
 
 export default function UserProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<ProvidedUserType>(null);
+  const [loggingIn, setLoggingIn] = useState(false);
   const connection = useConnectionHub();
-  const actionContext = useMemo(() => ({ connection, user }), [user, connection]);
+  const actionContext = useMemo(() => ({ connection, user, setLoggingIn }), [user, connection, setLoggingIn]);
   const dispatch = useCallback(async <Action extends HubUserActionNames>(
     action: Action,
     ...args: HubUserActions[Action]
@@ -27,7 +28,7 @@ export default function UserProvider({ children }: PropsWithChildren) {
   }, [user, actionContext]);
 
   useCacheEffect(user, { storage: STORAGE, key: STORAGE_KEY }, [user]);
-  useUserEvents({ user, setUser });
+  useUserEvents({ user, setUser, setLoggingIn });
 
   useEffectOnce(() => {
     const storedUser = STORAGE.getItem(STORAGE_KEY)
@@ -36,13 +37,15 @@ export default function UserProvider({ children }: PropsWithChildren) {
     if (!storedUser) return;
     if ('username' in storedUser && !sentLoginRequest) {
       sentLoginRequest = true;
-      dispatch('login', storedUser.username, connection.connectionId);
+      dispatch('login', storedUser.username);
     }
   })
 
   return (
     <UserProviderContext.Provider value={{
       user,
+      loggingIn,
+      setLoggingIn,
       dispatch
     }}>
       {children}

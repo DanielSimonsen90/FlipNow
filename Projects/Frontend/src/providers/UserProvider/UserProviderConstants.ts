@@ -6,5 +6,7 @@ export const STORAGE = window.localStorage;
 
 export const UserProviderContext = createContext<UserProviderContextType>({
   user: null,
+  loggingIn: false,
+  setLoggingIn: () => {},
   dispatch: async () => {}
 });

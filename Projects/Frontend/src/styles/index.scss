@@ -43,6 +43,7 @@ body {
 
 main {
   display: grid;
+  grid-auto-rows: min-content;
   justify-items: center;
   gap: 1.5em;
   margin: .5em 1em 2em;

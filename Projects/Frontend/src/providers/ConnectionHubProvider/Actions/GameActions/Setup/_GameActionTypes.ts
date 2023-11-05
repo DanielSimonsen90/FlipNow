@@ -4,6 +4,7 @@ import { Nullable } from "types";
 import { GameProviderContextType } from "providers/GameProvider/GameProviderTypes";
 import { BaseActionProps, BroadcastToHub } from "../../HubActionTypes";
 import { ProvidedUserType } from "providers/UserProvider/UserProviderTypes";
+import { GameSettings } from "models/backend/GameSettings";
 
 /**
  * These events are emitted to the server from the client
@@ -19,6 +20,7 @@ export type HubGameActions = {
   leaveGame: [playerId: string];
 
   flipCard: [cardIndex: number];
+  updateSettings: [settings: GameSettings];
 };
 export type HubGameActionNames = keyof HubGameActions;
 

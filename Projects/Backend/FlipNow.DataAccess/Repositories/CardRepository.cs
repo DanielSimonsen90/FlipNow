@@ -8,12 +8,10 @@ public class CardRepository : BaseRepository<Card, Guid>
 {
     public CardRepository(FlipNowDbContext context) : base(context) {}
 
-    public IEnumerable<Card> GetAllShuffled(int limit) => GetAll()
-        .Take(limit)
-        .OrderBy(_ => Guid.NewGuid());
-    public IEnumerable<Card> GetAllTwiceShuffled() => (
-        GetAll()
+    public IEnumerable<Card> GetAll(int limit) => limit == int.MaxValue ? GetAll() : GetAll().Take(limit);
+    public IEnumerable<Card> GetAllTwiceShuffled(int limit = int.MaxValue) => (
+        GetAll(limit)
         .ToList() as IList<Card>)
-        .AddRange(GetAll())
+        .AddRange(GetAll(limit))
         .OrderBy(_ => Guid.NewGuid());
 }

@@ -4,7 +4,7 @@ import { UserProviderContextType } from "./UserProviderTypes";
 
 import UserEvents from "providers/ConnectionHubProvider/Events/UserEvents";
 import { HubUserEventNames, UserEventProps, UserEventReducer } from "providers/ConnectionHubProvider/Events";
-import { useConnectionHub, useSignalREvents } from "providers/ConnectionHubProvider";
+import { useSignalREvents } from "providers/ConnectionHubProvider";
 
 export function useUser<
   AllowNullable extends boolean
@@ -13,7 +13,6 @@ export function useUser<
 }
 
 export function useUserWithPrompt() {
-  const { connectionId } = useConnectionHub();
   const { user, dispatch } = useUser();
 
   async function getUser() {
@@ -21,7 +20,7 @@ export function useUserWithPrompt() {
     const username = prompt("What is your username?");
     if (!username) return null;
 
-    return dispatch('login', username, connectionId);
+    return dispatch('login', username);
   }
 
   return { user, getUser };

@@ -4,11 +4,13 @@ import { ProvidedUserType } from "providers/UserProvider/UserProviderTypes";
 
 export default CreateUserAction('login', async ({ 
   args: [username], 
+  setLoggingIn,
   broadcastToHub, 
-  connection: { connectionId } 
 }) => {
+  setLoggingIn(true);
   const response = await Request<ProvidedUserType, string>(`users/${username}`);
-  if (response.success) return await broadcastToHub(username, connectionId);
+  if (response.success) return await broadcastToHub(username);
 
   console.error(response.text);
+  setLoggingIn(false);
 });

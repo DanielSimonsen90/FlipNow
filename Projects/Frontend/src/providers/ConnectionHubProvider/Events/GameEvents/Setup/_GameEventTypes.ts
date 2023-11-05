@@ -10,6 +10,7 @@ import { ProvidedUserType } from "providers/UserProvider/UserProviderTypes";
  */
 export type HubGameEvents = {
   gameStarted: [inviteCode: string, game: ActiveGame];
+  gameSettingsUpdated: [inviteCode: string, game: ActiveGame];
 
   cardFlipped: [inviteCode: string, game: ActiveGame];
   gameUpdated: [inviteCode: string, game: ActiveGame];

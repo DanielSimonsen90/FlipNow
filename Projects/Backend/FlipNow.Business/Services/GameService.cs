@@ -25,9 +25,7 @@ public class GameService
 
         _unitOfWork = unitOfWork;
         _sessionService = sessionService;
-        Game = new ActiveGame(
-            cards: _unitOfWork.CardRepository.GetAllTwiceShuffled(),
-            host);
+        Game = new ActiveGame(_unitOfWork, host);
 
         _hostId = host.Id;
 
@@ -82,6 +80,11 @@ public class GameService
         Game.Players.ForEach(p => p.CardMatches = 0);
     }
 
+    public void UpdateSettings(GameSettings settings)
+    {
+        Game.SetSettings(settings, _unitOfWork);
+        UpdateHostedGames();
+    }
     /// <summary>
     /// Flip card from <paramref name="index"/>
     /// </summary>

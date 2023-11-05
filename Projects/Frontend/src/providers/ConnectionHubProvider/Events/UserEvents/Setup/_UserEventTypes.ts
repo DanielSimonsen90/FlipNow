@@ -11,6 +11,7 @@ export type HubUserEventNames = keyof HubUserEvents;
 
 export type UserEventProps<Event extends HubUserEventNames> = {
   user: ProvidedUserType;
+  setLoggingIn: Dispatch<SetStateAction<boolean>>;
   setUser: Dispatch<SetStateAction<ProvidedUserType>>;
   args: HubUserEvents[Event]
 }
