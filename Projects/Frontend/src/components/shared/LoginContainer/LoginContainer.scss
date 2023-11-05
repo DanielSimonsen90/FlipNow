@@ -1,7 +1,8 @@
 .login-container {
   display: grid;
   align-items: center;
-  
+  gap: .5ch;
+
   p {
     margin: .5ch;
     color: var(--text-muted);
@@ -14,9 +15,5 @@
 
   button {
     margin-left: auto;
-  }
-
-  &.login {
-    gap: 1ch;
   }
 }

@@ -5,37 +5,54 @@
 $game-size: mixins.calculate-game-size(
   card.$card-width,
   cardContainer.$gap,
-  5
-);
+  5);
 
 main {
   margin: unset;
 }
 
 #active-game {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   place-items: center;
   gap: 1em;
 
-  > h1 {
+  >h1 {
     margin: 2rem 0 .5rem;
+    text-align: center;
   }
 }
 
 .game-container {
+  --cards-amount: 0;
+  --min-cols: 5;
+  --max-cols: 10;
+  --actual-cols: clamp(var(--min-cols), calc(var(--cards-amount) / 1.75), var(--max-cols));
+
   // PlayState == PLAYING
   display: grid;
   grid-template-areas: "game leaderboard";
-  grid-template-columns: #{$game-size} auto;
+  grid-template-columns: calc(var(--actual-cols) * #{card.$card-width} + cardContainer.$gap) auto;
   place-items: center;
   gap: 2em;
   min-height: min(20vh, 75vw);
-  margin-bottom: 2em;
+  margin: 0 1em 2em;
+  max-width: 90em;
 
   &:has(.turn-teller) {
-    grid-template-areas: 
-      "turn-teller turn-teller" 
+    grid-template-areas:
+      "turn-teller turn-teller"
       "game leaderboard";
+
+    @media (max-width: 970px) {
+      grid-template-areas: "turn-teller" "game" "leaderboard";
+      grid-template-columns: auto;
+      grid-auto-flow: row;
+
+      main {
+        grid-area: game;
+      }
+    }
   }
 
   // PlayState == IDLE
@@ -50,7 +67,7 @@ main {
     grid-template-areas: "end end" "start leaderboard";
     margin: 1em 0;
 
-    > *:first-child {
+    >*:first-child {
       grid-area: end;
     }
 

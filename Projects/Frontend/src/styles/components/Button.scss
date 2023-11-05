@@ -18,7 +18,10 @@
   max-height: calc(var(--font-size) + 1.25em);
   border-radius: .5em;
   text-align: center;
+
   display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover:not(:disabled) {
     $background: lighten($main, 3%);
@@ -61,4 +64,9 @@ button,
   display: flex;
   justify-content: flex-end;
   gap: 1ch;
+
+  &.reverse {
+    flex-direction: row-reverse;
+    margin-left: auto;
+  }
 }

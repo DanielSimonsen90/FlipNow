@@ -8,14 +8,14 @@ import { GameActionReducer, HubGameActionNames, HubGameActions } from 'providers
 import { GameActiontReducerProps } from 'providers/ConnectionHubProvider/Actions/GameActions/Setup/_GameActionReducer';
 
 import { GameProviderContext } from './GameProviderConstants';
-import { useGetActiveGame, useGameEvents, useUserLoggedOutWhileInGame } from './GameProviderHooks';
+import { useGameEvents, useGetActiveGame, useUserLoggedOutWhileInGame } from './GameProviderHooks';
 import { GameProviderContextType } from './GameProviderTypes';
-import { useConnectionHub } from 'providers/ConnectionHubProvider';
+import FlipNowHubConnection from 'providers/ConnectionHubProvider/FlipNowHubConnection';
 
 export default function GameProvider({ children }: PropsWithChildren) {
   const [game, setGame] = useState<Nullable<ActiveGame>>(null);
   const { user } = useUser();
-  const connection = useConnectionHub();
+  const connection = FlipNowHubConnection.getInstance();
 
   const isClientTurn = game?.turn.player?.user.username === user?.username;
   const isHost = useMemo(() => game?.host.user.id === user?.id, [game, user]);

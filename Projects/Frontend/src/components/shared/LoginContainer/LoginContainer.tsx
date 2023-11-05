@@ -1,31 +1,33 @@
+import { useRef } from "react";
 import { Button, classNames } from "danholibraryrjs";
+
 import { FormEvent } from "types";
 import { LoginContainerProps } from "./LoginContainerProps";
-import { useRef, useState } from "react";
-import { useConnectionHub } from "providers/ConnectionHubProvider";
+import FlipNowHubConnection from "providers/ConnectionHubProvider/FlipNowHubConnection";
 
-export default function LoginContainer({ className, dispatch }: LoginContainerProps) {
-  const [loading, setLoading] = useState(false);
+const LoginMessage = 'Logging you in...';
+
+export default function LoginContainer({ className, dispatch, loggingIn, setLoggingIn }: LoginContainerProps) {
   const usernameInputRef = useRef<HTMLInputElement>(null);
-  const connection = useConnectionHub();
+  const connection = FlipNowHubConnection.getInstance();
   
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     connection.on('userLoggedIn', succeeded => {
       if (succeeded) return; 
       
-      setLoading(false);
+      setLoggingIn(false);
       usernameInputRef.current?.focus();
     });
 
-    setLoading(true);
-    dispatch('login', e.target.username.value, connection.connectionId);
+    setLoggingIn(true);
+    dispatch('login', e.target.username.value);
   };
 
   return (
     <form className={classNames(className, 'login')} onSubmit={onSubmit}>
-      <input ref={usernameInputRef} type="text" name="username" placeholder="Select your username..." />
-      <Button importance="primary" type="submit" disabled={loading}>{loading ? 'Logging you in...' : 'Login'}</Button>
+      <input ref={usernameInputRef} type="text" name="username" disabled={loggingIn} placeholder={loggingIn ? LoginMessage : 'Select your username...'} />
+      <Button importance="primary" type="submit" disabled={loggingIn}>{loggingIn ? LoginMessage : 'Login'}</Button>
     </form>
   );
 }

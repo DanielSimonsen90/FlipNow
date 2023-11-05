@@ -9,7 +9,6 @@ import {
 
 import { STORAGE, STORAGE_KEY, UserProviderContext } from "./UserProviderConstants";
 import type { ProvidedUserType } from './UserProviderTypes';
-import { useConnectionHub } from "providers/ConnectionHubProvider";
 import { useEffectOnce } from "danholibraryrjs";
 import { useUserEvents } from "./UserProviderHooks";
 
@@ -17,8 +16,8 @@ let sentLoginRequest = false;
 
 export default function UserProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<ProvidedUserType>(null);
-  const connection = useConnectionHub();
-  const actionContext = useMemo(() => ({ connection, user }), [user, connection]);
+  const [loggingIn, setLoggingIn] = useState(false);
+  const actionContext = useMemo(() => ({user, setLoggingIn }), [user, setLoggingIn]);
   const dispatch = useCallback(async <Action extends HubUserActionNames>(
     action: Action,
     ...args: HubUserActions[Action]
@@ -27,7 +26,7 @@ export default function UserProvider({ children }: PropsWithChildren) {
   }, [user, actionContext]);
 
   useCacheEffect(user, { storage: STORAGE, key: STORAGE_KEY }, [user]);
-  useUserEvents({ user, setUser });
+  useUserEvents({ user, setUser, setLoggingIn });
 
   useEffectOnce(() => {
     const storedUser = STORAGE.getItem(STORAGE_KEY)
@@ -36,13 +35,15 @@ export default function UserProvider({ children }: PropsWithChildren) {
     if (!storedUser) return;
     if ('username' in storedUser && !sentLoginRequest) {
       sentLoginRequest = true;
-      dispatch('login', storedUser.username, connection.connectionId);
+      dispatch('login', storedUser.username);
     }
   })
 
   return (
     <UserProviderContext.Provider value={{
       user,
+      loggingIn,
+      setLoggingIn,
       dispatch
     }}>
       {children}

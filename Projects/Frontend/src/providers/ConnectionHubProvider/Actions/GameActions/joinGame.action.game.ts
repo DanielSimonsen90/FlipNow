@@ -9,5 +9,5 @@ export default CreateGameAction('joinGame', async ({
     if (game.inviteCode !== inviteCode) throw new Error('You are already in a different game');
   }
 
-  broadcastToHub(userId);
+  broadcastToHub(inviteCode, userId);
 })

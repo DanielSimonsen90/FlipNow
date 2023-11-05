@@ -14,16 +14,16 @@ export default function TurnTeller() {
   const started = game.playState === PlayState.PLAYING;
   const turnPlayername = game.turn.player?.user.username ?? "Nobody";
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRenderCount(c => c + 1);
-    }, 1000);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setRenderCount(c => c + 1);
+  //   }, 1000);
 
-    return () => {
-      clearInterval(interval);
-      setRenderCount(0);
-    }
-  }, [started, game.turn.count]);
+  //   return () => {
+  //     clearInterval(interval);
+  //     setRenderCount(0);
+  //   }
+  // }, [started, game.turn.count]);
 
   useEffect(() => {
     if (started && isClientTurn && secondsSpent >= game.turn.timeout) {

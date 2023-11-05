@@ -1,10 +1,7 @@
-import { useContext } from "react";
-import { UserProviderContext } from "./UserProviderConstants";
+import { useContext, useEffect } from "react";
+import { RegisterUserEvents, UserProviderContext } from "./UserProviderConstants";
 import { UserProviderContextType } from "./UserProviderTypes";
-
-import UserEvents from "providers/ConnectionHubProvider/Events/UserEvents";
-import { HubUserEventNames, UserEventProps, UserEventReducer } from "providers/ConnectionHubProvider/Events";
-import { useConnectionHub, useSignalREvents } from "providers/ConnectionHubProvider";
+import { UserEventProps, HubUserEventNames } from "providers/ConnectionHubProvider/Events";
 
 export function useUser<
   AllowNullable extends boolean
@@ -13,7 +10,6 @@ export function useUser<
 }
 
 export function useUserWithPrompt() {
-  const { connectionId } = useConnectionHub();
   const { user, dispatch } = useUser();
 
   async function getUser() {
@@ -21,11 +17,13 @@ export function useUserWithPrompt() {
     const username = prompt("What is your username?");
     if (!username) return null;
 
-    return dispatch('login', username, connectionId);
+    return dispatch('login', username);
   }
 
   return { user, getUser };
 }
 
-export const useUserEvents = (props: Omit<UserEventProps<HubUserEventNames>, 'args'>) => 
-  useSignalREvents(UserEvents, async (event, ...args) => await UserEventReducer(event, { ...props, args }));
+export const useUserEvents = (props: Omit<UserEventProps<HubUserEventNames>, 'args'>) =>
+  useEffect(() => {
+    RegisterUserEvents(props);
+  }, [props]);
