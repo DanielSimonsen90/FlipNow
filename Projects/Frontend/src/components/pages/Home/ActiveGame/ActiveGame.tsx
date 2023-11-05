@@ -15,7 +15,7 @@ export default function ActiveGame() {
       <h1>{game.lobbyName}</h1>
       <InviteCode />
 
-      <div className="game-container">
+      <div className="game-container" style={{ '--cards-amount': game.cards.length } as any}>
         <TurnTeller />
         {started ? <CardContainer /> : <GameControlPanel />}
         <Leaderboard />

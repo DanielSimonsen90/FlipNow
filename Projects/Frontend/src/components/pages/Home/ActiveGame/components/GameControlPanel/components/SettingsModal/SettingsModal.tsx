@@ -1,10 +1,10 @@
+import { useRef } from "react";
 import { Button } from "danholibraryrjs";
 
 import Input from "components/shared/Input";
-import { useGame } from "providers/GameProvider";
 import Modal from "components/shared/Modal";
+import { useGame } from "providers/GameProvider";
 import { GameSettings } from "models/backend/GameSettings";
-import { useRef } from "react";
 
 type Props = {
   modalRef: React.RefObject<HTMLDialogElement>;
