@@ -23,4 +23,16 @@
       color: var(--text-primary);
     }
   }
+
+  form:invalid .error {
+    display: block;
+  }
+
+  form .error {
+    display: none;
+    color: var(--crud-error);
+    font-size: .75rem;
+    margin-top: .25em;
+    padding-left: .25em;
+  }
 }

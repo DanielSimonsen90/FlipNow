@@ -1,40 +1,42 @@
 import { DetailedHTMLProps, InputHTMLAttributes, useState } from "react";
 
-type Props<T extends Record<any, any>> = Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, 'name'> & {
-  group?: boolean;
-  label?: string | boolean;
+type Props<T extends object> = Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, 'onChange'> & {
   model: T;
   name: keyof T;
-  onChange?: (value: string) => void;
+
+  label?: string | boolean;
+  group?: boolean;
+  errorMessage?: string;
 }
 
-export default function Input<T extends Record<any, any>>({ group, model, name, label: labelValue, ...props }: Props<T>) {
-  const [value, setValue] = useState(model[name].toString());
+export default function Input<T extends object>({ 
+  name, model, group, errorMessage,
+  label: labelAttr, 
+  ...props 
+}: Props<T>) {
+  const labelValue = typeof labelAttr === 'boolean' ? formatLabel(name.toString()) : labelAttr;
+  const [value, setValue] = useState(model[name]?.toString());
 
-  function onChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const newValue = e.target.value;
-    setValue(newValue);
-    props.onChange?.(newValue);
-  }
+  const input = <input id={`input-${name.toString()}`}
+    type={typeof (model[name])}
+    placeholder={model[name]?.toString()} 
+    value={value} onChange={e => setValue(e.target.value)}
+    {...props}
+  />;
 
-  const input = <input type="text" value={value} {...props} name={name.toString()} onChange={onChange} />;
-  const label = labelValue 
-    ? <label htmlFor={props.id ?? name.toString()}>
+  const label = labelValue
+    ? <label htmlFor={`input-${name.toString()}`}>
         {typeof labelValue === 'boolean' ? formatLabel(name.toString()) : labelValue}
-      </label> 
+      </label>
     : null;
 
-  return group ? (
-    <div className="input-group">
-      {label}
-      {input}
-    </div>
-  ) : (
-    <>
-      {label}
-      {input}
-    </>
-  );
+  const children = (<>
+    {label}
+    {input}
+    {errorMessage && <span className="error">{errorMessage}</span>}
+  </>);
+
+  return group ? <div className="input-group">{children}</div> : <>{children}</>;
 }
 
 function formatLabel(name: string) {

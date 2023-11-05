@@ -4,9 +4,13 @@
   display: flex;
   flex-direction: column;
   
-  .player-count {
-    color: var(--text-secondary);
+  p {
     margin-bottom: 1em;
+    color: var(--text-secondary);
+  }
+
+  .player-count {
+    color: var(--text-primary);
   }
 }
 

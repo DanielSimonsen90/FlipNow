@@ -1,7 +1,6 @@
 import { useContext, useEffect } from "react";
 import { RegisterUserEvents, UserProviderContext } from "./UserProviderConstants";
 import { UserProviderContextType } from "./UserProviderTypes";
-import FlipNowHubConnection from "providers/ConnectionHubProvider/FlipNowHubConnection";
 import { UserEventProps, HubUserEventNames } from "providers/ConnectionHubProvider/Events";
 
 export function useUser<

@@ -1,6 +1,6 @@
 import { PropsWithChildren, useState } from "react";
 
-import { ConnectionHubProviderContext, RegisterSystemEvents } from "./ConnectionHubProviderConstants";
+import { ConnectionHubProviderContext } from "./ConnectionHubProviderConstants";
 import { Log } from "./ConnectionHubProviderTypes";
 import { useSystemEvents } from "./ConnectionHubProviderHooks";
 

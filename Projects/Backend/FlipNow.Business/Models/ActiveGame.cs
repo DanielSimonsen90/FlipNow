@@ -23,7 +23,7 @@ public class ActiveGame
     public string LobbyName { get; set; }
     public string InviteCode { get; } = Guid.NewGuid().ToString();
     public int LobbyLimit { get; set; } = GameService.MAX_PLAYERS_ALLOWED;
-    public readonly int MaxPlayerAllowed = GameService.MAX_PLAYERS_ALLOWED;
+    public int MaxPlayersAllowed { get; } = GameService.MAX_PLAYERS_ALLOWED;
 
     public GameSettings Settings { get; private set; }
     public void SetSettings(GameSettings value, UnitOfWork uow)
@@ -35,10 +35,11 @@ public class ActiveGame
         
         if (value.LobbyName != LobbyName) 
             LobbyName = value.LobbyName;
-        
-        if (value.LobbyLimit != LobbyLimit 
-            && value.LobbyLimit <= GameService.MAX_PLAYERS_ALLOWED) 
+
+        if (value.LobbyLimit != LobbyLimit
+            && value.LobbyLimit <= GameService.MAX_PLAYERS_ALLOWED)
             LobbyLimit = value.LobbyLimit;
+        else value.LobbyLimit = LobbyLimit;
 
         Settings = value;
     }
