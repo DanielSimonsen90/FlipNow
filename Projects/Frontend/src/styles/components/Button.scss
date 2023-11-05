@@ -64,4 +64,9 @@ button,
   display: flex;
   justify-content: flex-end;
   gap: 1ch;
+
+  &.reverse {
+    flex-direction: row-reverse;
+    margin-left: auto;
+  }
 }

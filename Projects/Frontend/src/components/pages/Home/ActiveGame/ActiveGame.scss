@@ -13,9 +13,11 @@ main {
 }
 
 #active-game {
-  display: grid;
+  // display: grid;
+  // grid-auto-rows: min-content;
+  display: flex;
+  flex-direction: column;
   place-items: center;
-  grid-auto-rows: min-content;
   gap: 1em;
 
   > h1 {

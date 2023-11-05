@@ -10,9 +10,9 @@ export default function GameControlPanel() {
   return isHost ? (
     <>
       <SettingsModal modalRef={modalRef} />
-      <div className="button-container game-control-panel">
-        <Button importance="tertiary" onClick={() => modalRef.current?.showModal()} title="Open game settings">⚙️</Button>
-        <Button className="start-game--button" onClick={() => dispatch('startGame')}>Let the game begin</Button>
+      <div className="button-container game-control-panel reverse">
+        <Button type="button" className="start-game--button" onClick={() => dispatch('startGame')}>Let the game begin</Button>
+        <Button type="button" importance="tertiary" onClick={() => modalRef.current?.showModal()} title="Open game settings">⚙️</Button>
       </div>
     </>
   ) : <p className="start-game--text">Waiting for <span title={`${game.host.user.username} is the host`}>host</span> to start the game...</p>;

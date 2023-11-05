@@ -1,4 +1,10 @@
 .game-settings {
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+  }
+
   h1 {
     color: var(--text-primary);
     margin: unset;
