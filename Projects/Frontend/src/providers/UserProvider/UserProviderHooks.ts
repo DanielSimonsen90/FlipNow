@@ -1,6 +1,7 @@
-import { useContext } from "react";
-import { UserProviderContext } from "./UserProviderConstants";
+import { useContext, useEffect } from "react";
+import { RegisterUserEvents, UserProviderContext } from "./UserProviderConstants";
 import { UserProviderContextType } from "./UserProviderTypes";
+import { UserEventProps, HubUserEventNames } from "providers/ConnectionHubProvider/Events";
 
 export function useUser<
   AllowNullable extends boolean
@@ -9,15 +10,20 @@ export function useUser<
 }
 
 export function useUserWithPrompt() {
-  const { user, createOrFind } = useUser();
+  const { user, dispatch } = useUser();
 
   async function getUser() {
     if (user) return user;
     const username = prompt("What is your username?");
     if (!username) return null;
 
-    return createOrFind(username);
+    return dispatch('login', username);
   }
 
   return { user, getUser };
 }
+
+export const useUserEvents = (props: Omit<UserEventProps<HubUserEventNames>, 'args'>) =>
+  useEffect(() => {
+    RegisterUserEvents(props);
+  }, [props]);

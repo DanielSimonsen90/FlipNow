@@ -1,46 +1,63 @@
 @use './colors' as clrs;
 @use './mixins' as mixins;
 
-@import './components/index.scss';
+@layer base;
 
-* {
-  box-sizing: border-box;
-  position: relative;
-  margin: unset;
-  @include mixins.transition();
-}
+@layer base {
+  @import './components/index.scss';
 
-:root {
-  --text-primary: #{clrs.$text-primary};
-  --text-secondary: #{clrs.$text-secondary};
-  --text-muted: #{clrs.$text-muted};
+  * {
+    box-sizing: border-box;
+    position: relative;
+    margin: unset;
+    @include mixins.transition();
+  }
 
-  --background-primary: #{clrs.$background-primary};
-  --background-secondary: #{clrs.$background-secondary};
-  --background-tertiary: #{clrs.$background-tertiary};
+  :root {
+    --text-primary: #{clrs.$text-primary};
+    --text-secondary: #{clrs.$text-secondary};
+    --text-muted: #{clrs.$text-muted};
 
-  --brand-primary: #{clrs.$brand-primary};
-  --brand-muted: #{clrs.$brand-muted};
+    --background-primary: #{clrs.$background-primary};
+    --background-secondary: #{clrs.$background-secondary};
+    --background-tertiary: #{clrs.$background-tertiary};
 
-  --crud-success: #{clrs.$crud-success};
+    --brand-primary: #{clrs.$brand-primary};
+    --brand-muted: #{clrs.$brand-muted};
 
-  font-size: 16px;
-  font-family: Arial;
-}
+    --crud-success: #{clrs.$crud-success};
+    --crud-error: #{clrs.$crud-error};
 
-body {
-  background-color: var(--background-primary);
-  color: var(--text-primary);
-  margin: 0 0 2em;
-}
+    --link: #{clrs.$link};
 
-main {
-  display: grid;
-  justify-items: center;
-  gap: 1.5em;
-  margin: .5em 1em;
-}
+    font-size: 16px;
+    font-family: Arial;
+  }
 
-[title] {
-  text-decoration: dotted underline var(--text-muted);
+  body {
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+  }
+
+  #root {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+
+  main {
+    display: grid;
+    grid-auto-rows: min-content;
+    justify-items: center;
+    gap: 1.5em;
+    margin: .5em 1em 2em;
+  }
+
+  a {
+    color: var(--link);
+  }
+
+  [title] {
+    text-decoration: dotted underline var(--text-muted);
+  }
 }

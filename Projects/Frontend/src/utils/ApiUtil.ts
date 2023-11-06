@@ -42,7 +42,7 @@ export async function Request<TData, Param extends TParam = undefined>(
     controller = new AbortController(),
     query,
   }: RequestOptions | undefined = {}) {
-  console.log(`Requesting ${path} with method ${method}`);
+  // console.log(`Requesting ${path} with method ${method}`);
 
   const endpoint = (() => {
     const result = API_ENDPOINT_SECURE + ensureSlash(path);

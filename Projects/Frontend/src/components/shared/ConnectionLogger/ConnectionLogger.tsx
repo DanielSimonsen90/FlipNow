@@ -1,10 +1,14 @@
-import { ToggleButton } from "components/pages/Home/Buttons";
-import { Button } from "danholibraryrjs";
-import { useGame } from "providers/GameProvider";
 import { useState } from "react";
+import { Button } from "danholibraryrjs";
+
+import { useLogs } from "providers/ConnectionHubProvider";
+import { useGame } from "providers/GameProvider";
+
+import { ToggleButton } from "components/pages/Home/Buttons";
 
 export default function ConnectionLogger() {
-  const { logs, isHost, setLogs } = useGame();
+  const { isHost } = useGame();
+  const { logs, setLogs } = useLogs();
   const [showLogs, setShowLogs] = useState(isHost);
 
   return (

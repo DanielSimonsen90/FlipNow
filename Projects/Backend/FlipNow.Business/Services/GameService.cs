@@ -1,7 +1,6 @@
 ﻿using DanhoLibrary.Extensions;
 using FlipNow.Business.Models;
 using FlipNow.Common.Entities;
-using Microsoft.AspNetCore.SignalR;
 
 namespace FlipNow.Business.Services;
 
@@ -9,10 +8,11 @@ public class GameService
 {
     public const int MAX_PLAYERS_ALLOWED = 10; // Lobby can only contain 10 players in order for lobby not being overloaded in memory
     private const int FLIPPED_CARD_TIMEOUT_MS = 1000; // 2 selected cards should be visible for a second before unflipping
+    public static int MAX_CARDS_ALLOWED { get; private set; }
     
     private static bool IsNotMatch(GameCard first, GameCard second) => first.Name != second.Name;
     public ActiveGame Game { get; private set; }
-    public bool CanAddPlayer => Game.Players.Count < MAX_PLAYERS_ALLOWED;
+    public bool CanAddPlayer => Game.Players.Count < Game.LobbyLimit;
 
     private readonly UnitOfWork _unitOfWork;
     private readonly GameSessionService _sessionService;
@@ -25,10 +25,9 @@ public class GameService
 
         _unitOfWork = unitOfWork;
         _sessionService = sessionService;
-        Game = new ActiveGame(
-            cards: _unitOfWork.CardRepository.GetAllTwiceShuffled(),
-            host);
+        MAX_CARDS_ALLOWED = unitOfWork.CardRepository.GetAll().Count() * 2;
 
+        Game = new ActiveGame(_unitOfWork, host);
         _hostId = host.Id;
 
         sessionService.AddGame(_hostId, this);
@@ -82,6 +81,11 @@ public class GameService
         Game.Players.ForEach(p => p.CardMatches = 0);
     }
 
+    public void UpdateSettings(GameSettings settings)
+    {
+        Game.SetSettings(settings, _unitOfWork);
+        UpdateHostedGames();
+    }
     /// <summary>
     /// Flip card from <paramref name="index"/>
     /// </summary>

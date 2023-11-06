@@ -10,7 +10,7 @@ export default function Leaderboard() {
   return (
     <aside className="leaderboard-container">
       <h3>{game.playState === PlayState.PLAYING ? 'Leaderboard' : 'Players'}</h3>
-      <p className="player-count">{game.players.length}/{game.maxPlayersAllowed} players</p>
+      <p><span className="player-count">{game.players.length}/{game.lobbyLimit}</span> players flipping {game.cards.length} cards</p>
 
       <ul id="leaderboard">
         {game.leaderboard.map(p => (

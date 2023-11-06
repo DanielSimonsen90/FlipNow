@@ -1,10 +1,9 @@
 import { useGame } from "providers/GameProvider";
 import ConnectionLogger from "components/shared/ConnectionLogger";
 
-import { CardContainer, InviteCode, Leaderboard, TurnTeller } from "./components";
+import { CardContainer, InviteCode, Leaderboard, TurnTeller, GameControlPanel } from "./components";
 import { DeleteGameButton, EndGameButton, GiveUpButton } from "../Buttons";
 import { PlayState } from "models/backend";
-import StartGameButton from "../Buttons/StartGameButton";
 
 export default function ActiveGame() {
   const { game } = useGame(false);
@@ -13,12 +12,12 @@ export default function ActiveGame() {
 
   return (
     <div id="active-game">
-      <h1>{game.host.user.username}'s Game</h1>
+      <h1>{game.lobbyName}</h1>
       <InviteCode />
 
-      <div className="game-container">
+      <div className="game-container" style={{ '--cards-amount': game.cards.length } as any}>
         <TurnTeller />
-        {started ? <CardContainer /> : <StartGameButton />}
+        {started ? <CardContainer /> : <GameControlPanel />}
         <Leaderboard />
         {ended && (
           <div className="game-ended">

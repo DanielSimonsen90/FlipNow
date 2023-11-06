@@ -4,16 +4,16 @@ import { useUser } from "providers/UserProvider";
 import { useState } from "react";
 
 export default function CreateGameButton() {
-  const { createOrFind } = useUser();
-  const { dispatch } = useGame();
+  const { dispatch: userDispatch, loggingIn } = useUser();
+  const { dispatch: gameDispatch } = useGame();
   const [pressed, setPressed] = useState(false);
 
   function onClick() {
     setPressed(true);
-    dispatch('createGame').catch(err => {
+    gameDispatch('createGame').catch(err => {
       if (err instanceof Error && err.message === 'User not logged in') {
         const username = prompt('Insert your username');
-        if (username) createOrFind(username).then(() => dispatch('createGame'));
+        if (username) userDispatch('login', username).then(() => gameDispatch('createGame'));
       }
       
       setPressed(false);
@@ -22,8 +22,12 @@ export default function CreateGameButton() {
 
   return (
     <Button id="create-game" importance="primary" 
-      disabled={pressed}
+      disabled={pressed || loggingIn}
       onClick={onClick}
-    >{pressed ? 'Creating your game...' : 'Start playing'}</Button>
+    >{
+      pressed ? 'Creating your game...' :
+      loggingIn ? 'You are being logged in' : 
+      'Start playing'
+    }</Button>
   );
 }
