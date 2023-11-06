@@ -3,6 +3,7 @@ import { useGame } from "providers/GameProvider";
 
 type Props = {
   card: GameCard;
+  file: any;
   index: number;
 }
 
