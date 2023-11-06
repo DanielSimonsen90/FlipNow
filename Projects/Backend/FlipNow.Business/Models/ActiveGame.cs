@@ -1,15 +1,15 @@
 ﻿using FlipNow.Business.Services;
 using FlipNow.Common.Entities;
-using System.Runtime;
-using System.Text.Json.Serialization;
 
 namespace FlipNow.Business.Models;
 
 public class ActiveGame
 {
+    private const int DEFAULT_CARDS_AMOUNT = 10;
+
     public ActiveGame(UnitOfWork uow, User host)
     {
-        Cards = uow.CardRepository.GetAllTwiceShuffled().Select(c => new GameCard(c)).ToList();
+        Cards = uow.CardRepository.GetAllTwiceShuffled(DEFAULT_CARDS_AMOUNT / 2).Select(c => new GameCard(c)).ToList();
         Host = new Player(host, this);
         LobbyName = $"{host.Username}'s game";
         Players = new List<Player>() { Host };
