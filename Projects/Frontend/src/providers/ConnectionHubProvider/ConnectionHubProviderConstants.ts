@@ -13,5 +13,11 @@ export const RegisterSystemEvents = (
   context: ConnectionHubProviderContextType
 ) => FlipNowHubConnection.getInstance().reigster(
   SystemEvents, 
-  (event, ...args) => SystemEventReducer(event, { args, ...context })
+  (event, ...args) => {
+    try {
+      return SystemEventReducer(event, { args, ...context })
+    } catch (error) {
+      alert((error as Error).message);
+    }
+  }
 );

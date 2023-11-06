@@ -1,5 +1,5 @@
 import { Nullable } from 'types';
-import { ActiveGame } from 'models/backend'
+import { ActiveGame } from 'models/backend';
 
 import Events from "../";
 import { GameEventProps, HubGameEventNames } from './_GameEventTypes';
@@ -10,27 +10,21 @@ export default async function GameEventReducer<Event extends HubGameEventNames>(
 ): Promise<Nullable<ActiveGame>> {
   if (!Events[event]) throw new Error(`Invalid event: ${event}`);
   if (
-    !context.player 
+    !context.player
     && !(
-      event === 'playerJoined' 
+      event === 'playerJoined'
       && (args as unknown as GameEventProps<'playerJoined'>['args'])
-        [0].players.some(p => p.user.id === user.id)
-      )
-    ) {
-    console.log('No player found for event', event, context, args);
+      [0].players.some(p => p.user.id === user.id)
+    )
+  ) {
+    // console.log('No player found for event', event, context, args);
     return context.game;
   }
 
   const { callback } = Events[event];
-  console.log(`[${event}]`, args);
+  // console.log(`[${event}]`, args);
 
-  try {
-    const update = await callback({ ...context, user, args });
-    console.log('Received update', update);
-    return update;
-
-  } catch (error) {
-    console.error(error);
-    return context.game;
-  }
+  const update = await callback({ ...context, user, args });
+  // console.log('Received update', update);
+  return update;
 }

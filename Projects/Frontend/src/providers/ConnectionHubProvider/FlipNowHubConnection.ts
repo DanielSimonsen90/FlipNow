@@ -1,4 +1,4 @@
-import { HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
+import { HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
 
 import { Promiseable } from "types";
 import { API_ENDPOINT_SECURE_SIGNALR } from "utils";
@@ -12,7 +12,7 @@ export default class FlipNowHubConnection {
   private static _hubConnectionSecure = new HubConnectionBuilder()
     .withUrl(API_ENDPOINT_SECURE_SIGNALR)
     .withAutomaticReconnect()
-    .configureLogging(LogLevel.Information)
+    // .configureLogging(LogLevel.Information)
     .build();
 
   private _hubConnection: HubConnection = FlipNowHubConnection._hubConnectionSecure;
@@ -61,7 +61,7 @@ export default class FlipNowHubConnection {
     Arguments extends HubEvents[EventName]
   >(event: EventName, callback: (...args: Arguments) => Promiseable<void>) {
     const _callback = (...args: any[]) => {
-      console.log(`Received ${event} event`, args);
+      // console.log(`Received ${event} event`, args);
       callback(...args as Arguments);
     };
     this._hubConnection.on(event, _callback);
@@ -76,7 +76,7 @@ export default class FlipNowHubConnection {
       this._startUpQueue.push([action, ...args]);
       return this.startQueue();
     }
-    console.log(`Sending ${action} action`, args);
+    // console.log(`Sending ${action} action`, args);
     return this._hubConnection.send(action as string, ...args);
   };
 

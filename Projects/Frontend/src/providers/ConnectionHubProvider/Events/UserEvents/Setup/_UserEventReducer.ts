@@ -8,11 +8,7 @@ export default async function UserEventReducer<Event extends HubUserEventNames>(
   if (!Events[event]) throw new Error(`Invalid event: ${event}`);
 
   const { callback } = Events[event];
-  console.log(`[${event}]`, props.args);
+  // console.log(`[${event}]`, props.args);
 
-  try {
-    await callback(props);
-  } catch (error) {
-    console.error(error);
-  }
+  return await callback(props);
 }

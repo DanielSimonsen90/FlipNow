@@ -29,9 +29,13 @@ export const RegisterGameEvents = (
     { inviteCode, context, args, event }
   );
 
-  const update = await GameEventReducer(event as HubEventNames, {
-    ...context,
-    user, args
-  } as GameEventProps<any>);
-  setGame(update);
+  try {
+    const update = await GameEventReducer(event as HubEventNames, {
+      ...context,
+      user, args
+    } as GameEventProps<any>);
+    setGame(update);
+  } catch (error) {
+    alert((error as Error).message);    
+  }
 });

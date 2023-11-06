@@ -8,11 +8,7 @@ export default async function SystemEventReducer<Event extends HubSystemEventNam
   if (!SystemEvents[event]) throw new Error(`Invalid event: ${event}`);
 
   const { callback } = SystemEvents[event];
-  console.log(`[${event}]`, props);
+  // console.log(`[${event}]`, props);
 
-  try {
-    await callback(props);
-  } catch (error) {
-    console.error(error);
-  }
+  await callback(props);
 }

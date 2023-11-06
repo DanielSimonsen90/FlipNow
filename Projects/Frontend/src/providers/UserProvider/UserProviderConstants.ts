@@ -18,5 +18,11 @@ export const RegisterUserEvents = (
   props: Omit<UserEventProps<HubUserEventNames>, 'args'>
 ) => FlipNowHubConnection.getInstance().reigster(
   UserEvents, 
-  async (event, ...args) => await UserEventReducer(event, { ...props, args })
+  async (event, ...args) => {
+    try {
+      return await UserEventReducer(event, { ...props, args })
+    } catch (error) {
+      alert((error as Error).message);
+    }
+  }
 );

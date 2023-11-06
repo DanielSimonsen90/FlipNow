@@ -8,15 +8,11 @@ export default async function UserActionReducer<Action extends HubUserActionName
 ): Promise<void> {
   if (!Actions[action]) throw new Error(`Invalid action: ${action}`);
   const { callback } = Actions[action];
-  console.log(`[${action}]`, args);
+  // console.log(`[${action}]`, args);
   const connection = FlipNowHubConnection.getInstance();
-  
-  try {
-    await callback({ 
-      args, ...props,
-      broadcastToHub: (...args) => connection.send(action, ...args)
-    });
-  } catch (error) {
-    console.error(error, connection);
-  }
+
+  return await callback({
+    args, ...props,
+    broadcastToHub: (...args) => connection.send(action, ...args)
+  });
 }
