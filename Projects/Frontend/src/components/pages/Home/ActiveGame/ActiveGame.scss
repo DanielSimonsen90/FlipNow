@@ -2,14 +2,9 @@
 @use './components/Card/Card.scss' as card;
 @use './components/CardContainer/CardContainer.scss' as cardContainer;
 
-$game-size: mixins.calculate-game-size(
-  card.$card-width,
-  cardContainer.$gap,
-  5);
-
-main {
-  margin: unset;
-}
+$game-size: mixins.calculate-game-size(card.$card-width,
+    cardContainer.$gap,
+    5);
 
 #active-game {
   display: flex;
@@ -20,6 +15,10 @@ main {
   >h1 {
     margin: 2rem 0 .5rem;
     text-align: center;
+  }
+
+  main {
+    margin: unset;
   }
 }
 

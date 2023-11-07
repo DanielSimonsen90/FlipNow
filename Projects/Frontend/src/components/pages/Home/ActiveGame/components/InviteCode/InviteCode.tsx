@@ -33,7 +33,7 @@ export default function InviteCode() {
   return game.playState !== PlayState.PLAYING ? (
     <div id="invite-code">
       <p>
-        Invite your friends!
+        <span>Invite your friends!</span>
         <Button importance="tertiary" onClick={() => copy(getInviteUrlFromGame(game), setCopiedLink)}>
           Copy link
           {copiedLink && (
