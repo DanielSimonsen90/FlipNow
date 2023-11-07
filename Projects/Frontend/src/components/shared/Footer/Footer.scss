@@ -9,4 +9,11 @@
 
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    grid-auto-flow: row;
+    gap: 1em;
+  }
 }

@@ -11,4 +11,13 @@
     border: 1px solid var(--background-tertiary);
     width: 36ch;
   }
+
+  @media (max-width: 600px) {
+    gap: .5em;
+    width: 100%;
+
+    input {
+      width: 100%;
+    }
+  }
 }
