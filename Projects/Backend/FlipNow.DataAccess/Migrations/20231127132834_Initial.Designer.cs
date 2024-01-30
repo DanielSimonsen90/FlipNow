@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlipNow.DataAccess.Migrations
 {
     [DbContext(typeof(FlipNowDbContext))]
-    [Migration("20231025122329_RemoveActiveGameFromUser")]
-    partial class RemoveActiveGameFromUser
+    [Migration("20231127132834_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -78,6 +78,46 @@ namespace FlipNow.DataAccess.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000005"),
                             Name = "Card4"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000006"),
+                            Name = "Card5"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000007"),
+                            Name = "Card6"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000008"),
+                            Name = "Card7"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000009"),
+                            Name = "Card8"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000010"),
+                            Name = "Card9"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000011"),
+                            Name = "Card10"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000012"),
+                            Name = "Card11"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000013"),
+                            Name = "Card12"
                         });
                 });
 
@@ -86,6 +126,9 @@ namespace FlipNow.DataAccess.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("SavedTimestamp")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 

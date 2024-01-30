@@ -15,8 +15,8 @@ internal class FlipNowContextFactory : IDesignTimeDbContextFactory<FlipNowDbCont
 
         var optionsBuilder = new DbContextOptionsBuilder<FlipNowDbContext>();
         optionsBuilder.UseSqlServer(configuration.GetConnectionString(
-            "DefaultConnection"
-            //"ReleaseConnection"
+            //"DefaultConnection"
+            "ReleaseConnection"
             ));
 
         return new FlipNowDbContext(optionsBuilder.Options);
