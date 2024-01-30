@@ -29,7 +29,8 @@ namespace FlipNow.DataAccess.Migrations
                 name: "Games",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SavedTimestamp = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,14 +68,14 @@ namespace FlipNow.DataAccess.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AvgScore = table.Column<double>(type: "float", nullable: false),
-                    ActiveGameId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Games_ActiveGameId",
-                        column: x => x.ActiveGameId,
+                        name: "FK_Users_Games_GameId",
+                        column: x => x.GameId,
                         principalTable: "Games",
                         principalColumn: "Id");
                 });
@@ -113,13 +114,21 @@ namespace FlipNow.DataAccess.Migrations
                     { new Guid("00000000-0000-0000-0000-000000000002"), "Card1" },
                     { new Guid("00000000-0000-0000-0000-000000000003"), "Card2" },
                     { new Guid("00000000-0000-0000-0000-000000000004"), "Card3" },
-                    { new Guid("00000000-0000-0000-0000-000000000005"), "Card4" }
+                    { new Guid("00000000-0000-0000-0000-000000000005"), "Card4" },
+                    { new Guid("00000000-0000-0000-0000-000000000006"), "Card5" },
+                    { new Guid("00000000-0000-0000-0000-000000000007"), "Card6" },
+                    { new Guid("00000000-0000-0000-0000-000000000008"), "Card7" },
+                    { new Guid("00000000-0000-0000-0000-000000000009"), "Card8" },
+                    { new Guid("00000000-0000-0000-0000-000000000010"), "Card9" },
+                    { new Guid("00000000-0000-0000-0000-000000000011"), "Card10" },
+                    { new Guid("00000000-0000-0000-0000-000000000012"), "Card11" },
+                    { new Guid("00000000-0000-0000-0000-000000000013"), "Card12" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "ActiveGameId", "AvgScore", "Username" },
-                values: new object[] { new Guid("00000000-0000-0000-0000-000000000006"), null, 0.0, "Dumbho" });
+                columns: new[] { "Id", "AvgScore", "GameId", "Username" },
+                values: new object[] { new Guid("00000000-0000-0000-0000-000000000006"), 0.0, null, "Dumbho" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CardGame_GamesId",
@@ -127,9 +136,9 @@ namespace FlipNow.DataAccess.Migrations
                 column: "GamesId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_ActiveGameId",
+                name: "IX_Users_GameId",
                 table: "Users",
-                column: "ActiveGameId");
+                column: "GameId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserScores_GameId",

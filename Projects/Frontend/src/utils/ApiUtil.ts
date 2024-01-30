@@ -2,7 +2,7 @@ if (process.env.NODE_ENV === 'development') {
   var API_ENDPOINT_SECURE = "https://localhost:5000/api";
   console.log('Running development build');
 } else {
-  API_ENDPOINT_SECURE = "https://flipnowapi.azurewebsites.net/api";
+  API_ENDPOINT_SECURE = "https://flipnowapi-2.azurewebsites.net/api";
   console.log('Running production build');
 }
 export { API_ENDPOINT_SECURE };
