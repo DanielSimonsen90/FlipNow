@@ -175,8 +175,11 @@ public class GameService
     {
         if (changeTurn)
         {
-            Game.TurnPlayerIndex = (Game.TurnPlayerIndex + 1) % Game.Players.Count;
-            Game.Turn.Player = Game.Players[Game.TurnPlayerIndex];
+            int newPlayerTurnIndex = (Game.TurnPlayerIndex + 1) % Game.Players.Count;
+            if (newPlayerTurnIndex == Game.TurnPlayerIndex) newPlayerTurnIndex++; // WARN: This might ont work
+
+            Game.TurnPlayerIndex = newPlayerTurnIndex;
+            Game.Turn.Player = Game.Players[newPlayerTurnIndex];
         }
 
         Game.Turn.TurnStarted = DateTime.Now;
