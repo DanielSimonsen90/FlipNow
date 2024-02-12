@@ -246,10 +246,13 @@ public class GameService
         }
         
         // Host left their own game, find new host
-        if (Game.Host.User.Id == userId)
+        if (_hostId == userId)
         {
             Game.Host = Game.Players.GetRandomItem();
+            _sessionService.RemoveGame(_hostId);
+            _sessionService.AddGame(Game.Host.User.Id, this);
         }
+
         UpdateHostedGames();
     }
 }
